@@ -25,6 +25,10 @@ struct SidebarView: View {
     @Binding var selection: SidebarSelection
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
 
+    @State private var showAddSheet = false
+    @State private var newTagName = ""
+    @State private var newTagKind: TagKind = .custom
+
     private var groups: [TagKind: [Tag]] {
         Dictionary(grouping: tags, by: { $0.kind })
     }
@@ -58,13 +62,25 @@ struct SidebarView: View {
                 }
             }
         }
+        .sheet(isPresented: $showAddSheet) {
+            CreateTagSheet(
+                name: $newTagName,
+                kind: $newTagKind,
+                onCancel: { showAddSheet = false },
+                onCreate: { name, kind in
+                    modelContext.insert(Tag(name: name, kind: kind))
+                    showAddSheet = false
+                }
+            )
+            .frame(minWidth: 360)
+        }
     }
 
     private func addTag() {
         withAnimation {
-            let newTag = Tag(name: "Something", kind: .custom)
-
-            modelContext.insert(newTag)
+            newTagName = ""
+            newTagKind = .custom
+            showAddSheet = true
         }
     }
 }

@@ -16,7 +16,7 @@ struct My_PhotosApp: App {
         ])
         let modelConfiguration = ModelConfiguration(
             schema: schema,
-            isStoredInMemoryOnly: false
+            isStoredInMemoryOnly: true
         )
         let container = try! ModelContainer(
             for: schema,
