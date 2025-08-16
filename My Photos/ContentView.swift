@@ -10,44 +10,14 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @State private var selection: SidebarSelection = .none
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
 
     var body: some View {
         NavigationSplitView {
-            List {
-                ForEach(TagKind.allCases, id: \.self) { kind in
-                    Section(kind.title) {
-                        NavigationLink(tag.name) {
-                            Text("Photos with tag \(tag.name)")
-                        }
-                    }
-                }
-            }
-            #if os(macOS)
-                .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-            #endif
-            .toolbar {
-                #if os(iOS)
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        EditButton()
-                    }
-                #endif
-                ToolbarItem {
-                    Button(action: addTag) {
-                        Label("Add Tag", systemImage: "plus")
-                    }
-                }
-            }
+            SidebarView(selection: $selection)
         } detail: {
             Text("Select an item")
-        }
-    }
-
-    private func addTag() {
-        withAnimation {
-            let newTag = Tag(name: "Holiday", kind: .event)
-
-            modelContext.insert(newTag)
         }
     }
 
