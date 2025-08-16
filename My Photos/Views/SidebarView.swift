@@ -62,7 +62,7 @@ struct SidebarView: View {
 
     private func addTag() {
         withAnimation {
-            let newTag = Tag(name: "Holiday", kind: .event)
+            let newTag = Tag(name: "Something", kind: .custom)
 
             modelContext.insert(newTag)
         }

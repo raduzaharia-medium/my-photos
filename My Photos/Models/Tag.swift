@@ -7,12 +7,14 @@
 
 import SwiftData
 
-enum TagKind: Int, Codable, Hashable, CaseIterable {
-    case person = 0
-    case place = 1
-    case date = 2
-    case event = 3
-    case custom = 4
+enum TagKind: String, Codable, Hashable, CaseIterable, Identifiable {
+    case person = "person"
+    case place = "place"
+    case date = "date"
+    case event = "event"
+    case custom = "custom"
+    
+    var id: String { rawValue }
 }
 
 extension TagKind {
@@ -22,7 +24,7 @@ extension TagKind {
         case .place: "Places"
         case .date: "Dates"
         case .event: "Events"
-        case .custom: "Others"
+        case .custom: "Tags"
         }
     }
     
