@@ -34,7 +34,8 @@ struct CreateTagSheet: View {
                         Text(k.title).tag(k)
                     }
                 }
-                .pickerStyle(.segmented)
+                .pickerStyle(.menu)
+                .labelsHidden()
             }
 
             HStack {

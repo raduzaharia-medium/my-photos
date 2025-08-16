@@ -37,14 +37,12 @@ struct SidebarView: View {
         List {
             ForEach(TagKind.allCases, id: \.self) { kind in
                 let sectionTags = groups[kind] ?? []
-
-                Section(kind.title) {
-                    ForEach(sectionTags, id: \.persistentModelID) { tag in
-                        NavigationLink(tag.name) {
-                            Text("Photos with tag \(tag.name)")
-                        }
-                    }
-                }
+                TagSection(
+                    kind: kind,
+                    tags: sectionTags,
+                    onEdit: editTag,
+                    onDelete: deleteTag
+                )
             }
         }
         #if os(macOS)
@@ -77,6 +75,22 @@ struct SidebarView: View {
     }
 
     private func addTag() {
+        withAnimation {
+            newTagName = ""
+            newTagKind = .custom
+            showAddSheet = true
+        }
+    }
+
+    private func editTag(tag: Tag) {
+        withAnimation {
+            newTagName = ""
+            newTagKind = .custom
+            showAddSheet = true
+        }
+    }
+
+    private func deleteTag(tag: Tag) {
         withAnimation {
             newTagName = ""
             newTagKind = .custom

@@ -33,7 +33,7 @@ extension TagKind {
         case .person: "person"
         case .place: "mappin.and.ellipse"
         case .date: "calendar"
-        case .event: "event"
+        case .event: "sparkles"
         case .custom: "tag"
         }
     }
