@@ -12,6 +12,7 @@ struct TagEditorSheet: View {
     @State private var name: String = ""
     @State private var kind: TagKind = .custom
 
+    let title: String
     let initialName: String
     let initialKind: TagKind
 
@@ -19,16 +20,18 @@ struct TagEditorSheet: View {
     var onSave: (String, TagKind) -> Void
 
     init(
+        title: String,
         initialName: String,
         initialKind: TagKind,
         onCancel: @escaping () -> Void,
         onSave: @escaping (String, TagKind) -> Void
     ) {
+        self.title = title
         self.initialName = initialName
         self.initialKind = initialKind
         self.onCancel = onCancel
         self.onSave = onSave
-        
+
         _name = State(initialValue: initialName)
         _kind = State(initialValue: initialKind)
     }
@@ -69,5 +72,7 @@ struct TagEditorSheet: View {
             }
         }.padding(20)
             .onAppear { DispatchQueue.main.async { nameFocused = true } }
+            .frame(minWidth: 360)
+            .navigationTitle(Text(title))
     }
 }

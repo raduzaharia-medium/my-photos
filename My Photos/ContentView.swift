@@ -29,8 +29,6 @@ struct ContentView: View {
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
 
     @State private var showAddSheet = false
-    @State private var newTagName = ""
-    @State private var newTagKind: TagKind = .custom
     @State private var editor: TagEditor?
 
     var body: some View {
@@ -54,18 +52,18 @@ struct ContentView: View {
             switch editor {
             case .create:
                 TagEditorSheet(
-                    initialName: newTagName,
-                    initialKind: newTagKind,
+                    title: "New Tag",
+                    initialName: "",
+                    initialKind: .custom,
                     onCancel: { self.editor = nil },
                     onSave: { name, kind in
                         modelContext.insert(Tag(name: name, kind: kind))
                         self.editor = nil
                     }
                 )
-                .frame(minWidth: 360)
-                .navigationTitle(Text("New Tag"))
             case .edit(let tag):
                 TagEditorSheet(
+                    title: "Edit Tag \"\(tag.name)\"",
                     initialName: tag.name,
                     initialKind: tag.kind,
                     onCancel: { self.editor = nil },
@@ -75,8 +73,6 @@ struct ContentView: View {
                         self.editor = nil
                     }
                 )
-                .frame(minWidth: 360)
-                .navigationTitle(Text("Edit Tag \"\(tag.name)\""))
             }
         }
     }
