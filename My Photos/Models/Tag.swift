@@ -7,10 +7,6 @@
 
 import SwiftData
 
-enum TagSelection: Hashable {
-    case tag(PersistentIdentifier)
-}
-
 enum TagKind: String, Codable, Hashable, CaseIterable, Identifiable {
     case album = "album"
     case person = "person"

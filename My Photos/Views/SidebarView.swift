@@ -5,12 +5,9 @@
 //  Created by Radu Zaharia on 16.08.2025.
 //
 
-import SwiftData
 import SwiftUI
 
 struct SidebarView: View {
-    @Environment(\.modelContext) private var modelContext
-
     let tags: [Tag]
     
     let onAdd: () -> Void

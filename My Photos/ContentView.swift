@@ -8,6 +8,22 @@
 import SwiftData
 import SwiftUI
 
+enum TagSelection: Hashable {
+    case tag(PersistentIdentifier)
+}
+
+private enum TagEditor: Identifiable {
+    case create
+    case edit(Tag)
+
+    var id: String {
+        switch self {
+        case .create: return "create"
+        case .edit(let tag): return "edit-\(tag.persistentModelID)"
+        }
+    }
+}
+
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
@@ -15,6 +31,7 @@ struct ContentView: View {
     @State private var showAddSheet = false
     @State private var newTagName = ""
     @State private var newTagKind: TagKind = .custom
+    @State private var editor: TagEditor?
 
     var body: some View {
         NavigationSplitView {
@@ -27,39 +44,52 @@ struct ContentView: View {
             .navigationDestination(for: TagSelection.self) { sel in
                 switch sel {
                 case .tag(let id):
-                    PhotosView(tagID: id)
+                    DetailView(tagID: id)
                 }
             }
         } detail: {
             Text("Select a tag").foregroundStyle(.secondary)
         }
-        .sheet(isPresented: $showAddSheet) {
-            CreateTagSheet(
-                name: $newTagName,
-                kind: $newTagKind,
-                onCancel: { showAddSheet = false },
-                onCreate: { name, kind in
-                    modelContext.insert(Tag(name: name, kind: kind))
-                    showAddSheet = false
-                }
-            )
-            .frame(minWidth: 360)
+        .sheet(item: $editor) { editor in
+            switch editor {
+            case .create:
+                TagEditorSheet(
+                    initialName: newTagName,
+                    initialKind: newTagKind,
+                    onCancel: { self.editor = nil },
+                    onSave: { name, kind in
+                        modelContext.insert(Tag(name: name, kind: kind))
+                        self.editor = nil
+                    }
+                )
+                .frame(minWidth: 360)
+                .navigationTitle(Text("New Tag"))
+            case .edit(let tag):
+                TagEditorSheet(
+                    initialName: tag.name,
+                    initialKind: tag.kind,
+                    onCancel: { self.editor = nil },
+                    onSave: { name, kind in
+                        tag.name = name
+                        tag.kind = kind
+                        self.editor = nil
+                    }
+                )
+                .frame(minWidth: 360)
+                .navigationTitle(Text("Edit Tag \"\(tag.name)\""))
+            }
         }
     }
 
     private func addTag() {
         withAnimation {
-            newTagName = ""
-            newTagKind = .custom
-            showAddSheet = true
+            editor = .create
         }
     }
 
     private func editTag(_ tag: Tag) {
         withAnimation {
-            newTagName = ""
-            newTagKind = .custom
-            showAddSheet = true
+            editor = .edit(tag)
         }
     }
 

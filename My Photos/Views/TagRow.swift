@@ -5,7 +5,6 @@
 //  Created by Radu Zaharia on 16.08.2025.
 //
 
-import SwiftData
 import SwiftUI
 
 struct TagRow: View {

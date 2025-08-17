@@ -7,19 +7,34 @@
 
 import SwiftUI
 
-struct CreateTagSheet: View {
+struct TagEditorSheet: View {
     @FocusState private var nameFocused: Bool
+    @State private var name: String = ""
+    @State private var kind: TagKind = .custom
 
-    @Binding var name: String
-    @Binding var kind: TagKind
+    let initialName: String
+    let initialKind: TagKind
 
     var onCancel: () -> Void
-    var onCreate: (String, TagKind) -> Void
+    var onSave: (String, TagKind) -> Void
+
+    init(
+        initialName: String,
+        initialKind: TagKind,
+        onCancel: @escaping () -> Void,
+        onSave: @escaping (String, TagKind) -> Void
+    ) {
+        self.initialName = initialName
+        self.initialKind = initialKind
+        self.onCancel = onCancel
+        self.onSave = onSave
+        
+        _name = State(initialValue: initialName)
+        _kind = State(initialValue: initialKind)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("New Tag").font(.title3).bold()
-
             VStack(alignment: .leading, spacing: 8) {
                 Text("Name").font(.caption).foregroundStyle(.secondary)
                 TextField("e.g. Vacation, Alice, 2025-08", text: $name)
@@ -41,8 +56,8 @@ struct CreateTagSheet: View {
             HStack {
                 Spacer()
                 Button("Cancel", role: .cancel, action: onCancel)
-                Button("Create") {
-                    onCreate(
+                Button("Save") {
+                    onSave(
                         name.trimmingCharacters(in: .whitespacesAndNewlines),
                         kind
                     )
