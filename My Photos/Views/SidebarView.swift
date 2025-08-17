@@ -49,11 +49,6 @@ struct SidebarView: View {
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)
         #endif
         .toolbar {
-            #if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-            #endif
             ToolbarItem {
                 Button(action: addTag) {
                     Label("Add Tag", systemImage: "plus")

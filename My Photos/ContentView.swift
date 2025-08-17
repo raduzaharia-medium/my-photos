@@ -17,7 +17,10 @@ struct ContentView: View {
         NavigationSplitView {
             SidebarView(selection: $selection)
         } detail: {
-            Text("Select an item")
+            switch selection {
+            case .tag(let pid): Text("Photos for tag \(pid.hashValue)")
+            case .none: Text("Select a tag").foregroundStyle(.secondary)
+            }
         }
     }
 
