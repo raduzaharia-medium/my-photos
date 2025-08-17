@@ -12,7 +12,6 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
 
-    @State private var selection: SidebarSelection?
     @State private var showAddSheet = false
     @State private var newTagName = ""
     @State private var newTagKind: TagKind = .custom
@@ -20,12 +19,12 @@ struct ContentView: View {
     var body: some View {
         NavigationSplitView {
             SidebarView(
-                selection: $selection,
+                tags: tags,
                 onAdd: addTag,
                 onEdit: editTag,
                 onDelete: deleteTag
             )
-            .navigationDestination(for: SidebarSelection.self) { sel in
+            .navigationDestination(for: TagSelection.self) { sel in
                 switch sel {
                 case .tag(let id):
                     PhotosView(tagID: id)
@@ -67,10 +66,6 @@ struct ContentView: View {
     private func deleteTag(_ tag: Tag) {
         withAnimation {
             modelContext.delete(tag)
-
-            if case let .tag(id)? = selection, id == tag.persistentModelID {
-                selection = nil
-            }
         }
     }
 }

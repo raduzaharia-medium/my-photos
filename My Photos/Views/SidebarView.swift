@@ -8,15 +8,11 @@
 import SwiftData
 import SwiftUI
 
-enum SidebarSelection: Hashable {
-    case tag(PersistentIdentifier)
-}
-
 struct SidebarView: View {
     @Environment(\.modelContext) private var modelContext
-    @Binding var selection: SidebarSelection?
-    @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
 
+    let tags: [Tag]
+    
     let onAdd: () -> Void
     let onEdit: (Tag) -> Void
     let onDelete: (Tag) -> Void

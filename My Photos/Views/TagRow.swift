@@ -14,7 +14,7 @@ struct TagRow: View {
     let onDelete: (Tag) -> Void
 
     var body: some View {
-        NavigationLink(value: SidebarSelection.tag(tag.persistentModelID)) {
+        NavigationLink(value: TagSelection.tag(tag.persistentModelID)) {
             HStack {
                 Label(tag.name, systemImage: tag.kind.icon)
                 Spacer(minLength: 8)
