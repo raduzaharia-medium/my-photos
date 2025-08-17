@@ -1,15 +1,8 @@
-//
-//  ContentView.swift
-//  My Photos
-//
-//  Created by Radu Zaharia on 16.08.2025.
-//
-
 import SwiftData
 import SwiftUI
 
 enum TagSelection: Hashable {
-    case tag(PersistentIdentifier)
+    case tag(Tag)
 }
 
 private enum TagEditor: Identifiable {
@@ -41,12 +34,12 @@ struct ContentView: View {
             )
             .navigationDestination(for: TagSelection.self) { sel in
                 switch sel {
-                case .tag(let id):
-                    DetailView(tagID: id)
+                case .tag(let tag):
+                    DetailView(tag: tag)
                 }
             }
         } detail: {
-            Text("Select a tag").foregroundStyle(.secondary)
+            DetailView(tag: nil)
         }
         .sheet(item: $editor) { editor in
             switch editor {

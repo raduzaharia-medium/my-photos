@@ -1,15 +1,8 @@
-//
-//  DetailView.swift
-//  My Photos
-//
-//  Created by Radu Zaharia on 17.08.2025.
-//
-
 import SwiftData
 import SwiftUI
 
 enum DetailTab: String, CaseIterable, Identifiable {
-    case photos = "Photos"
+    case photos = "Grid"
     case map = "Map"
 
     var id: String { rawValue }
@@ -17,17 +10,17 @@ enum DetailTab: String, CaseIterable, Identifiable {
 
 struct DetailView: View {
     @State private var tab: DetailTab = .photos
-    let tagID: PersistentIdentifier
+    let tag: Tag?
 
     var body: some View {
         Group {
             switch tab {
-            case .photos: PhotosView(tagID: tagID)
-            case .map: PhotosView(tagID: tagID)
+            case .photos: PhotosGrid(tag: tag)
+            case .map: PhotosMap(tag: tag)
             }
         }
         .toolbar {
-            ToolbarItem {
+            ToolbarItem(placement: .principal) {
                 Picker(
                     "Tab",
                     selection: Binding($tab)

@@ -1,10 +1,3 @@
-//
-//  TagSection.swift
-//  My Photos
-//
-//  Created by Radu Zaharia on 16.08.2025.
-//
-
 import SwiftUI
 
 struct TagSection: View {

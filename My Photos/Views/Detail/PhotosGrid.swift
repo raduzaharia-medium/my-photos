@@ -1,15 +1,19 @@
-//
-//  PhotosView.swift
-//  My Photos
-//
-//  Created by Radu Zaharia on 17.08.2025.
-//
-
 import SwiftData
 import SwiftUI
 
-struct PhotosView: View {
+struct PhotosGrid: View {
+    @Query(sort: \Photo.dateTaken, order: .reverse) private var allPhotos:
+        [Photo]
+
     let tag: Tag?
+
+    private var photos: [Photo] {
+        if let tag {
+            return tag.photos.sorted { $0.dateTaken > $1.dateTaken }
+        } else {
+            return allPhotos
+        }
+    }
 
     var body: some View {
         if tag == nil {
