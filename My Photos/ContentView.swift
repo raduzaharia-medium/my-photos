@@ -10,24 +10,66 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @State private var selection: SidebarSelection = .none
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
+
+    @State private var selection: SidebarSelection?
+    @State private var showAddSheet = false
+    @State private var newTagName = ""
+    @State private var newTagKind: TagKind = .custom
 
     var body: some View {
         NavigationSplitView {
-            SidebarView(selection: $selection)
-        } detail: {
-            switch selection {
-            case .tag(let pid): Text("Photos for tag \(pid.hashValue)")
-            case .none: Text("Select a tag").foregroundStyle(.secondary)
+            SidebarView(
+                selection: $selection,
+                onAdd: addTag,
+                onEdit: editTag,
+                onDelete: deleteTag
+            )
+            .navigationDestination(for: SidebarSelection.self) { sel in
+                switch sel {
+                case .tag(let id):
+                    PhotosView(tagID: id)
+                }
             }
+        } detail: {
+            Text("Select a tag").foregroundStyle(.secondary)
+        }
+        .sheet(isPresented: $showAddSheet) {
+            CreateTagSheet(
+                name: $newTagName,
+                kind: $newTagKind,
+                onCancel: { showAddSheet = false },
+                onCreate: { name, kind in
+                    modelContext.insert(Tag(name: name, kind: kind))
+                    showAddSheet = false
+                }
+            )
+            .frame(minWidth: 360)
         }
     }
 
-    private func deleteItems(offsets: IndexSet) {
+    private func addTag() {
         withAnimation {
-            for index in offsets {
-                modelContext.delete(tags[index])
+            newTagName = ""
+            newTagKind = .custom
+            showAddSheet = true
+        }
+    }
+
+    private func editTag(_ tag: Tag) {
+        withAnimation {
+            newTagName = ""
+            newTagKind = .custom
+            showAddSheet = true
+        }
+    }
+
+    private func deleteTag(_ tag: Tag) {
+        withAnimation {
+            modelContext.delete(tag)
+
+            if case let .tag(id)? = selection, id == tag.persistentModelID {
+                selection = nil
             }
         }
     }

@@ -10,16 +10,17 @@ import SwiftUI
 
 struct TagRow: View {
     let tag: Tag
-    var onEdit: (Tag) -> Void
-    var onDelete: (Tag) -> Void
+    let onEdit: (Tag) -> Void
+    let onDelete: (Tag) -> Void
 
     var body: some View {
-        HStack {
-            Label(tag.name, systemImage: tag.kind.icon)
-            Spacer(minLength: 8)
-
+        NavigationLink(value: SidebarSelection.tag(tag.persistentModelID)) {
+            HStack {
+                Label(tag.name, systemImage: tag.kind.icon)
+                Spacer(minLength: 8)
+            }
+            .contentShape(Rectangle())
         }
-        .contentShape(Rectangle())
         .contextMenu {
             Button {
                 onEdit(tag)
