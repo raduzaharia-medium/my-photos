@@ -22,15 +22,16 @@ struct PhotosGrid: View {
     init(_ selectedItem: SidebarItem?) {
         self.selectedItem = selectedItem
     }
-    
+
     var body: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 8) {
                 ForEach(photos) { photo in
-                    Text("Something")
+                    PhotoCell(photo)
                 }
                 .buttonStyle(.plain)
             }
+            .padding(.all)
         }
         .navigationTitle(selectedItem?.name ?? "All Photos")
     }
