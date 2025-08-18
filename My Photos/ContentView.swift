@@ -30,7 +30,7 @@ struct ContentView: View {
             )
         } detail: {
             DetailView(nil)
-        }
+        } 
         .sheet(item: $editor) { editor in
             switch editor {
             case .create:

@@ -68,9 +68,6 @@ struct PhotoCard: View {
             )
         }.overlay {
             Text(photo.title)
-                .clipShape(
-                    RoundedRectangle(cornerRadius: variant.tokens.cornerRadius, style: .continuous)
-                )
                 .padding(variant.tokens.padding)
 
         }
