@@ -1,21 +1,34 @@
 import SwiftData
 import Foundation
 
+struct GeoCoordinate: Codable, Hashable {
+    let latitude: Double
+    let longitude: Double
+    
+    init(_ latitude: Double, _ longitude: Double) {
+        self.latitude = latitude
+        self.longitude = longitude
+    }
+}
+
 @Model
-final class Photo {
+final class Photo: Identifiable {
     @Attribute(.unique) var id: UUID
+    var title: String
     var dateTaken: Date
-    var location: String
+    var location: GeoCoordinate
     
     @Relationship(inverse: \Tag.photos) var tags: [Tag]
     
     public init(
         id: UUID = .init(),
+        title: String,
         dateTaken: Date,
-        location: String,
+        location: GeoCoordinate,
         tags: [Tag] = []
     ) {
         self.id = id
+        self.title = title
         self.dateTaken = dateTaken
         self.location = location
         self.tags = tags

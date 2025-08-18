@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PhotoCell: View {
+struct PhotoCard: View {
     let photo: Photo
 
     init(_ photo: Photo) {
@@ -13,8 +13,7 @@ struct PhotoCell: View {
                 .foregroundColor(.white)
                 .shadow(color: .black.opacity(0.15), radius: 5, x: 0, y: 2)
         }.overlay {
-            Text(photo.location)
-                .frame(height: 110)
+            Text(photo.title)
                 .clipShape(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
                 )
