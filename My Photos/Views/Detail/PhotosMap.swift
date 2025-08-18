@@ -31,7 +31,7 @@ struct PhotosMap: View {
                         longitude: photo.location.longitude
                     )
                 ) {
-                    PhotoPin(photo)
+                    PhotoCard(photo, variant: .pin)
                 }
             }
         }

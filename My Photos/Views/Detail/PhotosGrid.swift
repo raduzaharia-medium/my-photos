@@ -27,7 +27,7 @@ struct PhotosGrid: View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 8) {
                 ForEach(photos) { photo in
-                    PhotoCard(photo)
+                    PhotoCard(photo, variant: .grid)
                 }
                 .buttonStyle(.plain)
             }
