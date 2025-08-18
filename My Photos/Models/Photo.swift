@@ -7,16 +7,18 @@ final class Photo {
     var dateTaken: Date
     var location: String
     
-    @Relationship(inverse: \Tag.photos) var tags: [Tag] = []
+    @Relationship(inverse: \Tag.photos) var tags: [Tag]
     
     public init(
         id: UUID = .init(),
         dateTaken: Date,
-        location: String
+        location: String,
+        tags: [Tag] = []
     ) {
         self.id = id
         self.dateTaken = dateTaken
         self.location = location
+        self.tags = tags
     }
     
     func addTag(_ tag: Tag) {

@@ -5,25 +5,33 @@ struct PhotosGrid: View {
     @Query(sort: \Photo.dateTaken, order: .reverse) private var allPhotos:
         [Photo]
 
-    let tag: Tag?
+    let selectedItem: SidebarItem?
 
     private var photos: [Photo] {
-        if let tag {
+        switch selectedItem {
+        case .tag(let tag):
             return tag.photos.sorted { $0.dateTaken > $1.dateTaken }
-        } else {
+        default:
             return allPhotos
         }
     }
+    private let columns = [
+        GridItem(.adaptive(minimum: 110, maximum: 200), spacing: 8)
+    ]
 
+    init(_ selectedItem: SidebarItem?) {
+        self.selectedItem = selectedItem
+    }
+    
     var body: some View {
-        if tag == nil {
-            ContentUnavailableView(
-                "Select a tag",
-                systemImage: "tag.slash",
-                description: Text("Let's browse all photos.")
-            )
-        } else {
-            Text(tag?.name ?? "Unknown Tag")
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: 8) {
+                ForEach(photos) { photo in
+                    Text("Something")
+                }
+                .buttonStyle(.plain)
+            }
         }
+        .navigationTitle(selectedItem?.name ?? "All Photos")
     }
 }

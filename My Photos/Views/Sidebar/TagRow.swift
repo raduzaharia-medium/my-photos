@@ -6,7 +6,7 @@ struct TagRow: View {
     let onDelete: (Tag) -> Void
 
     var body: some View {
-        NavigationLink(value: TagSelection.tag(tag)) {
+        NavigationLink(value: SidebarItem.tag(tag)) {
             HStack {
                 Label(tag.name, systemImage: tag.kind.icon)
                 Spacer(minLength: 8)

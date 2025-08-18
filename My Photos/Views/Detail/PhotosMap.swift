@@ -2,17 +2,21 @@ import SwiftData
 import SwiftUI
 
 struct PhotosMap: View {
-    let tag: Tag?
+    let selectedItem: SidebarItem?
+    
+    init(_ selectedItem: SidebarItem?) {
+        self.selectedItem = selectedItem
+    }
 
     var body: some View {
-        if tag == nil {
+        if selectedItem == nil {
             ContentUnavailableView(
                 "Select a tag",
                 systemImage: "tag.slash",
                 description: Text("Let's browse all photos.")
             )
         } else {
-            Text(tag?.name ?? "Unknown Tag")
+            Text(selectedItem?.name ?? "Unknown Tag")
         }
     }
 }

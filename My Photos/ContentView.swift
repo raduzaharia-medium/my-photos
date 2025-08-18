@@ -1,10 +1,6 @@
 import SwiftData
 import SwiftUI
 
-enum TagSelection: Hashable {
-    case tag(Tag)
-}
-
 private enum TagEditor: Identifiable {
     case create
     case edit(Tag)
@@ -32,14 +28,11 @@ struct ContentView: View {
                 onEdit: editTag,
                 onDelete: deleteTag
             )
-            .navigationDestination(for: TagSelection.self) { sel in
-                switch sel {
-                case .tag(let tag):
-                    DetailView(tag: tag)
-                }
+            .navigationDestination(for: SidebarItem.self) { selection in
+                DetailView(selection)
             }
         } detail: {
-            DetailView(tag: nil)
+            DetailView(nil)
         }
         .sheet(item: $editor) { editor in
             switch editor {

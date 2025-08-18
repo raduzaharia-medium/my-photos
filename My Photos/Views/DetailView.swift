@@ -10,13 +10,17 @@ enum DetailTab: String, CaseIterable, Identifiable {
 
 struct DetailView: View {
     @State private var tab: DetailTab = .photos
-    let tag: Tag?
+    let selectedItem: SidebarItem?
 
+    init(_ selectedItem: SidebarItem?) {
+        self.selectedItem = selectedItem
+    }
+    
     var body: some View {
         Group {
             switch tab {
-            case .photos: PhotosGrid(tag: tag)
-            case .map: PhotosMap(tag: tag)
+            case .photos: PhotosGrid(selectedItem)
+            case .map: PhotosMap(selectedItem)
             }
         }
         .toolbar {

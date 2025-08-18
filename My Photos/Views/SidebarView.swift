@@ -1,8 +1,22 @@
 import SwiftUI
 
+enum SidebarItem: Hashable {
+    case filter(Filter)
+    case tag(Tag)
+
+    var name: String {
+        switch self {
+        case .filter(let filter):
+            return filter.name
+        case .tag(let tag):
+            return tag.name
+        }
+    }
+}
+
 struct SidebarView: View {
     let tags: [Tag]
-    
+
     let onAdd: () -> Void
     let onEdit: (Tag) -> Void
     let onDelete: (Tag) -> Void
@@ -13,6 +27,12 @@ struct SidebarView: View {
 
     var body: some View {
         List {
+            Section("Filters") {
+                ForEach(Filter.allCases, id: \.self) { filter in
+                    FilterRow(filter: filter)
+                }
+            }
+
             ForEach(TagKind.allCases, id: \.self) { kind in
                 let sectionTags = groups[kind] ?? []
                 TagSection(

@@ -36,7 +36,7 @@ extension TagKind {
 }
 
 @Model
-final class Tag {
+final class Tag: Identifiable, Hashable {
     var name: String
     var kind: TagKind
 
