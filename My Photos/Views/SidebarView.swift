@@ -29,19 +29,22 @@ struct SidebarView: View {
         List {
             Section("Filters") {
                 ForEach(Filter.allCases, id: \.self) { filter in
-                    FilterRow(filter: filter)
+                    FilterRow(filter)
                 }
             }
 
             ForEach(TagKind.allCases, id: \.self) { kind in
                 let sectionTags = groups[kind] ?? []
                 TagSection(
-                    kind: kind,
-                    tags: sectionTags,
+                    kind.title,
+                    sectionTags,
                     onEdit: onEdit,
                     onDelete: onDelete
                 )
             }
+        }
+        .navigationDestination(for: SidebarItem.self) { selection in
+            DetailView(selection)
         }
         #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)

@@ -5,6 +5,16 @@ struct TagRow: View {
     let onEdit: (Tag) -> Void
     let onDelete: (Tag) -> Void
 
+    init(
+        _ tag: Tag,
+        onEdit: @escaping (Tag) -> Void,
+        onDelete: @escaping (Tag) -> Void
+    ) {
+        self.tag = tag
+        self.onEdit = onEdit
+        self.onDelete = onDelete
+    }
+
     var body: some View {
         NavigationLink(value: SidebarItem.tag(tag)) {
             HStack {

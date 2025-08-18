@@ -3,6 +3,10 @@ import SwiftUI
 struct FilterRow: View {
     let filter: Filter
 
+    init(_ filter: Filter) {
+        self.filter = filter
+    }
+    
     var body: some View {
         NavigationLink(value: SidebarItem.filter(filter)) {
             HStack {

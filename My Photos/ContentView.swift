@@ -28,9 +28,6 @@ struct ContentView: View {
                 onEdit: editTag,
                 onDelete: deleteTag
             )
-            .navigationDestination(for: SidebarItem.self) { selection in
-                DetailView(selection)
-            }
         } detail: {
             DetailView(nil)
         }
@@ -41,22 +38,17 @@ struct ContentView: View {
                     title: "New Tag",
                     initialName: "",
                     initialKind: .custom,
-                    onCancel: { self.editor = nil },
-                    onSave: { name, kind in
-                        modelContext.insert(Tag(name: name, kind: kind))
-                        self.editor = nil
-                    }
+                    onCancel: cancel,
+                    onSave: saveCreate
                 )
             case .edit(let tag):
                 TagEditorSheet(
                     title: "Edit Tag \"\(tag.name)\"",
                     initialName: tag.name,
                     initialKind: tag.kind,
-                    onCancel: { self.editor = nil },
+                    onCancel: cancel,
                     onSave: { name, kind in
-                        tag.name = name
-                        tag.kind = kind
-                        self.editor = nil
+                        saveEdit(tag, name: name, kind: kind)
                     }
                 )
             }
@@ -79,6 +71,21 @@ struct ContentView: View {
         withAnimation {
             modelContext.delete(tag)
         }
+    }
+
+    private func cancel() {
+        editor = nil
+    }
+
+    private func saveCreate(name: String, kind: TagKind) {
+        modelContext.insert(Tag(name: name, kind: kind))
+        self.editor = nil
+    }
+
+    private func saveEdit(_ tag: Tag, name: String, kind: TagKind) {
+        tag.name = name
+        tag.kind = kind
+        self.editor = nil
     }
 }
 
