@@ -6,14 +6,13 @@ struct FilterRow: View {
     init(_ filter: Filter) {
         self.filter = filter
     }
-    
+
     var body: some View {
-        NavigationLink(value: SidebarItem.filter(filter)) {
-            HStack {
-                Label(filter.name, systemImage: filter.icon)
-                Spacer(minLength: 8)
-            }
-            .contentShape(Rectangle())
+        HStack {
+            Label(filter.name, systemImage: filter.icon)
+            Spacer(minLength: 8)
         }
+        .contentShape(Rectangle())
+        .tag(SidebarItem.filter(filter))
     }
 }

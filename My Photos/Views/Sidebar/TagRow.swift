@@ -16,13 +16,12 @@ struct TagRow: View {
     }
 
     var body: some View {
-        NavigationLink(value: SidebarItem.tag(tag)) {
-            HStack {
-                Label(tag.name, systemImage: tag.kind.icon)
-                Spacer(minLength: 8)
-            }
-            .contentShape(Rectangle())
+        HStack {
+            Label(tag.name, systemImage: tag.kind.icon)
+            Spacer(minLength: 8)
         }
+        .contentShape(Rectangle())
+        .tag(SidebarItem.tag(tag))
         .contextMenu {
             Button {
                 onEdit(tag)

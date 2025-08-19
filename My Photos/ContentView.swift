@@ -17,20 +17,23 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
 
+    @State private var sidebarSelection: SidebarItem? = nil
     @State private var showAddSheet = false
     @State private var editor: TagEditor?
 
     var body: some View {
         NavigationSplitView {
             SidebarView(
-                tags: tags,
+                Filter.allCases,
+                tags,
+                $sidebarSelection,
                 onAdd: addTag,
                 onEdit: editTag,
                 onDelete: deleteTag
             )
         } detail: {
-            DetailView(nil)
-        } 
+            DetailView(sidebarSelection)
+        }
         .sheet(item: $editor) { editor in
             switch editor {
             case .create:
