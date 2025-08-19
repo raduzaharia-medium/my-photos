@@ -21,6 +21,9 @@ enum TagEditor: Identifiable {
 @MainActor
 final class LibraryController: ObservableObject {
     @Published var showImportFolder = false
+    @Published var showToast = false
+    @Published var toastMessage = ""
+    
     @Published var editor: TagEditor?
     @Published var pendingDelete: Tag?
 
@@ -42,9 +45,13 @@ final class LibraryController: ObservableObject {
         switch result {
         case .success(let urls):
             guard let folder = urls.first else { return }
+
+            toastMessage = "Imported \(folder.lastPathComponent)"
+            withAnimation { showToast = true }
+
         case .failure(let error):
-            // TODO: surface a toast/alert
-            print("Import failed: \(error)")
+            toastMessage = "Failed to import: \(error.localizedDescription)"
+            withAnimation { showToast = true }
         }
     }
 

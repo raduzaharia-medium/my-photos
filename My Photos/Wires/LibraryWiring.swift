@@ -31,6 +31,7 @@ struct LibraryWiring: ViewModifier {
                         : "Edit Tag \(state.tag?.name ?? "")")
                 }
             }
+            .toast(isPresented: $controller.showToast, message: controller.toastMessage)
             .alert("Delete “\(controller.pendingDelete?.name ?? "Tag")”?",
                    isPresented: .init(
                        get: { controller.pendingDelete != nil },
