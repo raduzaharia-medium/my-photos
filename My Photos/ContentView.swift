@@ -11,6 +11,10 @@ private enum TagEditor: Identifiable {
         case .edit(let tag): return "edit-\(tag.persistentModelID)"
         }
     }
+    var tag: Tag? {
+        if case let .edit(tag) = self { return tag }
+        return nil
+    }
 }
 
 struct ContentView: View {
@@ -35,21 +39,11 @@ struct ContentView: View {
             DetailView(sidebarSelection)
         }
         .sheet(item: $editor) { editor in
-            switch editor {
-            case .create:
-                TagEditorSheet(
-                    onCancel: cancel,
-                    onSave: saveCreate
-                )
-            case .edit(let tag):
-                TagEditorSheet(
-                    tag,
-                    onCancel: cancel,
-                    onSave: { name, kind in
-                        saveEdit(tag, name: name, kind: kind)
-                    }
-                )
-            }
+            TagEditorSheet(
+                editor.tag,
+                onCancel: cancel,
+                onSave: saveTag,
+            )
         }
     }
 
@@ -72,18 +66,22 @@ struct ContentView: View {
     }
 
     private func cancel() {
-        editor = nil
+        withAnimation {
+            editor = nil
+        }
     }
 
-    private func saveCreate(name: String, kind: TagKind) {
-        modelContext.insert(Tag(name: name, kind: kind))
-        self.editor = nil
-    }
-
-    private func saveEdit(_ tag: Tag, name: String, kind: TagKind) {
-        tag.name = name
-        tag.kind = kind
-        self.editor = nil
+    private func saveTag(_ tag: Tag?, name: String, kind: TagKind) {
+        withAnimation {
+            if let tag {
+                tag.name = name
+                tag.kind = kind
+            } else {
+                modelContext.insert(Tag(name: name, kind: kind))
+            }
+            
+            self.editor = nil
+        }
     }
 }
 

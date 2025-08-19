@@ -7,12 +7,12 @@ struct TagEditorSheet: View {
 
     let tag: Tag?
     var onCancel: () -> Void
-    var onSave: (String, TagKind) -> Void
+    var onSave: (Tag?, String, TagKind) -> Void
 
     init(
         _ tag: Tag? = nil,
         onCancel: @escaping () -> Void,
-        onSave: @escaping (String, TagKind) -> Void
+        onSave: @escaping (Tag?, String, TagKind) -> Void
     ) {
         self.tag = tag
         self.onCancel = onCancel
@@ -47,7 +47,10 @@ struct TagEditorSheet: View {
                 Button("Cancel", role: .cancel, action: onCancel)
                 Button("Save") {
                     onSave(
-                        name.trimmingCharacters(in: .whitespacesAndNewlines),
+                        tag,
+                        name.trimmingCharacters(
+                            in: .whitespacesAndNewlines
+                        ),
                         kind
                     )
                 }
