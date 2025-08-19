@@ -21,19 +21,6 @@ enum SidebarItem: Hashable {
     }
 }
 
-struct NewTagButton: View {
-    @FocusedValue(\.libraryActions) private var actions
-
-    var body: some View {
-        Button {
-            actions?.createTag()
-        } label: {
-            Label("New Tag", systemImage: "plus")
-        }
-        .disabled(actions == nil)
-    }
-}
-
 struct SidebarView: View {
     @FocusedValue(\.libraryActions) private var actions
 
@@ -65,44 +52,16 @@ struct SidebarView: View {
 
             ForEach(TagKind.allCases, id: \.self) { kind in
                 let sectionTags = groups[kind] ?? []
-                
-                Section(kind.title) {
-                    ForEach(sectionTags, id: \.persistentModelID) { tag in
-                        SidebarRow(.tag(tag))
+
+                if !sectionTags.isEmpty {
+                    Section(kind.title) {
+                        ForEach(sectionTags, id: \.persistentModelID) { tag in
+                            SidebarRow(.tag(tag))
+                        }
                     }
                 }
             }
         }
-        #if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
-        #endif
-        .contextMenu(forSelectionType: SidebarItem.self) { items in
-            if let tag = singleTag(from: items) {
-                Button {
-                    actions?.editTag(tag)
-                } label: {
-                    Label("Edit", systemImage: "pencil")
-                }
-
-                Button(role: .destructive) {
-                    actions?.deleteTag(tag)
-                } label: {
-                    Label("Delete", systemImage: "trash")
-                }
-            }
-        }
-        .toolbar {
-            ToolbarItem {
-                NewTagButton()
-            }
-        }
-    }
-
-    private func singleTag(from items: Set<SidebarItem>) -> Tag? {
-        guard items.count == 1, case let .tag(t) = items.first! else {
-            return nil
-        }
-
-        return t
+        .sidebarWiring()
     }
 }
