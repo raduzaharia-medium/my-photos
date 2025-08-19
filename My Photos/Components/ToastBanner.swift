@@ -33,7 +33,6 @@ extension View {
                     if isPresented.wrappedValue {
                         ToastBanner(message: message)
                             .padding(.top, 12)
-                            .zIndex(9999)
                             .allowsHitTesting(false)
                             .transition(
                                 .move(edge: .top).combined(with: .opacity)
