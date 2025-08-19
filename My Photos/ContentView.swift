@@ -23,6 +23,7 @@ struct ContentView: View {
 
     @State private var sidebarSelection: SidebarItem? = nil
     @State private var showAddSheet = false
+    @State private var showImportFolder = false
     @State private var editor: TagEditor?
 
     var body: some View {
@@ -45,6 +46,20 @@ struct ContentView: View {
                 onSave: saveTag,
             )
         }
+        .fileImporter(
+            isPresented: $showImportFolder,
+            allowedContentTypes: [.folder],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                guard let folder = urls.first else { return }
+            case .failure(let error):
+                // TODO: surface a toast/alert
+                print("Import failed: \(error)")
+            }
+        }
+        .focusedValue(\.showImportFolder, $showImportFolder)
     }
 
     private func addTag() {
@@ -79,7 +94,7 @@ struct ContentView: View {
             } else {
                 modelContext.insert(Tag(name: name, kind: kind))
             }
-            
+
             self.editor = nil
         }
     }
