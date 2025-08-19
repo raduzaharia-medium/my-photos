@@ -22,8 +22,6 @@ enum SidebarItem: Hashable {
 }
 
 struct SidebarView: View {
-    @FocusedValue(\.libraryActions) private var actions
-
     let filters: [Filter]
     let tags: [Tag]
     let selection: Binding<SidebarItem?>

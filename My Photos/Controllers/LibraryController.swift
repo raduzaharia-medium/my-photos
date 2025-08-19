@@ -40,7 +40,6 @@ final class LibraryController: ObservableObject {
         if modelContext == nil { modelContext = context }
     }
 
-    // Handlers
     func handleImportResult(_ result: Result<[URL], Error>) {
         switch result {
         case .success(let urls):

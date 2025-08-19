@@ -1,20 +1,19 @@
 import SwiftUI
 
 struct NewTagButton: View {
-    @FocusedValue(\.libraryActions) private var actions
+    @Environment(\.libraryActions) private var actions
 
     var body: some View {
         Button {
-            actions?.createTag()
+            actions.createTag()
         } label: {
             Label("New Tag", systemImage: "plus")
         }
-        .disabled(actions == nil)
     }
 }
 
 struct SidebarWiring: ViewModifier {
-    @FocusedValue(\.libraryActions) private var actions
+    @Environment(\.libraryActions) private var actions
 
     func body(content: Content) -> some View {
         content
@@ -24,13 +23,13 @@ struct SidebarWiring: ViewModifier {
             .contextMenu(forSelectionType: SidebarItem.self) { items in
                 if let tag = singleTag(from: items) {
                     Button {
-                        actions?.editTag(tag)
+                        actions.editTag(tag)
                     } label: {
                         Label("Edit", systemImage: "pencil")
                     }
 
                     Button(role: .destructive) {
-                        actions?.deleteTag(tag)
+                        actions.deleteTag(tag)
                     } label: {
                         Label("Delete", systemImage: "trash")
                     }

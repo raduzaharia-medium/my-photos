@@ -7,46 +7,53 @@ struct LibraryActions {
     var deleteTag: (Tag) -> Void
 }
 
-struct SelectedTagKey: FocusedValueKey { typealias Value = Tag? }
-struct LibraryActionsKey: FocusedValueKey { typealias Value = LibraryActions }
+struct LibraryActionsKey: EnvironmentKey {
+    static let defaultValue = LibraryActions(
+        importFolder: {},
+        createTag: {},
+        editTag: { _ in },
+        deleteTag: { _ in }
+    )
+}
+struct SelectedTagKey: EnvironmentKey {
+    static let defaultValue: Tag? = nil
+}
 
-extension FocusedValues {
+extension EnvironmentValues {
     var selectedTag: Tag? {
         get { self[SelectedTagKey.self] ?? nil }
         set { self[SelectedTagKey.self] = newValue }
     }
-    var libraryActions: LibraryActions? {
+    var libraryActions: LibraryActions {
         get { self[LibraryActionsKey.self] }
         set { self[LibraryActionsKey.self] = newValue }
     }
 }
 struct LibraryCommands: Commands {
-    @FocusedValue(\.selectedTag) private var selectedTag
-    @FocusedValue(\.libraryActions) private var actions
+    @Environment(\.selectedTag) private var selectedTag
+    @Environment(\.libraryActions) private var actions
 
     var body: some Commands {
         CommandMenu("Library") {
-            Button("Import Folder…") { actions?.importFolder() }
+            Button("Import Folder…") { actions.importFolder() }
                 .keyboardShortcut("I", modifiers: [.command, .shift])
-                .disabled(actions == nil)
 
             Divider()
             
-            Button("Create Tag…") { actions?.createTag() }
+            Button("Create Tag…") { actions.createTag() }
                 .keyboardShortcut("T", modifiers: [.command, .shift])
-                .disabled(actions == nil)
 
             Button("Edit Tag…") {
-                if let selectedTag { actions?.editTag(selectedTag) }
+                if let selectedTag { actions.editTag(selectedTag) }
             }
             .keyboardShortcut("E", modifiers: [.command, .shift])
-            .disabled(selectedTag == nil || actions == nil)
+            .disabled(selectedTag == nil)
 
             Button("Delete Tag", role: .destructive) {
-                if let selectedTag { actions?.deleteTag(selectedTag) }
+                if let selectedTag { actions.deleteTag(selectedTag) }
             }
             .keyboardShortcut("D", modifiers: [.command, .shift])
-            .disabled(selectedTag == nil || actions == nil)
+            .disabled(selectedTag == nil)
         }
     }
 }
