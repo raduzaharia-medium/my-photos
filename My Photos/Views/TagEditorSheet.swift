@@ -2,31 +2,24 @@ import SwiftUI
 
 struct TagEditorSheet: View {
     @FocusState private var nameFocused: Bool
-    @State private var name: String = ""
-    @State private var kind: TagKind = .custom
+    @State private var name: String
+    @State private var kind: TagKind
 
-    let title: String
-    let initialName: String
-    let initialKind: TagKind
-
+    let tag: Tag?
     var onCancel: () -> Void
     var onSave: (String, TagKind) -> Void
 
     init(
-        title: String,
-        initialName: String,
-        initialKind: TagKind,
+        _ tag: Tag? = nil,
         onCancel: @escaping () -> Void,
         onSave: @escaping (String, TagKind) -> Void
     ) {
-        self.title = title
-        self.initialName = initialName
-        self.initialKind = initialKind
+        self.tag = tag
         self.onCancel = onCancel
         self.onSave = onSave
 
-        _name = State(initialValue: initialName)
-        _kind = State(initialValue: initialKind)
+        _name = State(initialValue: tag?.name ?? "")
+        _kind = State(initialValue: tag?.kind ?? .custom)
     }
 
     var body: some View {
@@ -66,6 +59,8 @@ struct TagEditorSheet: View {
         }.padding(20)
             .onAppear { DispatchQueue.main.async { nameFocused = true } }
             .frame(minWidth: 360)
-            .navigationTitle(Text(title))
+            .navigationTitle(
+                tag == nil ? "New Tag" : "Edit Tag \(tag?.name ?? "")"
+            )
     }
 }

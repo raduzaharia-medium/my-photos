@@ -38,17 +38,12 @@ struct ContentView: View {
             switch editor {
             case .create:
                 TagEditorSheet(
-                    title: "New Tag",
-                    initialName: "",
-                    initialKind: .custom,
                     onCancel: cancel,
                     onSave: saveCreate
                 )
             case .edit(let tag):
                 TagEditorSheet(
-                    title: "Edit Tag \"\(tag.name)\"",
-                    initialName: tag.name,
-                    initialKind: tag.kind,
+                    tag,
                     onCancel: cancel,
                     onSave: { name, kind in
                         saveEdit(tag, name: name, kind: kind)
