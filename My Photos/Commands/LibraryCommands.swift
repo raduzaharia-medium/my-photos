@@ -30,6 +30,8 @@ struct LibraryCommands: Commands {
                 .keyboardShortcut("I", modifiers: [.command, .shift])
                 .disabled(actions == nil)
 
+            Divider()
+            
             Button("Create Tag…") { actions?.createTag() }
                 .keyboardShortcut("T", modifiers: [.command, .shift])
                 .disabled(actions == nil)
