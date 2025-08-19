@@ -24,6 +24,11 @@ struct TagEditorSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
+            Text(tag == nil ? "New Tag" : "Edit Tag \(tag?.name ?? "")")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .padding(.bottom, 8)
+
             VStack(alignment: .leading, spacing: 8) {
                 Text("Name").font(.caption).foregroundStyle(.secondary)
                 TextField("e.g. Vacation, Alice, 2025-08", text: $name)
@@ -62,8 +67,5 @@ struct TagEditorSheet: View {
         }.padding(20)
             .onAppear { DispatchQueue.main.async { nameFocused = true } }
             .frame(minWidth: 360)
-            .navigationTitle(
-                tag == nil ? "New Tag" : "Edit Tag \(tag?.name ?? "")"
-            )
     }
 }
