@@ -24,14 +24,22 @@ struct PhotosGrid: View {
     }
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: columns, spacing: 8) {
-                ForEach(photos) { photo in
-                    PhotoCard(photo, variant: .grid)
+        NavigationStack {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 8) {
+                    ForEach(photos) { photo in
+                        NavigationLink(value: photo) {
+                            PhotoCard(photo, variant: .grid)
+                        }
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+                .padding(.all)
             }
-            .padding(.all)
+            .navigationDestination(for: Photo.self) { photo in
+                PhotoCard(photo, variant: .detail)
+                    .padding(16)
+            }
         }
     }
 }
