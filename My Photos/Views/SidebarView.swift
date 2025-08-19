@@ -26,12 +26,19 @@ struct SidebarView: View {
     private var groups: [TagKind: [Tag]] {
         Dictionary(grouping: tags, by: { $0.kind })
     }
-    
-    init(_ filters: [Filter], _ tags: [Tag], _ selection: Binding<SidebarItem?>, onAdd: @escaping () -> Void, onEdit: @escaping (Tag) -> Void, onDelete: @escaping (Tag) -> Void) {
+
+    init(
+        _ filters: [Filter],
+        _ tags: [Tag],
+        _ selection: Binding<SidebarItem?>,
+        onAdd: @escaping () -> Void,
+        onEdit: @escaping (Tag) -> Void,
+        onDelete: @escaping (Tag) -> Void
+    ) {
         self.filters = filters
         self.tags = tags
         self.selection = selection
-        
+
         self.onAdd = onAdd
         self.onEdit = onEdit
         self.onDelete = onDelete
@@ -56,7 +63,7 @@ struct SidebarView: View {
             }
         }
         #if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
+            .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
         #endif
         .toolbar {
             ToolbarItem {
