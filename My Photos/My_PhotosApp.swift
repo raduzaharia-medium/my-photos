@@ -1,31 +1,6 @@
 import SwiftData
 import SwiftUI
 
-struct ShowImportFolderKey: FocusedValueKey {
-    typealias Value = Binding<Bool>
-}
-
-extension FocusedValues {
-    var showImportFolder: ShowImportFolderKey.Value? {
-        get { self[ShowImportFolderKey.self] }
-        set { self[ShowImportFolderKey.self] = newValue }
-    }
-}
-
-struct LibraryCommands: Commands {
-    @FocusedValue(\.showImportFolder) var showImportFolder
-
-    var body: some Commands {
-        CommandMenu("Library") {
-            Button("Import Folder…") {
-                showImportFolder?.wrappedValue = true
-            }
-            .keyboardShortcut("I", modifiers: [.command, .shift])
-            .disabled(showImportFolder == nil)
-        }
-    }
-}
-
 @main
 struct My_PhotosApp: App {
     var sharedModelContainer: ModelContainer = {

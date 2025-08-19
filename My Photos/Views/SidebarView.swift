@@ -14,14 +14,23 @@ enum SidebarItem: Hashable {
     }
 }
 
+struct NewTagButton: View {
+    @FocusedValue(\.libraryActions) private var actions
+
+    var body: some View {
+        Button {
+            actions?.createTag()
+        } label: {
+            Label("New Tag", systemImage: "plus")
+        }
+        .disabled(actions == nil)
+    }
+}
+
 struct SidebarView: View {
     let filters: [Filter]
     let tags: [Tag]
     let selection: Binding<SidebarItem?>
-
-    let onAdd: () -> Void
-    let onEdit: (Tag) -> Void
-    let onDelete: (Tag) -> Void
 
     private var groups: [TagKind: [Tag]] {
         Dictionary(grouping: tags, by: { $0.kind })
@@ -31,17 +40,10 @@ struct SidebarView: View {
         _ filters: [Filter],
         _ tags: [Tag],
         _ selection: Binding<SidebarItem?>,
-        onAdd: @escaping () -> Void,
-        onEdit: @escaping (Tag) -> Void,
-        onDelete: @escaping (Tag) -> Void
     ) {
         self.filters = filters
         self.tags = tags
         self.selection = selection
-
-        self.onAdd = onAdd
-        self.onEdit = onEdit
-        self.onDelete = onDelete
     }
 
     var body: some View {
@@ -54,12 +56,7 @@ struct SidebarView: View {
 
             ForEach(TagKind.allCases, id: \.self) { kind in
                 let sectionTags = groups[kind] ?? []
-                TagSection(
-                    kind.title,
-                    sectionTags,
-                    onEdit: onEdit,
-                    onDelete: onDelete
-                )
+                TagSection(kind.title, sectionTags)
             }
         }
         #if os(macOS)
@@ -67,9 +64,7 @@ struct SidebarView: View {
         #endif
         .toolbar {
             ToolbarItem {
-                Button(action: onAdd) {
-                    Label("Add Tag", systemImage: "plus")
-                }
+                NewTagButton()
             }
         }
     }

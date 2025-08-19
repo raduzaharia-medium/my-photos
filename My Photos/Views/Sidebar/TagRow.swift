@@ -1,18 +1,14 @@
 import SwiftUI
 
 struct TagRow: View {
+    @FocusedValue(\.libraryActions) private var actions
+
     let tag: Tag
-    let onEdit: (Tag) -> Void
-    let onDelete: (Tag) -> Void
 
     init(
         _ tag: Tag,
-        onEdit: @escaping (Tag) -> Void,
-        onDelete: @escaping (Tag) -> Void
     ) {
         self.tag = tag
-        self.onEdit = onEdit
-        self.onDelete = onDelete
     }
 
     var body: some View {
@@ -24,13 +20,13 @@ struct TagRow: View {
         .tag(SidebarItem.tag(tag))
         .contextMenu {
             Button {
-                onEdit(tag)
+                actions?.editTag(tag)
             } label: {
                 Label("Edit", systemImage: "pencil")
             }
 
             Button(role: .destructive) {
-                onDelete(tag)
+                actions?.deleteTag(tag)
             } label: {
                 Label("Delete", systemImage: "trash")
             }
