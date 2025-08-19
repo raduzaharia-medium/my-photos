@@ -44,7 +44,7 @@ struct LibraryWiring: ViewModifier {
             } message: {
                 Text("This removes the tag from all photos.")
             }
-            .focusedValue(\.libraryActions, controller.actions)
+            .focusedSceneValue(\.libraryActions, controller.actions)
             .focusedValue(\.selectedTag, {
                 if case .tag(let t) = sidebarSelection { t } else { nil }
             }())
