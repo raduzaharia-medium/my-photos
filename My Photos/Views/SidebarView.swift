@@ -12,6 +12,13 @@ enum SidebarItem: Hashable {
             return tag.name
         }
     }
+
+    var icon: String {
+        switch self {
+        case .filter(let f): return f.icon
+        case .tag(let t): return t.kind.icon
+        }
+    }
 }
 
 struct NewTagButton: View {
@@ -52,13 +59,18 @@ struct SidebarView: View {
         List(selection: selection) {
             Section("Filters") {
                 ForEach(filters, id: \.self) { filter in
-                    FilterRow(filter)
+                    SidebarRow(.filter(filter))
                 }
             }
 
             ForEach(TagKind.allCases, id: \.self) { kind in
                 let sectionTags = groups[kind] ?? []
-                TagSection(kind.title, sectionTags)
+                
+                Section(kind.title) {
+                    ForEach(sectionTags, id: \.persistentModelID) { tag in
+                        SidebarRow(.tag(tag))
+                    }
+                }
             }
         }
         #if os(macOS)
