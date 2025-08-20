@@ -11,11 +11,16 @@ struct ContentView: View {
     }
 
     var body: some View {
+        let selection = Binding<SidebarItem?>(
+            get: { tagViewModel.selectedItem },
+            set: { tagViewModel.selectItem($0) }
+        )
+
         NavigationSplitView {
             SidebarView(
                 Filter.allCases,
                 tags,
-                $tagViewModel.selectedItem,
+                selection,
             )
             .sidebarWiring(tagViewModel)
         } detail: {

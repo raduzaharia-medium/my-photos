@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 enum TagEditorMode: Identifiable {
     case create
@@ -19,18 +19,18 @@ enum TagEditorMode: Identifiable {
 
 @MainActor
 final class TagViewModel: ObservableObject {
-    @Published private var modelContext: ModelContext?
-    
+    private var modelContext: ModelContext?
+
     @Published var tagEditorVisible: Bool = false
     @Published var folderSelectorVisible: Bool = false
     @Published var deleteTagAlertVisible: Bool = false
     @Published var notificationVisible: Bool = false
-    
+
     @Published var notificationMessage: String = ""
     @Published var tagEditorMode: TagEditorMode? = nil
     @Published var selectedTag: Tag? = nil
     @Published var selectedItem: SidebarItem? = nil
-    
+
     func setModelContext(_ modelContext: ModelContext) {
         self.modelContext = modelContext
     }
@@ -105,13 +105,15 @@ final class TagViewModel: ObservableObject {
     }
 
     func selectItem(_ item: SidebarItem?) {
-        withAnimation {
-            selectedItem = item
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            withAnimation { self.selectedItem = item }
         }
     }
     func selectTag(_ tag: Tag?) {
-        withAnimation {
-            selectedTag = tag
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            withAnimation { self.selectedTag = tag }
         }
     }
 
@@ -143,7 +145,7 @@ final class TagViewModel: ObservableObject {
 
         modelContext?.delete(tag)
         dismissDeleteTagAlert()
-        
+
         selectTag(nil)
         selectItem(nil)
     }
