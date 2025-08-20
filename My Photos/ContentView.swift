@@ -4,14 +4,8 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
-    @State private var sidebarSelection: SidebarItem? = nil
     @ObservedObject private var sidebarState: SidebarState
-    
-    var selectedTag: Tag? {
-        if case .tag(let tag) = sidebarSelection { return tag }
-        return nil
-    }
-    
+
     init(_ sidebarState: SidebarState) {
         self.sidebarState = sidebarState
     }
@@ -21,14 +15,18 @@ struct ContentView: View {
             SidebarView(
                 Filter.allCases,
                 tags,
-                $sidebarSelection,
+                $sidebarState.selectedItem,
             )
             .sidebarWiring(sidebarState)
         } detail: {
-            DetailView(sidebarSelection)
+            DetailView(sidebarState.selectedItem)
         }
         .onAppear {
             sidebarState.setModelContext(modelContext)
         }
+        .toast(
+            isPresented: $sidebarState.notificationVisible,
+            message: sidebarState.notificationMessage
+        )
     }
 }

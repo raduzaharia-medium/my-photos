@@ -13,10 +13,14 @@ struct My_PhotosApp: App {
             schema: schema,
             isStoredInMemoryOnly: true
         )
-        let container = try! ModelContainer(
-            for: schema,
-            configurations: [modelConfiguration]
-        )
+       
+        let container: ModelContainer
+        do {
+            container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            fatalError("Failed to initialize ModelContainer: \(error)")
+        }
+        
         let context = ModelContext(container)
 
         let tag1 = Tag(name: "Alice", kind: .person)

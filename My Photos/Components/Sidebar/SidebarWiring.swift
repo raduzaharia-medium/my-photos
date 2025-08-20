@@ -63,10 +63,6 @@ struct SidebarWiring: ViewModifier {
                 allowsMultipleSelection: false,
                 onCompletion: sidebarState.importFolder
             )
-            .toast(
-                isPresented: $sidebarState.notificationVisible,
-                message: sidebarState.notificationMessage
-            )
             .alert(
                 "Delete “\(sidebarState.selectedTag?.name ?? "Tag")”?",
                 isPresented: $sidebarState.deleteTagAlertVisible
@@ -88,10 +84,10 @@ struct SidebarWiring: ViewModifier {
     }
 
     private func singleTag(from items: Set<SidebarItem>) -> Tag? {
-        guard items.count == 1, case let .tag(t) = items.first! else {
+        guard items.count == 1, case let .tag(t) = items.first else {
             return nil
         }
-
+ 
         return t
     }
 

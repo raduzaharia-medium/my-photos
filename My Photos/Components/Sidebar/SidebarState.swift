@@ -29,6 +29,7 @@ final class SidebarState: ObservableObject {
     @Published var notificationMessage: String = ""
     @Published var tagEditorMode: TagEditorMode? = nil
     @Published var selectedTag: Tag? = nil
+    @Published var selectedItem: SidebarItem? = nil
     
     func setModelContext(_ modelContext: ModelContext) {
         self.modelContext = modelContext
@@ -105,6 +106,11 @@ final class SidebarState: ObservableObject {
         }
     }
 
+    func selectItem(_ item: SidebarItem?) {
+        withAnimation {
+            selectedItem = item
+        }
+    }
     func selectTag(_ tag: Tag?) {
         withAnimation {
             selectedTag = tag
@@ -139,6 +145,8 @@ final class SidebarState: ObservableObject {
 
         modelContext?.delete(tag)
         dismissDeleteTagAlert()
+        
         selectTag(nil)
+        selectItem(nil)
     }
 }
