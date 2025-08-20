@@ -53,8 +53,6 @@ final class TagViewModel: ObservableObject {
     }
 
     func showTagCreator() {
-        print("Showing the tag creator...")
-
         withAnimation {
             tagEditorVisible = true
             tagEditorMode = .create
