@@ -3,7 +3,7 @@ import SwiftUI
 
 @main
 struct My_PhotosApp: App {
-    @StateObject private var sidebarState = SidebarState()
+    @StateObject private var tagViewModel = TagViewModel()
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -78,11 +78,11 @@ struct My_PhotosApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(sidebarState)
+            ContentView(tagViewModel)
         }
         .modelContainer(sharedModelContainer)
         .commands {
-            SidebarCommands(sidebarState)
+            SidebarCommands(tagViewModel)
         }
     }
 }

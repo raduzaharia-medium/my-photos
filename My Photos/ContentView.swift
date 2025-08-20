@@ -4,10 +4,10 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
-    @ObservedObject private var sidebarState: SidebarState
+    @ObservedObject private var tagViewModel: TagViewModel
 
-    init(_ sidebarState: SidebarState) {
-        self.sidebarState = sidebarState
+    init(_ tagViewModel: TagViewModel) {
+        self.tagViewModel = tagViewModel
     }
 
     var body: some View {
@@ -15,18 +15,24 @@ struct ContentView: View {
             SidebarView(
                 Filter.allCases,
                 tags,
-                $sidebarState.selectedItem,
+                $tagViewModel.selectedItem,
             )
-            .sidebarWiring(sidebarState)
+            .sidebarWiring(tagViewModel)
         } detail: {
-            DetailView(sidebarState.selectedItem)
+            DetailView(tagViewModel.selectedItem)
         }
         .onAppear {
-            sidebarState.setModelContext(modelContext)
+            tagViewModel.setModelContext(modelContext)
         }
         .toast(
-            isPresented: $sidebarState.notificationVisible,
-            message: sidebarState.notificationMessage
+            isPresented: $tagViewModel.notificationVisible,
+            message: tagViewModel.notificationMessage
+        )
+        .fileImporter(
+            isPresented: $tagViewModel.folderSelectorVisible,
+            allowedContentTypes: [.folder],
+            allowsMultipleSelection: false,
+            onCompletion: tagViewModel.importFolder
         )
     }
 }

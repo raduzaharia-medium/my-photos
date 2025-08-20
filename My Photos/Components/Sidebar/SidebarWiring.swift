@@ -1,11 +1,15 @@
 import SwiftUI
 
 struct NewTagButton: View {
-    @ObservedObject var sidebarState: SidebarState
+    @ObservedObject var tagViewModel: TagViewModel
 
+    init(_ tagViewModel: TagViewModel) {
+        self.tagViewModel = tagViewModel
+    }
+    
     var body: some View {
         Button {
-            sidebarState.showTagCreator()
+            tagViewModel.showTagCreator()
         } label: {
             Label("New Tag", systemImage: "plus")
         }
@@ -13,8 +17,12 @@ struct NewTagButton: View {
 }
 
 struct SidebarWiring: ViewModifier {
-    @ObservedObject var sidebarState: SidebarState
+    @ObservedObject var tagViewModel: TagViewModel
 
+    init(_ tagViewModel: TagViewModel) {
+        self.tagViewModel = tagViewModel
+    }
+    
     func body(content: Content) -> some View {
         content
             #if os(macOS)
@@ -23,27 +31,27 @@ struct SidebarWiring: ViewModifier {
             .contextMenu(forSelectionType: SidebarItem.self) { items in
                 if let tag = singleTag(from: items) {
                     Button {
-                        sidebarState.selectTag(tag)
-                        sidebarState.showTagEditor()
+                        tagViewModel.selectTag(tag)
+                        tagViewModel.showTagEditor()
                     } label: {
                         Label("Edit", systemImage: "pencil")
                     }
 
                     Button(role: .destructive) {
-                        sidebarState.selectTag(tag)
-                        sidebarState.showDeleteTagAlert()
+                        tagViewModel.selectTag(tag)
+                        tagViewModel.showDeleteTagAlert()
                     } label: {
                         Label("Delete", systemImage: "trash")
                     }
                 }
             }
-            .sheet(item: $sidebarState.tagEditorMode) { state in
+            .sheet(item: $tagViewModel.tagEditorMode) { state in
                 NavigationStack {
                     TagEditorSheet(
                         state.tag,
-                        onCancel: { sidebarState.dismissTagEditor() },
+                        onCancel: { tagViewModel.dismissTagEditor() },
                         onSave: { original, name, kind in
-                            sidebarState.saveTag(
+                            tagViewModel.saveTag(
                                 original: original,
                                 name: name,
                                 kind: kind
@@ -57,28 +65,22 @@ struct SidebarWiring: ViewModifier {
                     )
                 }
             }
-            .fileImporter(
-                isPresented: $sidebarState.folderSelectorVisible,
-                allowedContentTypes: [.folder],
-                allowsMultipleSelection: false,
-                onCompletion: sidebarState.importFolder
-            )
             .alert(
-                "Delete “\(sidebarState.selectedTag?.name ?? "Tag")”?",
-                isPresented: $sidebarState.deleteTagAlertVisible
+                "Delete “\(tagViewModel.selectedTag?.name ?? "Tag")”?",
+                isPresented: $tagViewModel.deleteTagAlertVisible
             ) {
                 Button("Delete", role: .destructive) {
-                    sidebarState.deleteSelectedTag()
+                    tagViewModel.deleteSelectedTag()
                 }
                 Button("Cancel", role: .cancel) {
-                    sidebarState.dismissDeleteTagAlert()
+                    tagViewModel.dismissDeleteTagAlert()
                 }
             } message: {
                 Text("This removes the tag from all photos.")
             }
             .toolbar {
                 ToolbarItem {
-                    NewTagButton(sidebarState: sidebarState)
+                    NewTagButton(tagViewModel)
                 }
             }
     }
@@ -94,7 +96,7 @@ struct SidebarWiring: ViewModifier {
 }
 
 extension View {
-    func sidebarWiring(_ sidebarState: SidebarState) -> some View {
-        modifier(SidebarWiring(sidebarState: sidebarState))
+    func sidebarWiring(_ tagViewModel: TagViewModel) -> some View {
+        modifier(SidebarWiring(tagViewModel))
     }
 }

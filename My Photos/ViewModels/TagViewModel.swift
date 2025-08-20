@@ -18,7 +18,7 @@ enum TagEditorMode: Identifiable {
 }
 
 @MainActor
-final class SidebarState: ObservableObject {
+final class TagViewModel: ObservableObject {
     @Published private var modelContext: ModelContext?
     
     @Published var tagEditorVisible: Bool = false
