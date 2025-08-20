@@ -3,6 +3,8 @@ import SwiftUI
 
 @main
 struct My_PhotosApp: App {
+    @StateObject private var sidebarState = SidebarState()
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Photo.self, Tag.self,
@@ -68,16 +70,15 @@ struct My_PhotosApp: App {
         )
 
         return container
-
     }()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(sidebarState)
         }
         .modelContainer(sharedModelContainer)
         .commands {
-            LibraryCommands()
+            SidebarCommands(sidebarState)
         }
     }
 }

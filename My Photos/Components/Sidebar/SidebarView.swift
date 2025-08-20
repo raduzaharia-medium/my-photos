@@ -60,6 +60,5 @@ struct SidebarView: View {
                 }
             }
         }
-        .sidebarWiring()
     }
 }

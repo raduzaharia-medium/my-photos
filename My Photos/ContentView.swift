@@ -2,16 +2,20 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.modelContext) private var modelContext
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
-    
-    @StateObject private var libraryController = LibraryController()
     @State private var sidebarSelection: SidebarItem? = nil
+    @ObservedObject private var sidebarState: SidebarState
     
     var selectedTag: Tag? {
         if case .tag(let tag) = sidebarSelection { return tag }
         return nil
     }
     
+    init(_ sidebarState: SidebarState) {
+        self.sidebarState = sidebarState
+    }
+
     var body: some View {
         NavigationSplitView {
             SidebarView(
@@ -19,14 +23,12 @@ struct ContentView: View {
                 tags,
                 $sidebarSelection,
             )
+            .sidebarWiring(sidebarState)
         } detail: {
             DetailView(sidebarSelection)
         }
-        .libraryWiring(libraryController, selection: $sidebarSelection)
+        .onAppear {
+            sidebarState.setModelContext(modelContext)
+        }
     }
-}
-
-#Preview {
-    ContentView()
-        .modelContainer(for: Tag.self, inMemory: true)
 }
