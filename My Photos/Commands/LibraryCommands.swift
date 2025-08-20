@@ -1,7 +1,7 @@
 import SwiftUI
 
 // TODO: Split in TagCommands and LibraryCommands
-struct SidebarCommands: Commands {
+struct LibraryCommands: Commands {
     @ObservedObject var tagViewModel: TagViewModel
 
     init(_ tagViewModel: TagViewModel) {

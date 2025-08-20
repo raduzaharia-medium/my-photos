@@ -4,6 +4,7 @@ import SwiftUI
 @main
 struct My_PhotosApp: App {
     @StateObject private var tagViewModel = TagViewModel()
+    @StateObject private var notificationViewModel = NotificationViewModel()
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -78,11 +79,11 @@ struct My_PhotosApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(tagViewModel)
+            ContentView(tagViewModel, notificationViewModel)
         }
         .modelContainer(sharedModelContainer)
         .commands {
-            SidebarCommands(tagViewModel)
+            LibraryCommands(tagViewModel)
         }
     }
 }

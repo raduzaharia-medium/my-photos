@@ -20,19 +20,21 @@ enum TagEditorMode: Identifiable {
 @MainActor
 final class TagViewModel: ObservableObject {
     private var modelContext: ModelContext?
+    private var notifier: Notifier?
 
     @Published var tagEditorVisible: Bool = false
     @Published var folderSelectorVisible: Bool = false
     @Published var deleteTagAlertVisible: Bool = false
-    @Published var notificationVisible: Bool = false
 
-    @Published var notificationMessage: String = ""
     @Published var tagEditorMode: TagEditorMode? = nil
     @Published var selectedTag: Tag? = nil
     @Published var selectedItem: SidebarItem? = nil
 
     func setModelContext(_ modelContext: ModelContext) {
         self.modelContext = modelContext
+    }
+    func setNotifier(_ notifier: Notifier) {
+        self.notifier = notifier
     }
 
     func showTagEditor() {
@@ -42,7 +44,7 @@ final class TagViewModel: ObservableObject {
                 tagEditorMode = .edit(selectedTag)
             }
         } else {
-            showNotification("Select a tag first.")
+            notifier?.show("Select a tag first.")
         }
     }
     func dismissTagEditor() {
@@ -82,25 +84,12 @@ final class TagViewModel: ObservableObject {
                 deleteTagAlertVisible = true
             }
         } else {
-            showNotification("Select a tag first.")
+            notifier?.show("Select a tag first.")
         }
     }
     func dismissDeleteTagAlert() {
         withAnimation {
             deleteTagAlertVisible = false
-        }
-    }
-
-    func showNotification(_ message: String) {
-        withAnimation {
-            notificationMessage = message
-            notificationVisible = true
-        }
-    }
-    func dismissNotification() {
-        withAnimation {
-            notificationMessage = ""
-            notificationVisible = false
         }
     }
 
@@ -121,10 +110,10 @@ final class TagViewModel: ObservableObject {
         switch result {
         case .success(let urls):
             guard let folder = urls.first else { return }
-            showNotification("Imported \(folder.lastPathComponent)")
+            notifier?.show("Imported \(folder.lastPathComponent)")
 
         case .failure(let error):
-            showNotification("Failed to import: \(error.localizedDescription)")
+            notifier?.show("Failed to import: \(error.localizedDescription)")
         }
     }
 
