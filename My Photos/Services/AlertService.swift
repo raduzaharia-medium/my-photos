@@ -28,7 +28,7 @@ protocol Alerter: AnyObject {
 }
 
 @MainActor
-final class AlertViewModel: ObservableObject, Alerter {
+final class AlertService: ObservableObject, Alerter {
     @Published var isVisible: Bool = false
     @Published var title: String = ""
     @Published var message: String = ""

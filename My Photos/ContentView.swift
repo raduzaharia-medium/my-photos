@@ -6,19 +6,19 @@ struct ContentView: View {
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
 
     @ObservedObject private var tagViewModel: TagViewModel
-    @ObservedObject private var notificationViewModel: NotificationViewModel
-    @ObservedObject private var alertViewModel: AlertViewModel
+    @ObservedObject private var notificationService: NotificationService
+    @ObservedObject private var alertService: AlertService
 
     @State private var selection: SidebarItem? = nil
 
     init(
         tagViewModel: TagViewModel,
-        notificationViewModel: NotificationViewModel,
-        alertViewModel: AlertViewModel
+        notificationService: NotificationService,
+        alertService: AlertService
     ) {
         self.tagViewModel = tagViewModel
-        self.notificationViewModel = notificationViewModel
-        self.alertViewModel = alertViewModel
+        self.notificationService = notificationService
+        self.alertService = alertService
     }
 
     var body: some View {
@@ -35,28 +35,28 @@ struct ContentView: View {
         }
         .onAppear {
             tagViewModel.setModelContext(modelContext)
-            tagViewModel.setNotifier(notificationViewModel)
-            tagViewModel.setAlerter(alertViewModel)
+            tagViewModel.setNotifier(notificationService)
+            tagViewModel.setAlerter(alertService)
         }
         .onChange(of: selection) {
             tagViewModel.selectItem(selection)
         }
         .toast(
-            isPresented: $notificationViewModel.isVisible,
-            message: notificationViewModel.message
+            isPresented: $notificationService.isVisible,
+            message: notificationService.message
         )
         .alert(
-            alertViewModel.title,
-            isPresented: $alertViewModel.isVisible
+            alertService.title,
+            isPresented: $alertService.isVisible
         ) {
-            Button(alertViewModel.actionLabel, role: .destructive) {
-                alertViewModel.action()
+            Button(alertService.actionLabel, role: .destructive) {
+                alertService.action()
             }
-            Button(alertViewModel.cancelLabel, role: .cancel) {
-                alertViewModel.cancel()
+            Button(alertService.cancelLabel, role: .cancel) {
+                alertService.cancel()
             }
         } message: {
-            Text(alertViewModel.message)
+            Text(alertService.message)
         }
         .fileImporter(
             isPresented: $tagViewModel.folderSelectorVisible,

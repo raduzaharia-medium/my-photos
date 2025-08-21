@@ -7,7 +7,7 @@ protocol Notifier: AnyObject {
 }
 
 @MainActor
-final class NotificationViewModel: ObservableObject, Notifier {
+final class NotificationService: ObservableObject, Notifier {
     @Published var isVisible: Bool = false
     @Published var message: String = ""
 
