@@ -6,7 +6,7 @@ struct NewTagButton: View {
     init(_ tagViewModel: TagViewModel) {
         self.tagViewModel = tagViewModel
     }
-    
+
     var body: some View {
         Button {
             tagViewModel.showTagCreator()
@@ -18,11 +18,8 @@ struct NewTagButton: View {
 
 struct SidebarWiring: ViewModifier {
     @ObservedObject var tagViewModel: TagViewModel
+    @ObservedObject var alertViewModel: AlertViewModel
 
-    init(_ tagViewModel: TagViewModel) {
-        self.tagViewModel = tagViewModel
-    }
-    
     func body(content: Content) -> some View {
         content
             #if os(macOS)
@@ -31,15 +28,15 @@ struct SidebarWiring: ViewModifier {
             .contextMenu(forSelectionType: SidebarItem.self) { items in
                 if let tag = singleTag(from: items) {
                     Button {
-                        tagViewModel.selectTag(tag)
+                        tagViewModel.selectItem(.tag(tag))
                         tagViewModel.showTagEditor()
                     } label: {
                         Label("Edit", systemImage: "pencil")
                     }
 
                     Button(role: .destructive) {
-                        tagViewModel.selectTag(tag)
-                        tagViewModel.showDeleteTagAlert()
+                        tagViewModel.selectItem(.tag(tag))
+                        tagViewModel.deleteSelectedTag()
                     } label: {
                         Label("Delete", systemImage: "trash")
                     }
@@ -65,19 +62,6 @@ struct SidebarWiring: ViewModifier {
                     )
                 }
             }
-            .alert(
-                "Delete “\(tagViewModel.selectedTag?.name ?? "Tag")”?",
-                isPresented: $tagViewModel.deleteTagAlertVisible
-            ) {
-                Button("Delete", role: .destructive) {
-                    tagViewModel.deleteSelectedTag()
-                }
-                Button("Cancel", role: .cancel) {
-                    tagViewModel.dismissDeleteTagAlert()
-                }
-            } message: {
-                Text("This removes the tag from all photos.")
-            }
             .toolbar {
                 ToolbarItem {
                     NewTagButton(tagViewModel)
@@ -89,14 +73,22 @@ struct SidebarWiring: ViewModifier {
         guard items.count == 1, case let .tag(t) = items.first else {
             return nil
         }
- 
+
         return t
     }
 
 }
 
 extension View {
-    func sidebarWiring(_ tagViewModel: TagViewModel) -> some View {
-        modifier(SidebarWiring(tagViewModel))
+    func sidebarWiring(
+        tagViewModel: TagViewModel,
+        alertViewModel: AlertViewModel
+    ) -> some View {
+        modifier(
+            SidebarWiring(
+                tagViewModel: tagViewModel,
+                alertViewModel: alertViewModel
+            )
+        )
     }
 }

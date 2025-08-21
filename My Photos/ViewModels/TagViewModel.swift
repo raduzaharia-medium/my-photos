@@ -21,20 +21,27 @@ enum TagEditorMode: Identifiable {
 final class TagViewModel: ObservableObject {
     private var modelContext: ModelContext?
     private var notifier: Notifier?
+    private var alerter: Alerter?
 
     @Published var tagEditorVisible: Bool = false
     @Published var folderSelectorVisible: Bool = false
-    @Published var deleteTagAlertVisible: Bool = false
 
     @Published var tagEditorMode: TagEditorMode? = nil
-    @Published var selectedTag: Tag? = nil
     @Published var selectedItem: SidebarItem? = nil
+
+    var selectedTag: Tag? {
+        if case let .tag(t) = selectedItem { return t }
+        return nil
+    }
 
     func setModelContext(_ modelContext: ModelContext) {
         self.modelContext = modelContext
     }
     func setNotifier(_ notifier: Notifier) {
         self.notifier = notifier
+    }
+    func setAlerter(_ alerter: Alerter) {
+        self.alerter = alerter
     }
 
     func showTagEditor() {
@@ -78,32 +85,8 @@ final class TagViewModel: ObservableObject {
         }
     }
 
-    func showDeleteTagAlert() {
-        if selectedTag != nil {
-            withAnimation {
-                deleteTagAlertVisible = true
-            }
-        } else {
-            notifier?.show("Select a tag first.")
-        }
-    }
-    func dismissDeleteTagAlert() {
-        withAnimation {
-            deleteTagAlertVisible = false
-        }
-    }
-
     func selectItem(_ item: SidebarItem?) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            withAnimation { self.selectedItem = item }
-        }
-    }
-    func selectTag(_ tag: Tag?) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            withAnimation { self.selectedTag = tag }
-        }
+        withAnimation { self.selectedItem = item }
     }
 
     func importFolder(_ result: Result<[URL], Error>) {
@@ -132,10 +115,14 @@ final class TagViewModel: ObservableObject {
     func deleteSelectedTag() {
         guard let tag = selectedTag else { return }
 
-        modelContext?.delete(tag)
-        dismissDeleteTagAlert()
-
-        selectTag(nil)
-        selectItem(nil)
+        alerter?.show(
+            "Delete \(tag.name)?",
+            "Are you sure you want to delete this tag?",
+            actionLabel: "Delete",
+            onAction: { [weak self] in
+                self?.modelContext?.delete(tag)
+                self?.selectItem(nil)
+            }
+        )
     }
 }

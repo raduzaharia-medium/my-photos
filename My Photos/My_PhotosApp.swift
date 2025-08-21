@@ -5,6 +5,7 @@ import SwiftUI
 struct My_PhotosApp: App {
     @StateObject private var tagViewModel = TagViewModel()
     @StateObject private var notificationViewModel = NotificationViewModel()
+    @StateObject private var alertViewModel = AlertViewModel()
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -14,14 +15,17 @@ struct My_PhotosApp: App {
             schema: schema,
             isStoredInMemoryOnly: true
         )
-       
+
         let container: ModelContainer
         do {
-            container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+            container = try ModelContainer(
+                for: schema,
+                configurations: [modelConfiguration]
+            )
         } catch {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
-        
+
         let context = ModelContext(container)
 
         let tag1 = Tag(name: "Alice", kind: .person)
@@ -79,7 +83,11 @@ struct My_PhotosApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(tagViewModel, notificationViewModel)
+            ContentView(
+                tagViewModel: tagViewModel,
+                notificationViewModel: notificationViewModel,
+                alertViewModel: alertViewModel
+            )
         }
         .modelContainer(sharedModelContainer)
         .commands {
