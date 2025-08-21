@@ -27,11 +27,9 @@ struct ContentView: View {
                 Filter.allCases,
                 tags,
                 $selection,
+                tagViewModel: tagViewModel
             )
-            .sidebarWiring(
-                tagViewModel: tagViewModel,
-                alertViewModel: alertViewModel
-            )
+            .sidebarWiring(tagViewModel: tagViewModel)
         } detail: {
             DetailView(tagViewModel.selectedItem)
         }

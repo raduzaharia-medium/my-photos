@@ -22,6 +22,8 @@ enum SidebarItem: Hashable {
 }
 
 struct SidebarView: View {
+    @ObservedObject var tagViewModel: TagViewModel
+
     let filters: [Filter]
     let tags: [Tag]
     let selection: Binding<SidebarItem?>
@@ -34,10 +36,12 @@ struct SidebarView: View {
         _ filters: [Filter],
         _ tags: [Tag],
         _ selection: Binding<SidebarItem?>,
+        tagViewModel: TagViewModel
     ) {
         self.filters = filters
         self.tags = tags
         self.selection = selection
+        self.tagViewModel = tagViewModel
     }
 
     var body: some View {
@@ -59,6 +63,9 @@ struct SidebarView: View {
                     }
                 }
             }
+        }
+        .contextMenu(forSelectionType: SidebarItem.self) { items in
+            TagContextMenu(items, tagViewModel)
         }
     }
 }

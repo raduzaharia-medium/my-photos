@@ -18,29 +18,12 @@ struct NewTagButton: View {
 
 struct SidebarWiring: ViewModifier {
     @ObservedObject var tagViewModel: TagViewModel
-    @ObservedObject var alertViewModel: AlertViewModel
 
     func body(content: Content) -> some View {
         content
             #if os(macOS)
                 .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
             #endif
-            .contextMenu(forSelectionType: SidebarItem.self) { items in
-                if let tag = singleTag(from: items) {
-                    Button {
-                        tagViewModel.selectItem(.tag(tag))
-                        tagViewModel.showTagEditor()
-                    } label: {
-                        Label("Edit", systemImage: "pencil")
-                    }
-
-                    Button(role: .destructive) {
-                        tagViewModel.deleteTag(tag)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
-                    }
-                }
-            }
             .sheet(item: $tagViewModel.tagEditorMode) { state in
                 NavigationStack {
                     TagEditorSheet(
@@ -67,27 +50,12 @@ struct SidebarWiring: ViewModifier {
                 }
             }
     }
-
-    private func singleTag(from items: Set<SidebarItem>) -> Tag? {
-        guard items.count == 1, case let .tag(t) = items.first else {
-            return nil
-        }
-
-        return t
-    }
-
 }
 
 extension View {
-    func sidebarWiring(
-        tagViewModel: TagViewModel,
-        alertViewModel: AlertViewModel
-    ) -> some View {
+    func sidebarWiring(tagViewModel: TagViewModel) -> some View {
         modifier(
-            SidebarWiring(
-                tagViewModel: tagViewModel,
-                alertViewModel: alertViewModel
-            )
+            SidebarWiring(tagViewModel: tagViewModel)
         )
     }
 }
