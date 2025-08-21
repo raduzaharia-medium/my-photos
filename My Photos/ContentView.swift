@@ -8,17 +8,20 @@ struct ContentView: View {
     @ObservedObject private var tagViewModel: TagViewModel
     @ObservedObject private var notificationService: NotificationService
     @ObservedObject private var alertService: AlertService
+    @ObservedObject private var fileImportService: FileImportService
 
     @State private var selection: SidebarItem? = nil
 
     init(
         tagViewModel: TagViewModel,
         notificationService: NotificationService,
-        alertService: AlertService
+        alertService: AlertService,
+        fileImportService: FileImportService
     ) {
         self.tagViewModel = tagViewModel
         self.notificationService = notificationService
         self.alertService = alertService
+        self.fileImportService = fileImportService
     }
 
     var body: some View {
@@ -37,6 +40,7 @@ struct ContentView: View {
             tagViewModel.setModelContext(modelContext)
             tagViewModel.setNotifier(notificationService)
             tagViewModel.setAlerter(alertService)
+            tagViewModel.setFileImporter(fileImportService)
         }
         .onChange(of: selection) {
             tagViewModel.selectItem(selection)
@@ -59,10 +63,10 @@ struct ContentView: View {
             Text(alertService.message)
         }
         .fileImporter(
-            isPresented: $tagViewModel.folderSelectorVisible,
-            allowedContentTypes: [.folder],
-            allowsMultipleSelection: false,
-            onCompletion: tagViewModel.importFolder
+            isPresented: $fileImportService.isVisible,
+            allowedContentTypes: fileImportService.allowedContentTypes,
+            allowsMultipleSelection: fileImportService.multipleSelection,
+            onCompletion: fileImportService.action
         )
     }
 }

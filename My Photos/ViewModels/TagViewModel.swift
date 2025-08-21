@@ -22,10 +22,9 @@ final class TagViewModel: ObservableObject {
     private var modelContext: ModelContext?
     private var notifier: Notifier?
     private var alerter: Alerter?
+    private var fileImporter: FileImporter?
 
     @Published var tagEditorVisible: Bool = false
-    @Published var folderSelectorVisible: Bool = false
-
     @Published var tagEditorMode: TagEditorMode? = nil
     @Published var selectedItem: SidebarItem? = nil
 
@@ -42,6 +41,9 @@ final class TagViewModel: ObservableObject {
     }
     func setAlerter(_ alerter: Alerter) {
         self.alerter = alerter
+    }
+    func setFileImporter(_ fileImporter: FileImporter) {
+        self.fileImporter = fileImporter
     }
 
     func showTagEditor() {
@@ -74,29 +76,22 @@ final class TagViewModel: ObservableObject {
         }
     }
 
-    func showFolderSelector() {
-        withAnimation {
-            folderSelectorVisible = true
-        }
-    }
-    func dismissFolderSelector() {
-        withAnimation {
-            folderSelectorVisible = false
-        }
-    }
-
     func selectItem(_ item: SidebarItem?) {
         withAnimation { self.selectedItem = item }
     }
 
-    func importFolder(_ result: Result<[URL], Error>) {
-        switch result {
-        case .success(let urls):
-            guard let folder = urls.first else { return }
-            notifier?.show("Imported \(folder.lastPathComponent)")
+    func importFolder() {
+        fileImporter?.show { [weak self] result in
+            switch result {
+            case .success(let urls):
+                guard let folder = urls.first else { return }
+                self?.notifier?.show("Imported \(folder.lastPathComponent)")
 
-        case .failure(let error):
-            notifier?.show("Failed to import: \(error.localizedDescription)")
+            case .failure(let error):
+                self?.notifier?.show(
+                    "Failed to import: \(error.localizedDescription)"
+                )
+            }
         }
     }
 
@@ -110,7 +105,7 @@ final class TagViewModel: ObservableObject {
 
         dismissTagEditor()
     }
-    
+
     func deleteTag(_ tag: Tag) {
         alerter?.show(
             "Delete \(tag.name)?",
@@ -122,7 +117,7 @@ final class TagViewModel: ObservableObject {
             }
         )
     }
-    
+
     func deleteSelectedTag() {
         guard let tag = selectedTag else { return }
 

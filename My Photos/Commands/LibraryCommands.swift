@@ -10,7 +10,7 @@ struct LibraryCommands: Commands {
 
     var body: some Commands {
         CommandMenu("Library") {
-            Button("Import Folder…") { tagViewModel.showFolderSelector() }
+            Button("Import Folder…") { tagViewModel.importFolder() }
                 .keyboardShortcut("I", modifiers: [.command, .shift])
 
             Divider()

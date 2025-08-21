@@ -6,6 +6,7 @@ struct My_PhotosApp: App {
     @StateObject private var tagViewModel = TagViewModel()
     @StateObject private var notificationService = NotificationService()
     @StateObject private var alertService = AlertService()
+    @StateObject private var fileImportService = FileImportService()
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -86,7 +87,8 @@ struct My_PhotosApp: App {
             ContentView(
                 tagViewModel: tagViewModel,
                 notificationService: notificationService,
-                alertService: alertService
+                alertService: alertService,
+                fileImportService: fileImportService
             )
         }
         .modelContainer(sharedModelContainer)
