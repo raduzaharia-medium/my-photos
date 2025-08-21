@@ -67,5 +67,8 @@ struct SidebarView: View {
         .contextMenu(forSelectionType: SidebarItem.self) { items in
             TagContextMenu(items, tagViewModel)
         }
+        .toolbar {
+            TagToolbar(tagViewModel: tagViewModel)
+        }
     }
 }
