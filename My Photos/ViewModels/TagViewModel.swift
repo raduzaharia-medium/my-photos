@@ -100,7 +100,6 @@ final class TagViewModel: ObservableObject {
         }
     }
 
-    // TODO: should I use selectedTag here too?
     func saveTag(original: Tag?, name: String, kind: TagKind) {
         if let original {
             original.name = name
@@ -111,7 +110,19 @@ final class TagViewModel: ObservableObject {
 
         dismissTagEditor()
     }
-
+    
+    func deleteTag(_ tag: Tag) {
+        alerter?.show(
+            "Delete \(tag.name)?",
+            "Are you sure you want to delete this tag?",
+            actionLabel: "Delete",
+            onAction: { [weak self] in
+                self?.modelContext?.delete(tag)
+                self?.selectItem(nil)
+            }
+        )
+    }
+    
     func deleteSelectedTag() {
         guard let tag = selectedTag else { return }
 

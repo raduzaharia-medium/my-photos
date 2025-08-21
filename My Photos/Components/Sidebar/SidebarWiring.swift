@@ -35,8 +35,7 @@ struct SidebarWiring: ViewModifier {
                     }
 
                     Button(role: .destructive) {
-                        tagViewModel.selectItem(.tag(tag))
-                        tagViewModel.deleteSelectedTag()
+                        tagViewModel.deleteTag(tag)
                     } label: {
                         Label("Delete", systemImage: "trash")
                     }
