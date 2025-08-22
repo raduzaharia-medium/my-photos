@@ -1,22 +1,6 @@
 import SwiftData
 import SwiftUI
 
-enum TagEditorMode: Identifiable {
-    case create
-    case edit(Tag)
-
-    var id: String {
-        switch self {
-        case .create: return "create"
-        case .edit(let tag): return "edit-\(tag.persistentModelID)"
-        }
-    }
-    var tag: Tag? {
-        if case let .edit(tag) = self { return tag }
-        return nil
-    }
-}
-
 @MainActor
 final class TagViewModel: ObservableObject {
     private var modelContext: ModelContext?
