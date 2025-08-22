@@ -15,10 +15,10 @@ struct LibraryCommands: Commands {
 
             Divider()
 
-            Button("Create Tag…") { tagViewModel.showTagCreator() }
+            Button("Create Tag…") { tagViewModel.createTag() }
                 .keyboardShortcut("T", modifiers: [.command, .shift])
 
-            Button("Edit Tag…") { tagViewModel.showTagEditor() }
+            Button("Edit Tag…") { tagViewModel.editTag(tagViewModel.selectedTag!, ) }
                 .keyboardShortcut("E", modifiers: [.command, .shift])
                 .disabled(tagViewModel.selectedTag == nil)
 

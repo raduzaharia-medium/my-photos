@@ -64,6 +64,9 @@ struct SidebarView: View {
                 }
             }
         }
+        #if os(macOS)
+            .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
+        #endif
         .contextMenu(forSelectionType: SidebarItem.self) { items in
             TagContextMenu(items, tagViewModel)
         }

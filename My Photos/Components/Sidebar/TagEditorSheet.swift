@@ -6,17 +6,17 @@ struct TagEditorSheet: View {
     @State private var kind: TagKind
 
     let tag: Tag?
-    var onCancel: () -> Void
     var onSave: (Tag?, String, TagKind) -> Void
+    var onCancel: () -> Void
 
     init(
         _ tag: Tag? = nil,
-        onCancel: @escaping () -> Void,
-        onSave: @escaping (Tag?, String, TagKind) -> Void
+        onSave: @escaping (Tag?, String, TagKind) -> Void,
+        onCancel: @escaping () -> Void
     ) {
         self.tag = tag
-        self.onCancel = onCancel
         self.onSave = onSave
+        self.onCancel = onCancel
 
         _name = State(initialValue: tag?.name ?? "")
         _kind = State(initialValue: tag?.kind ?? .custom)
@@ -42,33 +42,32 @@ struct TagEditorSheet: View {
                     .pickerStyle(.menu)
                     .labelsHidden()
                 }
-
-                HStack {
-                    Spacer()
-                    Button("Cancel", role: .cancel, action: onCancel)
-                    Button("Save") {
-                        onSave(
-                            tag,
-                            name.trimmingCharacters(
-                                in: .whitespacesAndNewlines
-                            ),
-                            kind
-                        )
-                    }
-                    .keyboardShortcut(.defaultAction)
-                    .disabled(
-                        name.trimmingCharacters(in: .whitespacesAndNewlines)
-                            .isEmpty
-                    )
-                }
             }.padding(20)
                 .onAppear { DispatchQueue.main.async { nameFocused = true } }
                 .frame(minWidth: 360)
                 .navigationTitle(
-                    tag == nil
-                        ? "New Tag"
-                        : "Edit Tag \(tag?.name ?? "")"
+                    tag == nil ? "New Tag" : "Edit Tag \(tag?.name ?? "")"
                 )
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel", role: .cancel) { onCancel() }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Save") {
+                            let trimmed = name.trimmingCharacters(
+                                in: .whitespacesAndNewlines
+                            )
+                            guard !trimmed.isEmpty else { return }
+                            
+                            onSave(tag, trimmed, kind)
+                        }
+                        .keyboardShortcut(.defaultAction)
+                        .disabled(
+                            name.trimmingCharacters(in: .whitespacesAndNewlines)
+                                .isEmpty
+                        )
+                    }
+                }
         }
     }
 }

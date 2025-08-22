@@ -23,9 +23,8 @@ final class TagViewModel: ObservableObject {
     private var notifier: Notifier?
     private var alerter: Alerter?
     private var fileImporter: FileImporter?
+    private var modalPresenter: ModalPresenter?
 
-    @Published var tagEditorVisible: Bool = false
-    @Published var tagEditorMode: TagEditorMode? = nil
     @Published var selectedItem: SidebarItem? = nil
 
     var selectedTag: Tag? {
@@ -45,39 +44,42 @@ final class TagViewModel: ObservableObject {
     func setFileImporter(_ fileImporter: FileImporter) {
         self.fileImporter = fileImporter
     }
-
-    func showTagEditor() {
-        if let selectedTag {
-            withAnimation {
-                tagEditorVisible = true
-                tagEditorMode = .edit(selectedTag)
-            }
-        } else {
-            notifier?.show("Select a tag first.")
-        }
-    }
-    func dismissTagEditor() {
-        withAnimation {
-            tagEditorVisible = false
-            tagEditorMode = nil
-        }
-    }
-
-    func showTagCreator() {
-        withAnimation {
-            tagEditorVisible = true
-            tagEditorMode = .create
-        }
-    }
-    func dismissTagCreator() {
-        withAnimation {
-            tagEditorVisible = false
-            tagEditorMode = nil
-        }
+    func setModalPresenter(_ modalPresenter: ModalPresenter) {
+        self.modalPresenter = modalPresenter
     }
 
     func selectItem(_ item: SidebarItem?) {
         withAnimation { self.selectedItem = item }
+    }
+
+    func createTag() {
+        modalPresenter?.show(onDismiss: { [weak self] in
+            self?.modalPresenter?.dismiss()
+        }) {
+            TagEditorSheet(
+                nil,
+                onSave: { [weak self] original, name, kind in
+                    self?.saveTag(original: original, name: name, kind: kind)
+                    self?.modalPresenter?.dismiss()
+                },
+                onCancel: { [weak self] in self?.modalPresenter?.dismiss() }
+            )
+        }
+    }
+
+    func editTag(_ tag: Tag) {
+        modalPresenter?.show(onDismiss: { [weak self] in
+            self?.modalPresenter?.dismiss()
+        }) {
+            TagEditorSheet(
+                tag,
+                onSave: { [weak self] original, name, kind in
+                    self?.saveTag(original: original, name: name, kind: kind)
+                    self?.modalPresenter?.dismiss()
+                },
+                onCancel: { [weak self] in self?.modalPresenter?.dismiss() }
+            )
+        }
     }
 
     func importFolder() {
@@ -102,8 +104,6 @@ final class TagViewModel: ObservableObject {
         } else {
             modelContext?.insert(Tag(name: name, kind: kind))
         }
-
-        dismissTagEditor()
     }
 
     func deleteTag(_ tag: Tag) {

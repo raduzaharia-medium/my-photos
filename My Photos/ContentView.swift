@@ -9,6 +9,7 @@ struct ContentView: View {
     @ObservedObject private var notificationService: NotificationService
     @ObservedObject private var alertService: AlertService
     @ObservedObject private var fileImportService: FileImportService
+    @ObservedObject private var modalPresenterService: ModalPresenterService
 
     @State private var selection: SidebarItem? = nil
 
@@ -16,12 +17,14 @@ struct ContentView: View {
         tagViewModel: TagViewModel,
         notificationService: NotificationService,
         alertService: AlertService,
-        fileImportService: FileImportService
+        fileImportService: FileImportService,
+        modalPresenterService: ModalPresenterService
     ) {
         self.tagViewModel = tagViewModel
         self.notificationService = notificationService
         self.alertService = alertService
         self.fileImportService = fileImportService
+        self.modalPresenterService = modalPresenterService
     }
 
     var body: some View {
@@ -32,7 +35,6 @@ struct ContentView: View {
                 $selection,
                 tagViewModel: tagViewModel
             )
-            .sidebarWiring(tagViewModel: tagViewModel)
         } detail: {
             DetailView(tagViewModel.selectedItem)
         }
@@ -41,6 +43,7 @@ struct ContentView: View {
             tagViewModel.setNotifier(notificationService)
             tagViewModel.setAlerter(alertService)
             tagViewModel.setFileImporter(fileImportService)
+            tagViewModel.setModalPresenter(modalPresenterService)
         }
         .onChange(of: selection) {
             tagViewModel.selectItem(selection)
@@ -61,6 +64,12 @@ struct ContentView: View {
             }
         } message: {
             Text(alertService.message)
+        }
+        .sheet(
+            item: $modalPresenterService.item,
+            onDismiss: modalPresenterService.item?.onDismiss
+        ) {
+            item in item.content
         }
         .fileImporter(
             isPresented: $fileImportService.isVisible,

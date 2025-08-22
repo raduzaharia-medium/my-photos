@@ -9,7 +9,7 @@ struct NewTagButton: View {
 
     var body: some View {
         Button {
-            tagViewModel.showTagCreator()
+            tagViewModel.createTag()
         } label: {
             Label("New Tag", systemImage: "plus")
         }

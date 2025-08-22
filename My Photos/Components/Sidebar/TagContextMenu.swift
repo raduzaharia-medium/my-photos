@@ -13,8 +13,7 @@ struct TagContextMenu: View {
     var body: some View {
         if let tag = singleTag(from: selection) {
             Button {
-                tagViewModel.selectItem(.tag(tag))
-                tagViewModel.showTagEditor()
+                tagViewModel.editTag(tag)
             } label: {
                 Label("Edit", systemImage: "pencil")
             }
