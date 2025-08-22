@@ -66,19 +66,9 @@ private struct ToastModifier: ViewModifier {
                         .onTapGesture {
                             withAnimation(.easeInOut) { isPresented = false }
                         }
-                        // Schedule/cancel auto-dismiss safely
                         .task(id: isPresented) {
                             dismissTask?.cancel()
                             guard isPresented else { return }
-
-                            #if canImport(UIKit)
-                                UIAccessibility.post(
-                                    notification: .announcement,
-                                    argument: message
-                                )
-                                UINotificationFeedbackGenerator()
-                                    .notificationOccurred(.success)
-                            #endif
 
                             let task = Task { @MainActor in
                                 try? await Task.sleep(
