@@ -6,6 +6,13 @@ struct TagEditorSheet: View {
     @State private var kind: TagKind
 
     let tag: Tag?
+
+    var title: String { tag == nil ? "New Tag" : "Edit Tag" }
+    var trimmedName: String {
+        name.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    var canSave: Bool { !trimmedName.isEmpty }
+
     var onSave: (Tag?, String, TagKind) -> Void
     var onCancel: () -> Void
 
@@ -30,6 +37,8 @@ struct TagEditorSheet: View {
                     TextField("e.g. Vacation, Alice, 2025-08", text: $name)
                         .textFieldStyle(.roundedBorder)
                         .focused($nameFocused)
+                        .submitLabel(.done)
+                        .onSubmit(save)
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
@@ -43,31 +52,25 @@ struct TagEditorSheet: View {
                     .labelsHidden()
                 }
             }.padding(20)
-                .onAppear { DispatchQueue.main.async { nameFocused = true } }
+                .task { nameFocused = true }
                 .frame(minWidth: 360)
-                .navigationTitle(
-                    tag == nil ? "New Tag" : "Edit Tag \(tag?.name ?? "")"
-                )
+                .navigationTitle(title)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Cancel", role: .cancel) { onCancel() }
                     }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Save") {
-                            let trimmed = name.trimmingCharacters(
-                                in: .whitespacesAndNewlines
-                            )
-                            guard !trimmed.isEmpty else { return }
-                            
-                            onSave(tag, trimmed, kind)
-                        }
-                        .keyboardShortcut(.defaultAction)
-                        .disabled(
-                            name.trimmingCharacters(in: .whitespacesAndNewlines)
-                                .isEmpty
-                        )
+                        Button("Save", action: save)
+                            .keyboardShortcut(.defaultAction)
+                            .disabled(!canSave)
                     }
                 }
+                .interactiveDismissDisabled(!canSave)
         }
+    }
+
+    private func save() {
+        guard canSave else { return }
+        onSave(tag, trimmedName, kind)
     }
 }

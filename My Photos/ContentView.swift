@@ -46,11 +46,12 @@ struct ContentView: View {
             tagViewModel.setModalPresenter(modalPresenterService)
         }
         .onChange(of: selection) {
-            tagViewModel.selectItem(selection)
+            withAnimation { tagViewModel.selectItem(selection) }
         }
         .toast(
             isPresented: $notificationService.isVisible,
-            message: notificationService.message
+            message: notificationService.message,
+            style: notificationService.style
         )
         .alert(
             alertService.title,

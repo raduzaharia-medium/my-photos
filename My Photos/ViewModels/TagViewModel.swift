@@ -16,30 +16,16 @@ final class TagViewModel: ObservableObject {
         return nil
     }
 
-    func setModelContext(_ modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
-    func setNotifier(_ notifier: Notifier) {
-        self.notifier = notifier
-    }
-    func setAlerter(_ alerter: Alerter) {
-        self.alerter = alerter
-    }
-    func setFileImporter(_ fileImporter: FileImporter) {
-        self.fileImporter = fileImporter
-    }
-    func setModalPresenter(_ modalPresenter: ModalPresenter) {
-        self.modalPresenter = modalPresenter
-    }
+    func setModelContext(_ val: ModelContext) { self.modelContext = val }
+    func setNotifier(_ val: Notifier) { self.notifier = val }
+    func setAlerter(_ val: Alerter) { self.alerter = val }
+    func setFileImporter(_ val: FileImporter) { self.fileImporter = val }
+    func setModalPresenter(_ val: ModalPresenter) { self.modalPresenter = val }
 
-    func selectItem(_ item: SidebarItem?) {
-        withAnimation { self.selectedItem = item }
-    }
+    func selectItem(_ item: SidebarItem?) { self.selectedItem = item }
 
     func createTag() {
-        modalPresenter?.show(onDismiss: { [weak self] in
-            self?.modalPresenter?.dismiss()
-        }) {
+        modalPresenter?.show(onDismiss: {}) {
             TagEditorSheet(
                 nil,
                 onSave: { [weak self] original, name, kind in
@@ -52,9 +38,7 @@ final class TagViewModel: ObservableObject {
     }
 
     func editTag(_ tag: Tag) {
-        modalPresenter?.show(onDismiss: { [weak self] in
-            self?.modalPresenter?.dismiss()
-        }) {
+        modalPresenter?.show(onDismiss: {}) {
             TagEditorSheet(
                 tag,
                 onSave: { [weak self] original, name, kind in
@@ -67,15 +51,19 @@ final class TagViewModel: ObservableObject {
     }
 
     func importFolder() {
-        fileImporter?.show { [weak self] result in
+        fileImporter?.pickSingleFolder { [weak self] result in
             switch result {
             case .success(let urls):
                 guard let folder = urls.first else { return }
-                self?.notifier?.show("Imported \(folder.lastPathComponent)")
+                self?.notifier?.show(
+                    "Imported \(folder.lastPathComponent)",
+                    .success
+                )
 
             case .failure(let error):
                 self?.notifier?.show(
-                    "Failed to import: \(error.localizedDescription)"
+                    "Failed to import: \(error.localizedDescription)",
+                    .error
                 )
             }
         }
@@ -91,20 +79,6 @@ final class TagViewModel: ObservableObject {
     }
 
     func deleteTag(_ tag: Tag) {
-        alerter?.show(
-            "Delete \(tag.name)?",
-            "Are you sure you want to delete this tag?",
-            actionLabel: "Delete",
-            onAction: { [weak self] in
-                self?.modelContext?.delete(tag)
-                self?.selectItem(nil)
-            }
-        )
-    }
-
-    func deleteSelectedTag() {
-        guard let tag = selectedTag else { return }
-
         alerter?.show(
             "Delete \(tag.name)?",
             "Are you sure you want to delete this tag?",

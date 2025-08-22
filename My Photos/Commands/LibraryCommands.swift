@@ -23,7 +23,7 @@ struct LibraryCommands: Commands {
                 .disabled(tagViewModel.selectedTag == nil)
 
             Button("Delete Tag", role: .destructive) {
-                tagViewModel.deleteSelectedTag()
+                tagViewModel.deleteTag(tagViewModel.selectedTag!)
             }
             .keyboardShortcut("D", modifiers: [.command, .shift])
             .disabled(tagViewModel.selectedTag == nil)
