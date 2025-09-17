@@ -10,22 +10,7 @@ struct PhotosMap: View {
     let sidebarSelection: Set<SidebarItem>
 
     private var photos: [Photo] {
-        let selectedTags: [Tag] = sidebarSelection.compactMap { selection in
-            if case .tag(let t) = selection { return t }
-            return nil
-        }
-
-        guard !selectedTags.isEmpty else {
-            return allPhotos
-        }
-
-        let filtered = allPhotos.filter { photo in
-            photo.tags.contains { tag in
-                selectedTags.contains(where: { $0 == tag })
-            }
-        }
-
-        return filtered.sorted { $0.dateTaken > $1.dateTaken }
+        allPhotos.filtered(by: sidebarSelection)
     }
 
     init(_ sidebarSelection: Set<SidebarItem>) {
