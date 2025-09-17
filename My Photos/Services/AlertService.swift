@@ -2,6 +2,12 @@ import SwiftUI
 
 @MainActor
 protocol Alerter: AnyObject {
+    var isVisible: Bool { get set }
+    var title: String { get set }
+    var message: String { get set }
+    var actionLabel: String { get set }
+    var cancelLabel: String { get set }
+    
     func show(
         _ title: String,
         _ message: String,
@@ -24,6 +30,8 @@ protocol Alerter: AnyObject {
         onAction: (() -> Void)?,
     )
 
+    func action()
+    func cancel()
     func dismiss()
 }
 

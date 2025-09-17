@@ -7,18 +7,18 @@ struct PhotosMap: View {
         [Photo]
     @State private var camera: MapCameraPosition = .automatic
 
-    let sidebarSelection: SidebarItem?
+    let sidebarSelection: Set<SidebarItem>
 
     private var photos: [Photo] {
-        switch sidebarSelection {
-        case .tag(let tag):
+        switch sidebarSelection.first {
+        case .some(.tag(let tag)):
             return tag.photos.sorted { $0.dateTaken > $1.dateTaken }
         default:
             return allPhotos
         }
     }
 
-    init(_ sidebarSelection: SidebarItem?) {
+    init(_ sidebarSelection: Set<SidebarItem>) {
         self.sidebarSelection = sidebarSelection
     }
 

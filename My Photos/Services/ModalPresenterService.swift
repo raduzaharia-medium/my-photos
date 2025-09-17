@@ -1,7 +1,16 @@
 import SwiftUI
 
+struct Item: Identifiable {
+    let id = UUID()
+    let content: AnyView
+    let onDismiss: (() -> Void)?
+}
+
+
 @MainActor
 protocol ModalPresenter: AnyObject {
+    var item: Item? { get set }
+    
     func show<Content: View>(
         onDismiss: (() -> Void)?,
         @ViewBuilder _ content: @escaping () -> Content
@@ -11,12 +20,6 @@ protocol ModalPresenter: AnyObject {
 
 @MainActor
 final class ModalPresenterService: ObservableObject, ModalPresenter {
-    struct Item: Identifiable {
-        let id = UUID()
-        let content: AnyView
-        let onDismiss: (() -> Void)?
-    }
-
     @Published var item: Item?
 
     func show<Content: View>(

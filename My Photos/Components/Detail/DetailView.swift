@@ -10,9 +10,9 @@ enum DetailTab: String, CaseIterable, Identifiable {
 
 struct DetailView: View {
     @State private var tab: DetailTab = .photos
-    let sidebarSelection: SidebarItem?
+    let sidebarSelection: Set<SidebarItem>
 
-    init(_ sidebarSelection: SidebarItem?) {
+    init(_ sidebarSelection: Set<SidebarItem>) {
         self.sidebarSelection = sidebarSelection
     }
     
@@ -38,6 +38,6 @@ struct DetailView: View {
                 .help("Change how this tag is displayed")
             }
         }
-        .navigationTitle(sidebarSelection?.name ?? "All Photos")
+        .navigationTitle(sidebarSelection.first?.name ?? "All Photos")
     }
 }

@@ -5,13 +5,15 @@ struct PhotosGrid: View {
     @Query(sort: \Photo.dateTaken, order: .reverse) private var allPhotos:
         [Photo]
 
-    let sidebarSelection: SidebarItem?
+    let sidebarSelection: Set<SidebarItem>
 
     private var photos: [Photo] {
-        switch sidebarSelection {
-        case .tag(let tag):
+        if let tag = sidebarSelection.compactMap({ selection -> Tag? in
+            if case .tag(let t) = selection { return t }
+            return nil
+        }).first {
             return tag.photos.sorted { $0.dateTaken > $1.dateTaken }
-        default:
+        } else {
             return allPhotos
         }
     }
@@ -19,7 +21,7 @@ struct PhotosGrid: View {
         GridItem(.adaptive(minimum: 110, maximum: 200), spacing: 8)
     ]
 
-    init(_ sidebarSelection: SidebarItem?) {
+    init(_ sidebarSelection: Set<SidebarItem>) {
         self.sidebarSelection = sidebarSelection
     }
 
@@ -43,3 +45,4 @@ struct PhotosGrid: View {
         }
     }
 }
+

@@ -4,11 +4,8 @@ import SwiftUI
 @main
 struct My_PhotosApp: App {
     @StateObject private var tagViewModel = TagViewModel()
-    @StateObject private var notificationService = NotificationService()
-    @StateObject private var alertService = AlertService()
-    @StateObject private var fileImportService = FileImportService()
-    @StateObject private var modalPresenterService = ModalPresenterService()
-
+    @StateObject private var services = Services()
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Photo.self, Tag.self,
@@ -87,10 +84,7 @@ struct My_PhotosApp: App {
         WindowGroup {
             ContentView(
                 tagViewModel: tagViewModel,
-                notificationService: notificationService,
-                alertService: alertService,
-                fileImportService: fileImportService,
-                modalPresenterService: modalPresenterService
+                services: services,
             )
         }
         .modelContainer(sharedModelContainer)

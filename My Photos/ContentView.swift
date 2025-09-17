@@ -6,25 +6,16 @@ struct ContentView: View {
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
 
     @ObservedObject private var tagViewModel: TagViewModel
-    @ObservedObject private var notificationService: NotificationService
-    @ObservedObject private var alertService: AlertService
-    @ObservedObject private var fileImportService: FileImportService
-    @ObservedObject private var modalPresenterService: ModalPresenterService
+    @ObservedObject private var services: Services
 
-    @State private var selection: SidebarItem? = nil
+    @State private var selection: Set<SidebarItem> = []
 
     init(
         tagViewModel: TagViewModel,
-        notificationService: NotificationService,
-        alertService: AlertService,
-        fileImportService: FileImportService,
-        modalPresenterService: ModalPresenterService
+        services: Services
     ) {
         self.tagViewModel = tagViewModel
-        self.notificationService = notificationService
-        self.alertService = alertService
-        self.fileImportService = fileImportService
-        self.modalPresenterService = modalPresenterService
+        self.services = services
     }
 
     var body: some View {
@@ -40,43 +31,40 @@ struct ContentView: View {
         }
         .onAppear {
             tagViewModel.setModelContext(modelContext)
-            tagViewModel.setNotifier(notificationService)
-            tagViewModel.setAlerter(alertService)
-            tagViewModel.setFileImporter(fileImportService)
-            tagViewModel.setModalPresenter(modalPresenterService)
+            tagViewModel.setServices(services)
         }
         .onChange(of: selection) {
             withAnimation { tagViewModel.selectItem(selection) }
         }
         .toast(
-            isPresented: $notificationService.isVisible,
-            message: notificationService.message,
-            style: notificationService.style
+            isPresented: $services.notifier.isVisible,
+            message: services.notifier.message,
+            style: services.notifier.style
         )
         .alert(
-            alertService.title,
-            isPresented: $alertService.isVisible
+            services.alerter.title,
+            isPresented: $services.alerter.isVisible
         ) {
-            Button(alertService.actionLabel, role: .destructive) {
-                alertService.action()
+            Button(services.alerter.actionLabel, role: .destructive) {
+                services.alerter.action()
             }
-            Button(alertService.cancelLabel, role: .cancel) {
-                alertService.cancel()
+            Button(services.alerter.cancelLabel, role: .cancel) {
+                services.alerter.cancel()
             }
         } message: {
-            Text(alertService.message)
+            Text(services.alerter.message)
         }
         .sheet(
-            item: $modalPresenterService.item,
-            onDismiss: modalPresenterService.item?.onDismiss
-        ) {
-            item in item.content
+            item: $services.modalPresenter.item,
+            onDismiss: services.modalPresenter.item?.onDismiss
+        ) { item in
+            item.content
         }
         .fileImporter(
-            isPresented: $fileImportService.isVisible,
-            allowedContentTypes: fileImportService.allowedContentTypes,
-            allowsMultipleSelection: fileImportService.multipleSelection,
-            onCompletion: fileImportService.action
+            isPresented: $services.fileImporter.isVisible,
+            allowedContentTypes: services.fileImporter.allowedContentTypes,
+            allowsMultipleSelection: services.fileImporter.multipleSelection,
+            onCompletion: services.fileImporter.action
         )
     }
 }

@@ -26,7 +26,7 @@ struct SidebarView: View {
 
     let filters: [Filter]
     let tags: [Tag]
-    let selection: Binding<SidebarItem?>
+    let selection: Binding<Set<SidebarItem>>
 
     private var groups: [TagKind: [Tag]] {
         Dictionary(grouping: tags, by: { $0.kind })
@@ -35,7 +35,7 @@ struct SidebarView: View {
     init(
         _ filters: [Filter],
         _ tags: [Tag],
-        _ selection: Binding<SidebarItem?>,
+        _ selection: Binding<Set<SidebarItem>>,
         tagViewModel: TagViewModel
     ) {
         self.filters = filters

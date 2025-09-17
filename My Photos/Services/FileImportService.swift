@@ -3,7 +3,13 @@ import UniformTypeIdentifiers
 
 @MainActor
 protocol FileImporter: AnyObject {
+    var isVisible: Bool { get set }
+    var allowedContentTypes: [UTType] { get set }
+    var multipleSelection: Bool { get set }
+    
     func pickSingleFolder(_ actionHandler: ((Result<[URL], Error>) -> Void)?)
+    
+    func action(_ result: Result<[URL], Error>)
     func dismiss()
 }
 
