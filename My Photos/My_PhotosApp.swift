@@ -4,9 +4,11 @@ import SwiftUI
 @main
 struct My_PhotosApp: App {
     @StateObject private var tagViewModel = TagViewModel()
+    @StateObject private var modalPresenter = ModalPresenterService()
+    @StateObject private var alerter = AlertService()
     @StateObject private var services = Services()
     
-    var sharedModelContainer: ModelContainer = {
+    private var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Photo.self, Tag.self,
         ])
@@ -80,6 +82,7 @@ struct My_PhotosApp: App {
 
         return container
     }()
+    private var tagActions: TagActions { TagActions(context: ModelContext(sharedModelContainer)) }
 
     var body: some Scene {
         WindowGroup {
@@ -88,9 +91,12 @@ struct My_PhotosApp: App {
                 services: services,
             )
         }
+        .environmentObject(modalPresenter)
+        .environmentObject(alerter)
+        .environmentObject(tagActions)
         .modelContainer(sharedModelContainer)
         .commands {
-            LibraryCommands(tagViewModel)
+            LibraryCommands(tagViewModel, tagActions: tagActions, modalPresenter: modalPresenter, alerter: alerter)
         }
     }
 }

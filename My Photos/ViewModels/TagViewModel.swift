@@ -20,32 +20,6 @@ final class TagViewModel: ObservableObject {
     
     func selectItem(_ selection: Set<SidebarItem>) { self.selectedItem = selection }
 
-    func createTag() {
-        services?.modalPresenter.show(onDismiss: {}) {
-            TagEditorSheet(
-                nil,
-                onSave: { [weak self] original, name, kind in
-                    self?.saveTag(original: original, name: name, kind: kind)
-                    self?.services?.modalPresenter.dismiss()
-                },
-                onCancel: { [weak self] in self?.services?.modalPresenter.dismiss() }
-            )
-        }
-    }
-
-    func editTag(_ tag: Tag) {
-        services?.modalPresenter.show(onDismiss: {}) {
-            TagEditorSheet(
-                tag,
-                onSave: { [weak self] original, name, kind in
-                    self?.saveTag(original: original, name: name, kind: kind)
-                    self?.services?.modalPresenter.dismiss()
-                },
-                onCancel: { [weak self] in self?.services?.modalPresenter.dismiss() }
-            )
-        }
-    }
-
     func importFolder() {
         services?.fileImporter.pickSingleFolder { [weak self] result in
             switch result {
@@ -72,17 +46,5 @@ final class TagViewModel: ObservableObject {
         } else {
             modelContext?.insert(Tag(name: name, kind: kind))
         }
-    }
-
-    func deleteTag(_ tag: Tag) {
-        services?.alerter.show(
-            "Delete \(tag.name)?",
-            "Are you sure you want to delete this tag?",
-            actionLabel: "Delete",
-            onAction: { [weak self] in
-                self?.modelContext?.delete(tag)
-                self?.selectItem([])
-            }
-        )
     }
 }

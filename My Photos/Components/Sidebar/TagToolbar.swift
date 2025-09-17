@@ -1,15 +1,23 @@
 import SwiftUI
 
 struct NewTagButton: View {
-    @ObservedObject var tagViewModel: TagViewModel
-
-    init(_ tagViewModel: TagViewModel) {
-        self.tagViewModel = tagViewModel
-    }
-
+    @EnvironmentObject var modalPresenter: ModalPresenterService
+    @EnvironmentObject var tagActions: TagActions
+ 
     var body: some View {
         Button {
-            tagViewModel.createTag()
+            modalPresenter.show(onDismiss: {}) {
+                TagEditorSheet(
+                    nil,
+                    onSave: { original, name, kind in
+                        withAnimation {
+                            tagActions.upsert(original?.id, name: name, kind: kind)
+                            modalPresenter.dismiss()
+                        }
+                    },
+                    onCancel: { modalPresenter.dismiss() }
+                )
+            }
         } label: {
             Label("New Tag", systemImage: "plus")
         }
@@ -17,11 +25,9 @@ struct NewTagButton: View {
 }
 
 struct TagToolbar: ToolbarContent {
-    @ObservedObject var tagViewModel: TagViewModel
-
     var body: some ToolbarContent {
         ToolbarItem {
-            NewTagButton(tagViewModel)
+            NewTagButton()
         }
     }
 }

@@ -3,6 +3,8 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var modalPresenter: ModalPresenterService
+    @EnvironmentObject private var alerter: AlertService
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
 
     @ObservedObject private var tagViewModel: TagViewModel
@@ -41,24 +43,26 @@ struct ContentView: View {
             message: services.notifier.message,
             style: services.notifier.style
         )
-        .alert(
-            services.alerter.title,
-            isPresented: $services.alerter.isVisible
-        ) {
-            Button(services.alerter.actionLabel, role: .destructive) {
-                services.alerter.action()
-            }
-            Button(services.alerter.cancelLabel, role: .cancel) {
-                services.alerter.cancel()
-            }
-        } message: {
-            Text(services.alerter.message)
-        }
         .sheet(
-            item: $services.modalPresenter.item,
-            onDismiss: services.modalPresenter.item?.onDismiss
+            item: $modalPresenter.item,
+            onDismiss: {
+                modalPresenter.item?.onDismiss?()
+            }
         ) { item in
             item.content
+        }
+        .alert(
+            alerter.title,
+            isPresented: $alerter.isVisible
+        ) {
+            Button(alerter.actionLabel, role: .destructive) {
+                alerter.action()
+            }
+            Button(alerter.cancelLabel, role: .cancel) {
+                alerter.cancel()
+            }
+        } message: {
+            Text(alerter.message)
         }
         .fileImporter(
             isPresented: $services.fileImporter.isVisible,

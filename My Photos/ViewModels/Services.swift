@@ -2,16 +2,16 @@ import SwiftUI
 
 @MainActor
 final class Services: ObservableObject {
-    @Published var notifier: Notifier
-    @Published var alerter: Alerter
-    @Published var fileImporter: FileImporter
-    @Published var modalPresenter: ModalPresenter
+    @Published var notifier: NotificationService
+    @Published var alerter: AlertService
+    @Published var fileImporter: FileImportService
+    @Published var modalPresenter: ModalPresenterService
 
     init(
-        notifier: Notifier,
-        alerter: Alerter,
-        fileImporter: FileImporter,
-        modalPresenter: ModalPresenter
+        notifier: NotificationService,
+        alerter: AlertService,
+        fileImporter: FileImportService,
+        modalPresenter: ModalPresenterService
     ) {
         self.notifier = notifier
         self.alerter = alerter

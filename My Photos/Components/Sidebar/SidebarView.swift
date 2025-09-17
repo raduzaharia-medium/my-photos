@@ -68,10 +68,10 @@ struct SidebarView: View {
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
         #endif
         .contextMenu(forSelectionType: SidebarItem.self) { items in
-            TagContextMenu(items, tagViewModel)
+            TagContextMenu(items)
         }
         .toolbar {
-            TagToolbar(tagViewModel: tagViewModel)
+            TagToolbar()
         }
     }
 }
