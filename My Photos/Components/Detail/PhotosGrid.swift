@@ -8,14 +8,22 @@ struct PhotosGrid: View {
     let sidebarSelection: Set<SidebarItem>
 
     private var photos: [Photo] {
-        if let tag = sidebarSelection.compactMap({ selection -> Tag? in
+        let selectedTags: [Tag] = sidebarSelection.compactMap { selection in
             if case .tag(let t) = selection { return t }
             return nil
-        }).first {
-            return tag.photos.sorted { $0.dateTaken > $1.dateTaken }
-        } else {
+        }
+
+        guard !selectedTags.isEmpty else {
             return allPhotos
         }
+
+        let filtered = allPhotos.filter { photo in
+            photo.tags.contains { tag in
+                selectedTags.contains(where: { $0 == tag })
+            }
+        }
+
+        return filtered.sorted { $0.dateTaken > $1.dateTaken }
     }
     private let columns = [
         GridItem(.adaptive(minimum: 110, maximum: 200), spacing: 8)
@@ -45,4 +53,3 @@ struct PhotosGrid: View {
         }
     }
 }
-

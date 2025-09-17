@@ -38,6 +38,10 @@ struct DetailView: View {
                 .help("Change how this tag is displayed")
             }
         }
-        .navigationTitle(sidebarSelection.first?.name ?? "All Photos")
+        .navigationTitle(
+            sidebarSelection.count > 1
+                ? "Multiple Collections"
+                : (sidebarSelection.first?.name ?? "All Photos")
+        )
     }
 }

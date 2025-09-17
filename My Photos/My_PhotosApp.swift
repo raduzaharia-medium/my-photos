@@ -53,6 +53,7 @@ struct My_PhotosApp: App {
                 title: "On the sea",
                 dateTaken: formatter.date(from: "2022-01-10") ?? Date(),
                 location: GeoCoordinate(46.770439, 23.591423),
+                tags: [tag2]
             )
         )
         context.insert(
