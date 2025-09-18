@@ -21,7 +21,9 @@ func presentTagRemover(_ tag: Tag, alerter: AlertService, notifier: Notification
                 withAnimation {
                     do {
                         try tagStore.delete(tag.id)
+                        
                         tagSelectionModel.selection.removeAll()
+                        notifier.show("Tag deleted", .success)
                     }
                     catch {
                         notifier.show("Could not delete tag", .error)
@@ -43,7 +45,9 @@ func presentTagsRemover(_ tags: [Tag], alerter: AlertService, notifier: Notifica
                 withAnimation {
                     do {
                         try tagStore.delete(tags.map(\.id))
+                        
                         tagSelectionModel.selection.removeAll()
+                        notifier.show("Tags deleted", .success)
                     }
                     catch {
                         notifier.show("Could not delete tags", .error)

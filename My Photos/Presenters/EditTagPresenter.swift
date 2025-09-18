@@ -16,6 +16,7 @@ func presentTagEditor(_ tag: Tag?, modalPresenter: ModalService, notifier: Notif
                     withAnimation {
                         do {
                             try tagStore.upsert(original?.id, name: name, kind: kind)
+                            notifier.show("Tag saved", .success)
                         } catch {
                             notifier.show("Could not save tag", .error)
                         }

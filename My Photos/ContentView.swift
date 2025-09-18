@@ -22,7 +22,7 @@ struct ContentView: View {
         } detail: {
             DetailView(tagSelectionModel.selection)
         }
-        .toast(
+        .notification(
             isPresented: $notifier.isVisible,
             message: notifier.message,
             style: notifier.style

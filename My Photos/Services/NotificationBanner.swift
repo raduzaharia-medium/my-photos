@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum ToastStyle {
+enum NotificationStyle {
     case success, error, info
 
     var icon: String {
@@ -12,12 +12,12 @@ enum ToastStyle {
     }
 }
 
-struct ToastBanner: View {
+struct NotificationBanner: View {
     @Environment(\.colorScheme) private var scheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     let message: String
-    let style: ToastStyle
+    let style: NotificationStyle
 
     var body: some View {
         HStack(spacing: 12) {
@@ -47,19 +47,19 @@ struct ToastBanner: View {
     }
 }
 
-private struct ToastModifier: ViewModifier {
+private struct NotificationModifier: ViewModifier {
     @State private var dismissTask: Task<Void, Never>?
 
     @Binding var isPresented: Bool
     let message: String
-    let style: ToastStyle
+    let style: NotificationStyle
     let duration: TimeInterval
 
     func body(content: Content) -> some View {
         content
             .safeAreaInset(edge: .top, spacing: 0) {
                 if isPresented {
-                    ToastBanner(message: message, style: style)
+                    NotificationBanner(message: message, style: style)
                         .padding(.top, 12)
                         .padding(.horizontal, 12)
                         .allowsHitTesting(true)
@@ -91,14 +91,14 @@ private struct ToastModifier: ViewModifier {
 }
 
 extension View {
-    func toast(
+    func notification(
         isPresented: Binding<Bool>,
         message: String,
-        style: ToastStyle = .success,
+        style: NotificationStyle = .success,
         duration: TimeInterval = 2
     ) -> some View {
         self.modifier(
-            ToastModifier(
+            NotificationModifier(
                 isPresented: isPresented,
                 message: message,
                 style: style,
