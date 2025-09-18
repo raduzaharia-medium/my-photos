@@ -19,7 +19,7 @@ final class TagSelectionModel: ObservableObject {
 
 @main
 struct My_PhotosApp: App {
-    @StateObject private var modalPresenter = ModalPresenterService()
+    @StateObject private var modalPresenter = ModalService()
     @StateObject private var alerter = AlertService()
     @StateObject private var fileImporter = FileImportService()
     @StateObject private var notifier = NotificationService()

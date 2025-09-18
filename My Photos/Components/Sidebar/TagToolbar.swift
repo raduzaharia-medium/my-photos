@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct NewTagButton: View {
-    @EnvironmentObject var modalPresenter: ModalPresenterService
+    @EnvironmentObject var modalPresenter: ModalService
     @EnvironmentObject var notifier: NotificationService
     @EnvironmentObject var tagActions: TagActions
     

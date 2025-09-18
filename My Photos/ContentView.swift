@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject private var modalPresenter: ModalPresenterService
+    @EnvironmentObject private var modalPresenter: ModalService
     @EnvironmentObject private var alerter: AlertService
     @EnvironmentObject private var fileImporter: FileImportService
     @EnvironmentObject private var notifier: NotificationService

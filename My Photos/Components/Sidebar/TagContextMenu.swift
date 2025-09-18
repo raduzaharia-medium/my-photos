@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct TagContextMenu: View {
-    @EnvironmentObject private var modalPresenter: ModalPresenterService
+    @EnvironmentObject private var modalPresenter: ModalService
     @EnvironmentObject private var alerter: AlertService
     @EnvironmentObject private var notifier: NotificationService
     @EnvironmentObject private var tagActions: TagActions

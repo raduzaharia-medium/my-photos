@@ -8,7 +8,7 @@ struct Item: Identifiable {
 
 
 @MainActor
-protocol ModalPresenter: AnyObject {
+protocol Modal: AnyObject {
     var item: Item? { get set }
     
     func show<Content: View>(
@@ -19,7 +19,7 @@ protocol ModalPresenter: AnyObject {
 }
 
 @MainActor
-final class ModalPresenterService: ObservableObject, ModalPresenter {
+final class ModalService: ObservableObject, Modal {
     @Published var item: Item?
 
     func show<Content: View>(

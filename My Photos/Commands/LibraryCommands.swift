@@ -3,7 +3,7 @@ import SwiftUI
 
 // TODO: Split in TagCommands and LibraryCommands
 struct LibraryCommands: Commands {
-    @ObservedObject var modalPresenter: ModalPresenterService
+    @ObservedObject var modalPresenter: ModalService
     @ObservedObject var alerter: AlertService
     @ObservedObject var fileImporter: FileImportService
     @ObservedObject var notifier: NotificationService
@@ -13,7 +13,7 @@ struct LibraryCommands: Commands {
 
     init(
         tagActions: TagActions,
-        modalPresenter: ModalPresenterService,
+        modalPresenter: ModalService,
         alerter: AlertService,
         fileImporter: FileImportService,
         notifier: NotificationService,

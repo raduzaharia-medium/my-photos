@@ -1,13 +1,13 @@
 import SwiftUI
 
 extension View {
-    func presentTagEditor(_ tag: Tag?, modalPresenter: ModalPresenterService, notifier: NotificationService, tagActions: TagActions) {
+    func presentTagEditor(_ tag: Tag?, modalPresenter: ModalService, notifier: NotificationService, tagActions: TagActions) {
         My_Photos.presentTagEditor(tag, modalPresenter: modalPresenter, notifier: notifier, tagActions: tagActions)
     }
 }
 
 @MainActor
-func presentTagEditor(_ tag: Tag?, modalPresenter: ModalPresenterService, notifier: NotificationService, tagActions: TagActions) {
+func presentTagEditor(_ tag: Tag?, modalPresenter: ModalService, notifier: NotificationService, tagActions: TagActions) {
     withAnimation {
         modalPresenter.show(onDismiss: {}) {
             TagEditorSheet(
