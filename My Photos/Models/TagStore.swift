@@ -1,13 +1,13 @@
 import SwiftData
 import SwiftUI
 
-enum TagActionError: Error {
+enum TagStoreError: Error {
     case tagNotFound
     case saveFailed(underlying: Error)
 }
 
 @MainActor
-final class TagActions: ObservableObject {
+final class TagStore: ObservableObject {
     private let context: ModelContext
 
     init(context: ModelContext) {
@@ -24,7 +24,7 @@ final class TagActions: ObservableObject {
     func update(_ id: PersistentIdentifier, name: String, kind: TagKind) throws
     {
         guard let tag = context.model(for: id) as? Tag else {
-            throw TagActionError.tagNotFound
+            throw TagStoreError.tagNotFound
         }
 
         tag.name = name
@@ -44,7 +44,7 @@ final class TagActions: ObservableObject {
 
     func delete(_ id: PersistentIdentifier) throws {
         guard let tag = context.model(for: id) as? Tag else {
-            throw TagActionError.tagNotFound
+            throw TagStoreError.tagNotFound
         }
 
         context.delete(tag)
@@ -56,7 +56,7 @@ final class TagActions: ObservableObject {
 
         for id in ids {
             guard let tag = context.model(for: id) as? Tag else {
-                throw TagActionError.tagNotFound
+                throw TagStoreError.tagNotFound
             }
 
             context.delete(tag)

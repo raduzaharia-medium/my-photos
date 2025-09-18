@@ -1,17 +1,17 @@
 import SwiftUI
 
 extension View {
-    func presentTagRemover(_ tag: Tag, alerter: AlertService, notifier: NotificationService, tagActions: TagActions, tagSelectionModel: TagSelectionModel) {
-        My_Photos.presentTagRemover(tag, alerter: alerter, notifier: notifier, tagActions: tagActions, tagSelectionModel: tagSelectionModel)
+    func presentTagRemover(_ tag: Tag, alerter: AlertService, notifier: NotificationService, tagStore: TagStore, tagSelectionModel: TagSelectionModel) {
+        My_Photos.presentTagRemover(tag, alerter: alerter, notifier: notifier, tagStore: tagStore, tagSelectionModel: tagSelectionModel)
     }
     
-    func presentTagsRemover(_ tags: [Tag], alerter: AlertService, notifier: NotificationService, tagActions: TagActions, tagSelectionModel: TagSelectionModel) {
-        My_Photos.presentTagsRemover(tags, alerter: alerter, notifier: notifier, tagActions: tagActions, tagSelectionModel: tagSelectionModel)
+    func presentTagsRemover(_ tags: [Tag], alerter: AlertService, notifier: NotificationService, tagStore: TagStore, tagSelectionModel: TagSelectionModel) {
+        My_Photos.presentTagsRemover(tags, alerter: alerter, notifier: notifier, tagStore: tagStore, tagSelectionModel: tagSelectionModel)
     }
 }
 
 @MainActor
-func presentTagRemover(_ tag: Tag, alerter: AlertService, notifier: NotificationService, tagActions: TagActions, tagSelectionModel: TagSelectionModel) {
+func presentTagRemover(_ tag: Tag, alerter: AlertService, notifier: NotificationService, tagStore: TagStore, tagSelectionModel: TagSelectionModel) {
     withAnimation {
         alerter.show(
             "Delete \(tag.name)?",
@@ -20,7 +20,7 @@ func presentTagRemover(_ tag: Tag, alerter: AlertService, notifier: Notification
             onAction: {
                 withAnimation {
                     do {
-                        try tagActions.delete(tag.id)
+                        try tagStore.delete(tag.id)
                         tagSelectionModel.selection.removeAll()
                     }
                     catch {
@@ -33,7 +33,7 @@ func presentTagRemover(_ tag: Tag, alerter: AlertService, notifier: Notification
 }
 
 @MainActor
-func presentTagsRemover(_ tags: [Tag], alerter: AlertService, notifier: NotificationService, tagActions: TagActions, tagSelectionModel: TagSelectionModel) {
+func presentTagsRemover(_ tags: [Tag], alerter: AlertService, notifier: NotificationService, tagStore: TagStore, tagSelectionModel: TagSelectionModel) {
     withAnimation {
         alerter.show(
             "Delete \(tags.count) Tags?",
@@ -42,7 +42,7 @@ func presentTagsRemover(_ tags: [Tag], alerter: AlertService, notifier: Notifica
             onAction: {
                 withAnimation {
                     do {
-                        try tagActions.delete(tags.map(\.id))
+                        try tagStore.delete(tags.map(\.id))
                         tagSelectionModel.selection.removeAll()
                     }
                     catch {

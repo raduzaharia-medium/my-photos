@@ -9,10 +9,10 @@ struct LibraryCommands: Commands {
     @ObservedObject var notifier: NotificationService
     @ObservedObject var tagSelectionModel: TagSelectionModel
 
-    var tagActions: TagActions
+    var tagStore: TagStore
 
     init(
-        tagActions: TagActions,
+        tagStore: TagStore,
         modalPresenter: ModalService,
         alerter: AlertService,
         fileImporter: FileImportService,
@@ -27,7 +27,7 @@ struct LibraryCommands: Commands {
             wrappedValue: tagSelectionModel
         )
 
-        self.tagActions = tagActions
+        self.tagStore = tagStore
     }
 
     var body: some Commands {
@@ -47,7 +47,7 @@ struct LibraryCommands: Commands {
                     nil,
                     modalPresenter: modalPresenter,
                     notifier: notifier,
-                    tagActions: tagActions
+                    tagStore: tagStore
                 )
             }
             .keyboardShortcut("T", modifiers: [.command, .shift])
@@ -59,7 +59,7 @@ struct LibraryCommands: Commands {
                     tag,
                     modalPresenter: modalPresenter,
                     notifier: notifier,
-                    tagActions: tagActions
+                    tagStore: tagStore
                 )
             }
             .keyboardShortcut("E", modifiers: [.command, .shift])
@@ -72,7 +72,7 @@ struct LibraryCommands: Commands {
                     tag,
                     alerter: alerter,
                     notifier: notifier,
-                    tagActions: tagActions,
+                    tagStore: tagStore,
                     tagSelectionModel: tagSelectionModel
                 )
             }

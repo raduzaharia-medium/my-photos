@@ -3,11 +3,11 @@ import SwiftUI
 struct NewTagButton: View {
     @EnvironmentObject var modalPresenter: ModalService
     @EnvironmentObject var notifier: NotificationService
-    @EnvironmentObject var tagActions: TagActions
+    @EnvironmentObject var tagStore: TagStore
     
     var body: some View {
         Button {
-            presentTagEditor(nil, modalPresenter: modalPresenter, notifier: notifier, tagActions: tagActions)
+            presentTagEditor(nil, modalPresenter: modalPresenter, notifier: notifier, tagStore: tagStore)
         } label: {
             Label("New Tag", systemImage: "plus")
         }

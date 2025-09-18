@@ -4,7 +4,7 @@ struct TagContextMenu: View {
     @EnvironmentObject private var modalPresenter: ModalService
     @EnvironmentObject private var alerter: AlertService
     @EnvironmentObject private var notifier: NotificationService
-    @EnvironmentObject private var tagActions: TagActions
+    @EnvironmentObject private var tagStore: TagStore
     @EnvironmentObject private var tagSelectionModel: TagSelectionModel
 
     var selection: Set<SidebarItem>
@@ -20,7 +20,7 @@ struct TagContextMenu: View {
                     tag,
                     modalPresenter: modalPresenter,
                     notifier: notifier,
-                    tagActions: tagActions
+                    tagStore: tagStore
                 )
             } label: {
                 Label("Edit", systemImage: "pencil")
@@ -31,7 +31,7 @@ struct TagContextMenu: View {
                     tag,
                     alerter: alerter,
                     notifier: notifier,
-                    tagActions: tagActions,
+                    tagStore: tagStore,
                     tagSelectionModel: tagSelectionModel
                 )
             } label: {
@@ -43,7 +43,7 @@ struct TagContextMenu: View {
                     tags,
                     alerter: alerter,
                     notifier: notifier,
-                    tagActions: tagActions,
+                    tagStore: tagStore,
                     tagSelectionModel: tagSelectionModel
                 )
             } label: {
