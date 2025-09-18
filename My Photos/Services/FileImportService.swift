@@ -2,19 +2,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 @MainActor
-protocol FileImporter: AnyObject {
-    var isVisible: Bool { get set }
-    var allowedContentTypes: [UTType] { get set }
-    var multipleSelection: Bool { get set }
-    
-    func pickSingleFolder(_ actionHandler: ((Result<[URL], Error>) -> Void)?)
-    
-    func action(_ result: Result<[URL], Error>)
-    func dismiss()
-}
-
-@MainActor
-final class FileImportService: ObservableObject, FileImporter {
+final class FileImportService: ObservableObject {
     @Published var isVisible: Bool = false
     @Published var allowedContentTypes: [UTType] = []
     @Published var multipleSelection: Bool = false

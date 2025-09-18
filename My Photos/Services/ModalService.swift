@@ -6,20 +6,8 @@ struct Item: Identifiable {
     let onDismiss: (() -> Void)?
 }
 
-
 @MainActor
-protocol Modal: AnyObject {
-    var item: Item? { get set }
-    
-    func show<Content: View>(
-        onDismiss: (() -> Void)?,
-        @ViewBuilder _ content: @escaping () -> Content
-    )
-    func dismiss()
-}
-
-@MainActor
-final class ModalService: ObservableObject, Modal {
+final class ModalService: ObservableObject {
     @Published var item: Item?
 
     func show<Content: View>(

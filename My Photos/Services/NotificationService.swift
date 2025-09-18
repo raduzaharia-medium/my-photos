@@ -1,17 +1,7 @@
 import SwiftUI
 
 @MainActor
-protocol Notifier: AnyObject {
-    var isVisible: Bool { get set }
-    var message: String { get set }
-    var style: ToastStyle { get set }
-
-    func show(_ message: String, _ style: ToastStyle)
-    func dismiss()
-}
-
-@MainActor
-final class NotificationService: ObservableObject, Notifier {
+final class NotificationService: ObservableObject {
     @Published var isVisible: Bool = false
     @Published var message: String = ""
     @Published var style: ToastStyle = .success

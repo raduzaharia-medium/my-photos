@@ -1,42 +1,7 @@
 import SwiftUI
 
 @MainActor
-protocol Alerter: AnyObject {
-    var isVisible: Bool { get set }
-    var title: String { get set }
-    var message: String { get set }
-    var actionLabel: String { get set }
-    var cancelLabel: String { get set }
-    
-    func show(
-        _ title: String,
-        _ message: String,
-        actionLabel: String,
-        cancelLabel: String,
-        onAction: (() -> Void)?,
-        onCancel: (() -> Void)?
-    )
-    func show(
-        _ title: String,
-        _ message: String,
-        actionLabel: String,
-        cancelLabel: String,
-        onAction: (() -> Void)?,
-    )
-    func show(
-        _ title: String,
-        _ message: String,
-        actionLabel: String,
-        onAction: (() -> Void)?,
-    )
-
-    func action()
-    func cancel()
-    func dismiss()
-}
-
-@MainActor
-final class AlertService: ObservableObject, Alerter {
+final class AlertService: ObservableObject {
     @Published var isVisible: Bool = false
     @Published var title: String = ""
     @Published var message: String = ""
