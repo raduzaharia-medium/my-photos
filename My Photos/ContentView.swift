@@ -2,46 +2,30 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var modalPresenter: ModalPresenterService
     @EnvironmentObject private var alerter: AlertService
+    @EnvironmentObject private var fileImporter: FileImportService
+    @EnvironmentObject private var notifier: NotificationService
+    @EnvironmentObject private var tagSelectionModel: TagSelectionModel
+
+    @Environment(\.modelContext) private var modelContext
+
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
-
-    @ObservedObject private var tagViewModel: TagViewModel
-    @ObservedObject private var services: Services
-
-    @State private var selection: Set<SidebarItem> = []
-
-    init(
-        tagViewModel: TagViewModel,
-        services: Services
-    ) {
-        self.tagViewModel = tagViewModel
-        self.services = services
-    }
 
     var body: some View {
         NavigationSplitView {
             SidebarView(
                 Filter.allCases,
                 tags,
-                $selection,
-                tagViewModel: tagViewModel
+                $tagSelectionModel.selection
             )
         } detail: {
-            DetailView(tagViewModel.selectedItem)
-        }
-        .onAppear {
-            tagViewModel.setModelContext(modelContext)
-            tagViewModel.setServices(services)
-        }
-        .onChange(of: selection) {
-            withAnimation { tagViewModel.selectItem(selection) }
+            DetailView(tagSelectionModel.selection)
         }
         .toast(
-            isPresented: $services.notifier.isVisible,
-            message: services.notifier.message,
-            style: services.notifier.style
+            isPresented: $notifier.isVisible,
+            message: notifier.message,
+            style: notifier.style
         )
         .sheet(
             item: $modalPresenter.item,
@@ -65,10 +49,10 @@ struct ContentView: View {
             Text(alerter.message)
         }
         .fileImporter(
-            isPresented: $services.fileImporter.isVisible,
-            allowedContentTypes: services.fileImporter.allowedContentTypes,
-            allowsMultipleSelection: services.fileImporter.multipleSelection,
-            onCompletion: services.fileImporter.action
+            isPresented: $fileImporter.isVisible,
+            allowedContentTypes: fileImporter.allowedContentTypes,
+            allowsMultipleSelection: fileImporter.multipleSelection,
+            onCompletion: fileImporter.action
         )
     }
 }

@@ -1,12 +1,29 @@
 import SwiftData
 import SwiftUI
 
+final class TagSelectionModel: ObservableObject {
+    @Published var selection: Set<SidebarItem> = []
+    
+    var singleTag: Tag? {
+        guard selection.count == 1, case let .tag(t) = selection.first else { return nil }
+        return t
+    }
+    
+    var allTags: [Tag] {
+        selection.compactMap {
+            if case let .tag(t) = $0 { return t }
+            return nil
+        }
+    }
+}
+
 @main
 struct My_PhotosApp: App {
-    @StateObject private var tagViewModel = TagViewModel()
     @StateObject private var modalPresenter = ModalPresenterService()
     @StateObject private var alerter = AlertService()
-    @StateObject private var services = Services()
+    @StateObject private var fileImporter = FileImportService()
+    @StateObject private var notifier = NotificationService()
+    @StateObject private var tagSelectionModel = TagSelectionModel()
     
     private var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -16,7 +33,7 @@ struct My_PhotosApp: App {
             schema: schema,
             isStoredInMemoryOnly: true
         )
-
+        
         let container: ModelContainer
         do {
             container = try ModelContainer(
@@ -26,22 +43,22 @@ struct My_PhotosApp: App {
         } catch {
             fatalError("Failed to initialize ModelContainer: \(error)")
         }
-
+        
         let context = ModelContext(container)
-
+        
         let tag1 = Tag(name: "Alice", kind: .person)
         let tag2 = Tag(name: "Beach", kind: .place)
         let tag3 = Tag(name: "Birthday", kind: .event)
-
+        
         context.insert(tag1)
         context.insert(tag2)
         context.insert(tag3)
-
+        
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
-
+        
         context.insert(
             Photo(
                 title: "On the beach",
@@ -79,24 +96,24 @@ struct My_PhotosApp: App {
                 location: GeoCoordinate(45.657974, 25.601198),
             )
         )
-
+        
         return container
     }()
     private var tagActions: TagActions { TagActions(context: ModelContext(sharedModelContainer)) }
-
+    
     var body: some Scene {
         WindowGroup {
-            ContentView(
-                tagViewModel: tagViewModel,
-                services: services,
-            )
+            ContentView()
         }
         .environmentObject(modalPresenter)
         .environmentObject(alerter)
         .environmentObject(tagActions)
+        .environmentObject(fileImporter)
+        .environmentObject(notifier)
+        .environmentObject(tagSelectionModel)
         .modelContainer(sharedModelContainer)
         .commands {
-            LibraryCommands(tagViewModel, tagActions: tagActions, modalPresenter: modalPresenter, alerter: alerter)
+            LibraryCommands(tagActions: tagActions, modalPresenter: modalPresenter, alerter: alerter, fileImporter: fileImporter, notifier: notifier, tagSelectionModel: tagSelectionModel)
         }
     }
 }

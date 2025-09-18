@@ -1,77 +1,83 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 // TODO: Split in TagCommands and LibraryCommands
 struct LibraryCommands: Commands {
-    @ObservedObject var tagActions: TagActions
     @ObservedObject var modalPresenter: ModalPresenterService
     @ObservedObject var alerter: AlertService
-    @ObservedObject var tagViewModel: TagViewModel
+    @ObservedObject var fileImporter: FileImportService
+    @ObservedObject var notifier: NotificationService
+    @ObservedObject var tagSelectionModel: TagSelectionModel
 
-    init(_ tagViewModel: TagViewModel, tagActions: TagActions, modalPresenter: ModalPresenterService, alerter: AlertService) {
-        self._tagViewModel = ObservedObject(wrappedValue: tagViewModel)
-        
-        self._tagActions = ObservedObject(wrappedValue: tagActions)
+    var tagActions: TagActions
+
+    init(
+        tagActions: TagActions,
+        modalPresenter: ModalPresenterService,
+        alerter: AlertService,
+        fileImporter: FileImportService,
+        notifier: NotificationService,
+        tagSelectionModel: TagSelectionModel
+    ) {
         self._modalPresenter = ObservedObject(wrappedValue: modalPresenter)
         self._alerter = ObservedObject(wrappedValue: alerter)
+        self._fileImporter = ObservedObject(wrappedValue: fileImporter)
+        self._notifier = ObservedObject(wrappedValue: notifier)
+        self._tagSelectionModel = ObservedObject(
+            wrappedValue: tagSelectionModel
+        )
+
+        self.tagActions = tagActions
     }
 
     var body: some Commands {
         CommandMenu("Library") {
-            Button("Import Folder…") { tagViewModel.importFolder() }
-                .keyboardShortcut("I", modifiers: [.command, .shift])
+            Button("Import Folder…") {
+                presentImportPhotos(
+                    fileImporter: fileImporter,
+                    notifier: notifier
+                )
+            }
+            .keyboardShortcut("I", modifiers: [.command, .shift])
 
             Divider()
 
             Button("Create Tag…") {
-                modalPresenter.show(onDismiss: {}) {
-                    TagEditorSheet(
-                        nil,
-                        onSave: { original, name, kind in
-                            withAnimation {
-                                tagActions.upsert(original?.id, name: name, kind: kind)
-                                modalPresenter.dismiss()
-                            }
-                        },
-                        onCancel: { modalPresenter.dismiss() }
-                    )
-                }
+                presentTagEditor(
+                    nil,
+                    modalPresenter: modalPresenter,
+                    notifier: notifier,
+                    tagActions: tagActions
+                )
             }
-                .keyboardShortcut("T", modifiers: [.command, .shift])
+            .keyboardShortcut("T", modifiers: [.command, .shift])
 
             Button("Edit Tag…") {
-                modalPresenter.show(onDismiss: {}) {
-                    TagEditorSheet(
-                        nil,
-                        onSave: { original, name, kind in
-                            withAnimation {
-                                tagActions.upsert(original?.id, name: name, kind: kind)
-                                modalPresenter.dismiss()
-                            }
-                        },
-                        onCancel: { modalPresenter.dismiss() }
-                    )
-                }
+                guard let tag = tagSelectionModel.singleTag else { return }
 
+                presentTagEditor(
+                    tag,
+                    modalPresenter: modalPresenter,
+                    notifier: notifier,
+                    tagActions: tagActions
+                )
             }
-                .keyboardShortcut("E", modifiers: [.command, .shift])
-                .disabled(tagViewModel.selectedTag == nil)
+            .keyboardShortcut("E", modifiers: [.command, .shift])
+            .disabled(tagSelectionModel.singleTag == nil)
 
             Button("Delete Tag", role: .destructive) {
-                let tag = Tag(name: "Aaa", kind: .album )
-                
-                alerter.show(
-                    "Delete \(tag.name)?",
-                    "Are you sure you want to delete this tag?",
-                    actionLabel: "Delete",
-                    onAction: {
-                        tagActions.delete(tag.id)
-                    }
-                )
+                guard let tag = tagSelectionModel.singleTag else { return }
 
+                presentTagRemover(
+                    tag,
+                    alerter: alerter,
+                    notifier: notifier,
+                    tagActions: tagActions,
+                    tagSelectionModel: tagSelectionModel
+                )
             }
             .keyboardShortcut("D", modifiers: [.command, .shift])
-            .disabled(tagViewModel.selectedTag == nil)
+            .disabled(tagSelectionModel.singleTag == nil)
         }
     }
 }

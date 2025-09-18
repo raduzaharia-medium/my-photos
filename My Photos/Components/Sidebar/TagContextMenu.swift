@@ -1,10 +1,12 @@
 import SwiftUI
 
 struct TagContextMenu: View {
-    @EnvironmentObject var modalPresenter: ModalPresenterService
-    @EnvironmentObject var alerter: AlertService
-    @EnvironmentObject var tagActions: TagActions
-    
+    @EnvironmentObject private var modalPresenter: ModalPresenterService
+    @EnvironmentObject private var alerter: AlertService
+    @EnvironmentObject private var notifier: NotificationService
+    @EnvironmentObject private var tagActions: TagActions
+    @EnvironmentObject private var tagSelectionModel: TagSelectionModel
+
     var selection: Set<SidebarItem>
 
     init(_ selection: Set<SidebarItem>) {
@@ -14,48 +16,35 @@ struct TagContextMenu: View {
     var body: some View {
         if let tag = singleTag(from: selection) {
             Button {
-                modalPresenter.show(onDismiss: {}) {
-                    TagEditorSheet(
-                        tag,
-                        onSave: { original, name, kind in
-                            withAnimation {
-                                tagActions.upsert(original?.id, name: name, kind: kind)
-                                modalPresenter.dismiss()
-                            }
-                        },
-                        onCancel: { modalPresenter.dismiss() }
-                    )
-                }
+                presentTagEditor(
+                    tag,
+                    modalPresenter: modalPresenter,
+                    notifier: notifier,
+                    tagActions: tagActions
+                )
             } label: {
                 Label("Edit", systemImage: "pencil")
             }
 
             Button(role: .destructive) {
-                alerter.show(
-                    "Delete \(tag.name)?",
-                    "Are you sure you want to delete this tag?",
-                    actionLabel: "Delete",
-                    onAction: {
-                        withAnimation {
-                            tagActions.delete(tag.id)
-                        }
-                    }
+                presentTagRemover(
+                    tag,
+                    alerter: alerter,
+                    notifier: notifier,
+                    tagActions: tagActions,
+                    tagSelectionModel: tagSelectionModel
                 )
-
             } label: {
                 Label("Delete", systemImage: "trash")
             }
         } else if let tags = allTags(from: selection), !tags.isEmpty {
             Button(role: .destructive) {
-                alerter.show(
-                    "Delete \(tags.count) Tags?",
-                    "Are you sure you want to delete these tags?",
-                    actionLabel: "Delete",
-                    onAction: {
-                        withAnimation {
-                            tagActions.delete(tags.map(\.id))
-                        }
-                    }
+                presentTagsRemover(
+                    tags,
+                    alerter: alerter,
+                    notifier: notifier,
+                    tagActions: tagActions,
+                    tagSelectionModel: tagSelectionModel
                 )
             } label: {
                 Label("Delete \(tags.count) Tags", systemImage: "trash")
@@ -64,7 +53,7 @@ struct TagContextMenu: View {
     }
 
     private func singleTag(from items: Set<SidebarItem>) -> Tag? {
-        guard items.count == 1, case let .tag(t) = items.first else {
+        guard items.count == 1, case .tag(let t) = items.first else {
             return nil
         }
 
@@ -73,10 +62,9 @@ struct TagContextMenu: View {
 
     private func allTags(from items: Set<SidebarItem>) -> [Tag]? {
         let tags: [Tag] = items.compactMap { item in
-            if case let .tag(t) = item { return t }
+            if case .tag(let t) = item { return t }
             return nil
         }
         return tags
     }
 }
-

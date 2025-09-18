@@ -2,22 +2,12 @@ import SwiftUI
 
 struct NewTagButton: View {
     @EnvironmentObject var modalPresenter: ModalPresenterService
+    @EnvironmentObject var notifier: NotificationService
     @EnvironmentObject var tagActions: TagActions
- 
+    
     var body: some View {
         Button {
-            modalPresenter.show(onDismiss: {}) {
-                TagEditorSheet(
-                    nil,
-                    onSave: { original, name, kind in
-                        withAnimation {
-                            tagActions.upsert(original?.id, name: name, kind: kind)
-                            modalPresenter.dismiss()
-                        }
-                    },
-                    onCancel: { modalPresenter.dismiss() }
-                )
-            }
+            presentTagEditor(nil, modalPresenter: modalPresenter, notifier: notifier, tagActions: tagActions)
         } label: {
             Label("New Tag", systemImage: "plus")
         }
