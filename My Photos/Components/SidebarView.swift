@@ -22,9 +22,10 @@ enum SidebarItem: Hashable {
 }
 
 struct SidebarView: View {
+    @EnvironmentObject private var tagSelectionModel: TagSelectionModel
+    
     let filters: [Filter]
     let tags: [Tag]
-    let selection: Binding<Set<SidebarItem>>
 
     private var groups: [TagKind: [Tag]] {
         Dictionary(grouping: tags, by: { $0.kind })
@@ -33,15 +34,13 @@ struct SidebarView: View {
     init(
         _ filters: [Filter],
         _ tags: [Tag],
-        _ selection: Binding<Set<SidebarItem>>,
     ) {
         self.filters = filters
         self.tags = tags
-        self.selection = selection
     }
 
     var body: some View {
-        List(selection: selection) {
+        List(selection: $tagSelectionModel.selection) {
             Section("Filters") {
                 ForEach(filters, id: \.self) { filter in
                     SidebarRow(.filter(filter))

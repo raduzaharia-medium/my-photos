@@ -9,18 +9,14 @@ enum DetailTab: String, CaseIterable, Identifiable {
 }
 
 struct DetailView: View {
+    @EnvironmentObject private var tagSelectionModel: TagSelectionModel
     @State private var tab: DetailTab = .photos
-    let sidebarSelection: Set<SidebarItem>
 
-    init(_ sidebarSelection: Set<SidebarItem>) {
-        self.sidebarSelection = sidebarSelection
-    }
-    
     var body: some View {
         Group {
             switch tab {
-            case .photos: PhotosGrid(sidebarSelection)
-            case .map: PhotosMap(sidebarSelection)
+            case .photos: PhotosGrid(tagSelectionModel.selection)
+            case .map: PhotosMap(tagSelectionModel.selection)
             }
         }
         .toolbar {
@@ -39,9 +35,9 @@ struct DetailView: View {
             }
         }
         .navigationTitle(
-            sidebarSelection.count > 1
+            tagSelectionModel.selection.count > 1
                 ? "Multiple Collections"
-                : (sidebarSelection.first?.name ?? "All Photos")
+                : (tagSelectionModel.singleTag?.name ?? "All Photos")
         )
     }
 }

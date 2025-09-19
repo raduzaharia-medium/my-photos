@@ -40,13 +40,9 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView {
-            SidebarView(
-                Filter.allCases,
-                tags,
-                $tagSelectionModel.selection
-            )
+            SidebarView(Filter.allCases, tags)
         } detail: {
-            DetailView(tagSelectionModel.selection)
+            DetailView()
         }
         .notification(
             isPresented: $notifier.isVisible,
