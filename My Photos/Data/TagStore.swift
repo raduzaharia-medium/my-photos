@@ -6,7 +6,7 @@ enum TagStoreError: Error {
     case saveFailed(underlying: Error)
 }
 
-final class TagStore: ObservableObject {
+final class TagStore {
     private let context: ModelContext
 
     init(context: ModelContext) {
