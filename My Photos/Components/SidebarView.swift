@@ -32,9 +32,20 @@ extension FocusedValues {
     }
 }
 
+extension Sequence where Element == SidebarItem {
+    var allTags: [Tag] {
+        compactMap {
+            if case .tag(let t) = $0 { t } else { nil }
+        }
+    }
+
+    var singleTag: Tag? {
+        let tags = allTags
+        return tags.count == 1 ? tags.first : nil
+    }
+}
 
 struct SidebarView: View {
-    @EnvironmentObject private var tagSelectionModel: TagSelectionModel
     @State private var selection: Set<SidebarItem> = []
 
     let filters: [Filter]
@@ -73,16 +84,10 @@ struct SidebarView: View {
             }
         }
         .focusedValue(\.sidebarSelection, $selection)
-        .onReceive(NotificationCenter.default.publisher(for: .resetTagSelection)) { _ in
+        .onReceive(
+            NotificationCenter.default.publisher(for: .resetTagSelection)
+        ) { _ in
             selection.removeAll()
-        }
-        .onAppear {
-            DispatchQueue.main.async {
-                self.selection = tagSelectionModel.selection
-            }
-        }
-        .onChange(of: selection) { oldValue, newValue in
-            DispatchQueue.main.async { tagSelectionModel.selection = newValue }
         }
         #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
@@ -95,4 +100,3 @@ struct SidebarView: View {
         }
     }
 }
-

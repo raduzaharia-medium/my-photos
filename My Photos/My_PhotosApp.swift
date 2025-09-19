@@ -1,28 +1,8 @@
 import SwiftData
 import SwiftUI
 
-final class TagSelectionModel: ObservableObject {
-    @Published var selection: Set<SidebarItem> = []
-
-    var singleTag: Tag? {
-        guard selection.count == 1, case .tag(let t) = selection.first else {
-            return nil
-        }
-        return t
-    }
-
-    var allTags: [Tag] {
-        selection.compactMap {
-            if case .tag(let t) = $0 { return t }
-            return nil
-        }
-    }
-}
-
 @main
 struct My_PhotosApp: App {
-    @StateObject private var tagSelectionModel = TagSelectionModel()
-
     private var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Photo.self, Tag.self,
@@ -103,7 +83,6 @@ struct My_PhotosApp: App {
             ContentView()
         }
         .modelContainer(sharedModelContainer)
-        .environmentObject(tagSelectionModel)
         .commands {
             LibraryCommands()
         }

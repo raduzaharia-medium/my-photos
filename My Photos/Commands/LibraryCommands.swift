@@ -5,12 +5,6 @@ struct LibraryCommands: Commands {
     @FocusedBinding(\.sidebarSelection) var selection
 
     var body: some Commands {
-        let currentSelection = selection ?? []
-        let selectedTags: [Tag] = currentSelection.compactMap {
-            if case .tag(let t) = $0 { t } else { nil }
-        }
-        let singleTag = selectedTags.count == 1 ? selectedTags.first : nil
-
         CommandMenu("Library") {
             Button("Import Folder…") { AppIntents.requestImportPhotos() }
                 .keyboardShortcut("I", modifiers: [.command, .shift])
@@ -30,18 +24,17 @@ struct LibraryCommands: Commands {
                 AppIntents.requestEditTag(tag)
             }
             .keyboardShortcut("E", modifiers: [.command, .shift])
-            .disabled(selectedTags.isEmpty)
+            .disabled(selection?.allTags.isEmpty ?? true)
 
-            if let tag = singleTag {
+            if let tag = selection?.singleTag {
                 Button("Delete Tag", role: .destructive) {
                     AppIntents.requestDeleteTag(tag)
                 }
                 .keyboardShortcut("D", modifiers: [.command, .shift])
             }
 
-            if selectedTags.count > 1 {
-                Button("Delete \(selectedTags.count) Tags", role: .destructive)
-                {
+            if let selectedTags = selection?.allTags, selectedTags.count > 1 {
+                Button("Delete \(selectedTags.count) Tags", role: .destructive) {
                     AppIntents.requestDeleteTags(selectedTags)
                 }
                 .keyboardShortcut("D", modifiers: [.command, .shift])

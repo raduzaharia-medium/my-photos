@@ -9,14 +9,14 @@ enum DetailTab: String, CaseIterable, Identifiable {
 }
 
 struct DetailView: View {
-    @EnvironmentObject private var tagSelectionModel: TagSelectionModel
+    @FocusedBinding(\.sidebarSelection) private var selection
     @State private var tab: DetailTab = .photos
 
     var body: some View {
         Group {
             switch tab {
-            case .photos: PhotosGrid(tagSelectionModel.selection)
-            case .map: PhotosMap(tagSelectionModel.selection)
+            case .photos: PhotosGrid(selection ?? [])
+            case .map: PhotosMap(selection ?? [])
             }
         }
         .toolbar {
@@ -35,9 +35,9 @@ struct DetailView: View {
             }
         }
         .navigationTitle(
-            tagSelectionModel.selection.count > 1
+            ((selection?.allTags.count ?? 0) > 1)
                 ? "Multiple Collections"
-                : (tagSelectionModel.singleTag?.name ?? "All Photos")
+                : (selection?.singleTag?.name ?? "All Photos")
         )
     }
 }

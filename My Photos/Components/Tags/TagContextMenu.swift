@@ -8,7 +8,7 @@ struct TagContextMenu: View {
     }
 
     var body: some View {
-        if let tag = singleTag(from: selection) {
+        if let tag = selection.singleTag {
             Button {
                 AppIntents.requestEditTag(tag)
             } label: {
@@ -20,28 +20,12 @@ struct TagContextMenu: View {
             } label: {
                 Label("Delete", systemImage: "trash")
             }
-        } else if let tags = allTags(from: selection), !tags.isEmpty {
+        } else if !selection.allTags.isEmpty {
             Button(role: .destructive) {
-                AppIntents.requestDeleteTags(tags)
+                AppIntents.requestDeleteTags(selection.allTags)
             } label: {
-                Label("Delete \(tags.count) Tags", systemImage: "trash")
+                Label("Delete \(selection.allTags.count) Tags", systemImage: "trash")
             }
         }
-    }
-
-    private func singleTag(from items: Set<SidebarItem>) -> Tag? {
-        guard items.count == 1, case .tag(let t) = items.first else {
-            return nil
-        }
-
-        return t
-    }
-
-    private func allTags(from items: Set<SidebarItem>) -> [Tag]? {
-        let tags: [Tag] = items.compactMap { item in
-            if case .tag(let t) = item { return t }
-            return nil
-        }
-        return tags
     }
 }
