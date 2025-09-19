@@ -23,7 +23,8 @@ enum SidebarItem: Hashable {
 
 struct SidebarView: View {
     @EnvironmentObject private var tagSelectionModel: TagSelectionModel
-    
+    @State private var selection: Set<SidebarItem> = []
+
     let filters: [Filter]
     let tags: [Tag]
 
@@ -40,7 +41,7 @@ struct SidebarView: View {
     }
 
     var body: some View {
-        List(selection: $tagSelectionModel.selection) {
+        List(selection: $selection) {
             Section("Filters") {
                 ForEach(filters, id: \.self) { filter in
                     SidebarRow(.filter(filter))
@@ -58,6 +59,14 @@ struct SidebarView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            DispatchQueue.main.async {
+                self.selection = tagSelectionModel.selection
+            }
+        }
+        .onChange(of: selection) { oldValue, newValue in
+            DispatchQueue.main.async { tagSelectionModel.selection = newValue }
         }
         #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
