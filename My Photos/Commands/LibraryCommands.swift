@@ -1,7 +1,6 @@
 import SwiftData
 import SwiftUI
 
-// TODO: Split in TagCommands and LibraryCommands
 struct LibraryCommands: Commands {
     @ObservedObject var modalPresenter: ModalService
     @ObservedObject var alerter: AlertService
