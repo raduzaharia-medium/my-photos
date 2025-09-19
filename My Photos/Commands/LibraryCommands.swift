@@ -24,17 +24,23 @@ struct LibraryCommands: Commands {
                 AppIntents.requestEditTag(tag)
             }
             .keyboardShortcut("E", modifiers: [.command, .shift])
-            .disabled(selection?.allTags.isEmpty ?? true)
+            .disabled(
+                (selection?.allTags.isEmpty ?? true)
+                    || (selection?.hasFilter ?? false)
+            )
 
-            if let tag = selection?.singleTag {
+            if let tag = selection?.singleTag, !(selection?.hasFilter ?? false) {
                 Button("Delete Tag", role: .destructive) {
                     AppIntents.requestDeleteTag(tag)
                 }
                 .keyboardShortcut("D", modifiers: [.command, .shift])
             }
 
-            if let selectedTags = selection?.allTags, selectedTags.count > 1 {
-                Button("Delete \(selectedTags.count) Tags", role: .destructive) {
+            if let selectedTags = selection?.allTags, selectedTags.count > 1,
+               !(selection?.hasFilter ?? false)
+            {
+                Button("Delete \(selectedTags.count) Tags", role: .destructive)
+                {
                     AppIntents.requestDeleteTags(selectedTags)
                 }
                 .keyboardShortcut("D", modifiers: [.command, .shift])

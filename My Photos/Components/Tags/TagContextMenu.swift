@@ -8,7 +8,9 @@ struct TagContextMenu: View {
     }
 
     var body: some View {
-        if let tag = selection.singleTag {
+        if selection.hasFilter {
+            EmptyView()
+        } else if let tag = selection.singleTag {
             Button {
                 AppIntents.requestEditTag(tag)
             } label: {
@@ -24,7 +26,10 @@ struct TagContextMenu: View {
             Button(role: .destructive) {
                 AppIntents.requestDeleteTags(selection.allTags)
             } label: {
-                Label("Delete \(selection.allTags.count) Tags", systemImage: "trash")
+                Label(
+                    "Delete \(selection.allTags.count) Tags",
+                    systemImage: "trash"
+                )
             }
         }
     }

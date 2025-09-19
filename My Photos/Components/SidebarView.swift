@@ -43,6 +43,13 @@ extension Sequence where Element == SidebarItem {
         let tags = allTags
         return tags.count == 1 ? tags.first : nil
     }
+    
+    var hasFilter: Bool {
+        contains { item in
+            if case .filter = item { return true }
+            return false
+        }
+    }
 }
 
 struct SidebarView: View {
