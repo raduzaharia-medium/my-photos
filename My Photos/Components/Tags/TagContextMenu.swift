@@ -1,12 +1,6 @@
 import SwiftUI
 
 struct TagContextMenu: View {
-    @EnvironmentObject private var modalPresenter: ModalService
-    @EnvironmentObject private var alerter: AlertService
-    @EnvironmentObject private var notifier: NotificationService
-    @EnvironmentObject private var tagStore: TagStore
-    @EnvironmentObject private var tagSelectionModel: TagSelectionModel
-
     var selection: Set<SidebarItem>
 
     init(_ selection: Set<SidebarItem>) {
@@ -16,36 +10,19 @@ struct TagContextMenu: View {
     var body: some View {
         if let tag = singleTag(from: selection) {
             Button {
-                presentTagEditor(
-                    tag,
-                    modalPresenter: modalPresenter,
-                    notifier: notifier,
-                    tagStore: tagStore
-                )
+                AppIntents.requestEditTag(tag)
             } label: {
                 Label("Edit", systemImage: "pencil")
             }
 
             Button(role: .destructive) {
-                presentTagRemover(
-                    tag,
-                    alerter: alerter,
-                    notifier: notifier,
-                    tagStore: tagStore,
-                    tagSelectionModel: tagSelectionModel
-                )
+                AppIntents.requestDeleteTag(tag)
             } label: {
                 Label("Delete", systemImage: "trash")
             }
         } else if let tags = allTags(from: selection), !tags.isEmpty {
             Button(role: .destructive) {
-                presentTagsRemover(
-                    tags,
-                    alerter: alerter,
-                    notifier: notifier,
-                    tagStore: tagStore,
-                    tagSelectionModel: tagSelectionModel
-                )
+                AppIntents.requestDeleteTags(tags)
             } label: {
                 Label("Delete \(tags.count) Tags", systemImage: "trash")
             }

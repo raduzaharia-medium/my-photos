@@ -115,16 +115,30 @@ struct My_PhotosApp: App {
         .environmentObject(fileImporter)
         .environmentObject(notifier)
         .environmentObject(tagSelectionModel)
-        .modelContainer(sharedModelContainer)
-        .commands {
-            LibraryCommands(
-                tagStore: tagStore,
+        .environmentObject(
+            EditTagPresenter(
                 modalPresenter: modalPresenter,
-                alerter: alerter,
-                fileImporter: fileImporter,
                 notifier: notifier,
+                tagStore: tagStore
+            )
+        )
+        .environmentObject(
+            ImportPhotosPresenter(
+                fileImporter: fileImporter,
+                notifier: notifier
+            )
+        )
+        .environmentObject(
+            DeleteTagPresenter(
+                alerter: alerter,
+                notifier: notifier,
+                tagStore: tagStore,
                 tagSelectionModel: tagSelectionModel
             )
+        )
+        .modelContainer(sharedModelContainer)
+        .commands {
+            LibraryCommands(tagSelectionModel)
         }
     }
 }

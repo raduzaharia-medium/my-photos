@@ -1,10 +1,16 @@
 import SwiftUI
 
-struct EditTagPresenter {
+class EditTagPresenter: ObservableObject {
     let modalPresenter: ModalService
     let notifier: NotificationService
     let tagStore: TagStore
 
+    init(modalPresenter: ModalService, notifier: NotificationService, tagStore: TagStore) {
+        self.modalPresenter = modalPresenter
+        self.notifier = notifier
+        self.tagStore = tagStore
+    }
+    
     @MainActor
     func show(_ tag: Tag?) {
         withAnimation {
@@ -14,47 +20,18 @@ struct EditTagPresenter {
                     onSave: { original, name, kind in
                         withAnimation {
                             do {
-                                try tagStore.upsert(original?.id, name: name, kind: kind)
-                                notifier.show("Tag saved", .success)
+                                try self.tagStore.upsert(original?.id, name: name, kind: kind)
+                                self.notifier.show("Tag saved", .success)
                             } catch {
-                                notifier.show("Could not save tag", .error)
+                                self.notifier.show("Could not save tag", .error)
                             }
-                            modalPresenter.dismiss()
+                            self.modalPresenter.dismiss()
                         }
                     },
-                    onCancel: { modalPresenter.dismiss() }
+                    onCancel: { self.modalPresenter.dismiss() }
                 )
             }
         }
     }
 }
 
-extension View {
-    func presentTagEditor(_ tag: Tag?, modalPresenter: ModalService, notifier: NotificationService, tagStore: TagStore) {
-        My_Photos.presentTagEditor(tag, modalPresenter: modalPresenter, notifier: notifier, tagStore: tagStore)
-    }
-}
-
-@MainActor
-func presentTagEditor(_ tag: Tag?, modalPresenter: ModalService, notifier: NotificationService, tagStore: TagStore) {
-    withAnimation {
-        modalPresenter.show(onDismiss: {}) {
-            TagEditorSheet(
-                tag,
-                onSave: { original, name, kind in
-                    withAnimation {
-                        do {
-                            try tagStore.upsert(original?.id, name: name, kind: kind)
-                            notifier.show("Tag saved", .success)
-                        } catch {
-                            notifier.show("Could not save tag", .error)
-                        }
-                        
-                        modalPresenter.dismiss()
-                    }
-                },
-                onCancel: { modalPresenter.dismiss() }
-            )
-        }
-    }
-}
