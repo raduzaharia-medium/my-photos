@@ -2,15 +2,15 @@ import SwiftData
 import SwiftUI
 
 struct LibraryCommands: Commands {
-    @ObservedObject var tagSelectionModel: TagSelectionModel
-
-    init(_ tagSelectionModel: TagSelectionModel) {
-        self._tagSelectionModel = ObservedObject(
-            wrappedValue: tagSelectionModel
-        )
-    }
+    @FocusedBinding(\.sidebarSelection) var selection
 
     var body: some Commands {
+        let currentSelection = selection ?? []
+        let selectedTags: [Tag] = currentSelection.compactMap {
+            if case .tag(let t) = $0 { t } else { nil }
+        }
+        let singleTag = selectedTags.count == 1 ? selectedTags.first : nil
+
         CommandMenu("Library") {
             Button("Import Folder…") { AppIntents.requestImportPhotos() }
                 .keyboardShortcut("I", modifiers: [.command, .shift])
@@ -21,23 +21,28 @@ struct LibraryCommands: Commands {
                 .keyboardShortcut("T", modifiers: [.command, .shift])
 
             Button("Edit Tag…") {
-                guard let tag = tagSelectionModel.singleTag else { return }
+                guard selection?.count == 1,
+                    case .tag(let tag) = selection?.first
+                else {
+                    return
+                }
+
                 AppIntents.requestEditTag(tag)
             }
             .keyboardShortcut("E", modifiers: [.command, .shift])
-            .disabled(tagSelectionModel.singleTag == nil)
+            .disabled(selectedTags.isEmpty)
 
-            if let single = tagSelectionModel.singleTag {
+            if let tag = singleTag {
                 Button("Delete Tag", role: .destructive) {
-                    AppIntents.requestDeleteTag(single)
+                    AppIntents.requestDeleteTag(tag)
                 }
                 .keyboardShortcut("D", modifiers: [.command, .shift])
             }
 
-            if tagSelectionModel.allTags.count > 1 {
-                let count = tagSelectionModel.allTags.count
-                Button("Delete \(count) Tags", role: .destructive) {
-                    AppIntents.requestDeleteTags(tagSelectionModel.allTags)
+            if selectedTags.count > 1 {
+                Button("Delete \(selectedTags.count) Tags", role: .destructive)
+                {
+                    AppIntents.requestDeleteTags(selectedTags)
                 }
                 .keyboardShortcut("D", modifiers: [.command, .shift])
             }

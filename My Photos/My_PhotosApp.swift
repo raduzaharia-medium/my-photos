@@ -105,7 +105,7 @@ struct My_PhotosApp: App {
         .modelContainer(sharedModelContainer)
         .environmentObject(tagSelectionModel)
         .commands {
-            LibraryCommands(tagSelectionModel)
+            LibraryCommands()
         }
     }
 }

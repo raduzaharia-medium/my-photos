@@ -21,6 +21,18 @@ enum SidebarItem: Hashable {
     }
 }
 
+struct SidebarSelectionFocusedKey: FocusedValueKey {
+    typealias Value = Binding<Set<SidebarItem>>
+}
+
+extension FocusedValues {
+    var sidebarSelection: Binding<Set<SidebarItem>>? {
+        get { self[SidebarSelectionFocusedKey.self] }
+        set { self[SidebarSelectionFocusedKey.self] = newValue }
+    }
+}
+
+
 struct SidebarView: View {
     @EnvironmentObject private var tagSelectionModel: TagSelectionModel
     @State private var selection: Set<SidebarItem> = []
@@ -60,6 +72,7 @@ struct SidebarView: View {
                 }
             }
         }
+        .focusedValue(\.sidebarSelection, $selection)
         .onAppear {
             DispatchQueue.main.async {
                 self.selection = tagSelectionModel.selection
