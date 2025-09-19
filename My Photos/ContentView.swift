@@ -3,7 +3,6 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.modelContext) private var context
-    @EnvironmentObject private var tagSelectionModel: TagSelectionModel
 
     @StateObject private var modalPresenter = ModalService()
     @StateObject private var alerter = AlertService()
@@ -32,7 +31,6 @@ struct ContentView: View {
             alerter: alerter,
             notifier: notifier,
             tagStore: tagStore,
-            tagSelectionModel: tagSelectionModel
         )
     }
 

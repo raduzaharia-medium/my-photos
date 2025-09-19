@@ -73,6 +73,9 @@ struct SidebarView: View {
             }
         }
         .focusedValue(\.sidebarSelection, $selection)
+        .onReceive(NotificationCenter.default.publisher(for: .resetTagSelection)) { _ in
+            selection.removeAll()
+        }
         .onAppear {
             DispatchQueue.main.async {
                 self.selection = tagSelectionModel.selection
@@ -92,3 +95,4 @@ struct SidebarView: View {
         }
     }
 }
+

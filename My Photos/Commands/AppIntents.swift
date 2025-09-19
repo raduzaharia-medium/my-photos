@@ -6,6 +6,8 @@ extension Notification.Name {
     static let requestDeleteTag = Notification.Name("requestDeleteTag")
     static let requestDeleteTags = Notification.Name("requestDeleteTags")
     static let requestImportPhotos = Notification.Name("requestImportPhotos")
+    
+    static let resetTagSelection = Notification.Name("resetTagSelection")
 }
 
 enum AppIntents {
@@ -23,5 +25,9 @@ enum AppIntents {
     }
     static func requestImportPhotos() {
         NotificationCenter.default.post(name: .requestImportPhotos, object: nil)
+    }
+    
+    static func resetTagSelection() {
+        NotificationCenter.default.post(name: .resetTagSelection, object: nil)
     }
 }

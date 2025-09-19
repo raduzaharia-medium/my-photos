@@ -4,18 +4,15 @@ class DeleteTagPresenter: ObservableObject {
     let alerter: AlertService
     let notifier: NotificationService
     let tagStore: TagStore
-    let tagSelectionModel: TagSelectionModel
 
     init(
         alerter: AlertService,
         notifier: NotificationService,
         tagStore: TagStore,
-        tagSelectionModel: TagSelectionModel
     ) {
         self.alerter = alerter
         self.notifier = notifier
         self.tagStore = tagStore
-        self.tagSelectionModel = tagSelectionModel
     }
 
     @MainActor
@@ -30,7 +27,7 @@ class DeleteTagPresenter: ObservableObject {
                         do {
                             try self.tagStore.delete(tag.id)
 
-                            self.tagSelectionModel.selection.removeAll()
+                            AppIntents.resetTagSelection()
                             self.notifier.show("Tag deleted", .success)
                         } catch {
                             self.notifier.show("Could not delete tag", .error)
@@ -54,7 +51,7 @@ class DeleteTagPresenter: ObservableObject {
                         do {
                             try self.tagStore.delete(tags.map(\.id))
 
-                            self.tagSelectionModel.selection.removeAll()
+                            NotificationCenter.default.post(name: .resetTagSelection, object: nil)
                             self.notifier.show("Tags deleted", .success)
                         } catch {
                             self.notifier.show("Could not delete tags", .error)
