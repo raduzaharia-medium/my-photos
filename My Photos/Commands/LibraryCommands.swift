@@ -27,12 +27,20 @@ struct LibraryCommands: Commands {
             .keyboardShortcut("E", modifiers: [.command, .shift])
             .disabled(tagSelectionModel.singleTag == nil)
 
-            Button("Delete Tag", role: .destructive) {
-                guard let tag = tagSelectionModel.singleTag else { return }
-                AppIntents.requestDeleteTag(tag)
+            if let single = tagSelectionModel.singleTag {
+                Button("Delete Tag", role: .destructive) {
+                    AppIntents.requestDeleteTag(single)
+                }
+                .keyboardShortcut("D", modifiers: [.command, .shift])
             }
-            .keyboardShortcut("D", modifiers: [.command, .shift])
-            .disabled(tagSelectionModel.singleTag == nil)
+
+            if tagSelectionModel.allTags.count > 1 {
+                let count = tagSelectionModel.allTags.count
+                Button("Delete \(count) Tags", role: .destructive) {
+                    AppIntents.requestDeleteTags(tagSelectionModel.allTags)
+                }
+                .keyboardShortcut("D", modifiers: [.command, .shift])
+            }
         }
     }
 }
