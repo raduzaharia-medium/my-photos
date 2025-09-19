@@ -2,17 +2,39 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject private var modalPresenter: ModalService
-    @EnvironmentObject private var alerter: AlertService
-    @EnvironmentObject private var fileImporter: FileImportService
-    @EnvironmentObject private var notifier: NotificationService
+    @Environment(\.modelContext) private var context
     @EnvironmentObject private var tagSelectionModel: TagSelectionModel
 
-    @EnvironmentObject private var editTagPresenter: EditTagPresenter
-    @EnvironmentObject private var importPhotosPresenter: ImportPhotosPresenter
-    @EnvironmentObject private var deleteTagPresenter: DeleteTagPresenter
+    @StateObject private var modalPresenter = ModalService()
+    @StateObject private var alerter = AlertService()
+    @StateObject private var fileImporter = FileImportService()
+    @StateObject private var notifier = NotificationService()
 
-    @Environment(\.modelContext) private var modelContext
+    private var tagStore: TagStore { TagStore(context: context) }
+
+    private var editTagPresenter: EditTagPresenter {
+        EditTagPresenter(
+            modalPresenter: modalPresenter,
+            notifier: notifier,
+            tagStore: tagStore
+        )
+    }
+
+    private var importPhotosPresenter: ImportPhotosPresenter {
+        ImportPhotosPresenter(
+            fileImporter: fileImporter,
+            notifier: notifier
+        )
+    }
+
+    private var deleteTagPresenter: DeleteTagPresenter {
+        DeleteTagPresenter(
+            alerter: alerter,
+            notifier: notifier,
+            tagStore: tagStore,
+            tagSelectionModel: tagSelectionModel
+        )
+    }
 
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
 
@@ -63,18 +85,23 @@ struct ContentView: View {
         ) { note in
             importPhotosPresenter.show()
         }
-        .onReceive(NotificationCenter.default.publisher(for: .requestCreateTag)) { note in
+        .onReceive(NotificationCenter.default.publisher(for: .requestCreateTag))
+        { note in
             editTagPresenter.show(nil)
         }
-        .onReceive(NotificationCenter.default.publisher(for: .requestEditTag)) { note in
+        .onReceive(NotificationCenter.default.publisher(for: .requestEditTag)) {
+            note in
             guard let tag = note.object as? Tag else { return }
             editTagPresenter.show(tag)
         }
-        .onReceive(NotificationCenter.default.publisher(for: .requestDeleteTag)) { note in
+        .onReceive(NotificationCenter.default.publisher(for: .requestDeleteTag))
+        { note in
             guard let tag = note.object as? Tag else { return }
             deleteTagPresenter.show(tag)
         }
-        .onReceive(NotificationCenter.default.publisher(for: .requestDeleteTags)) { note in
+        .onReceive(
+            NotificationCenter.default.publisher(for: .requestDeleteTags)
+        ) { note in
             guard let tags = note.object as? [Tag] else { return }
             deleteTagPresenter.show(tags)
         }

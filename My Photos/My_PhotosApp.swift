@@ -21,10 +21,6 @@ final class TagSelectionModel: ObservableObject {
 
 @main
 struct My_PhotosApp: App {
-    @StateObject private var modalPresenter = ModalService()
-    @StateObject private var alerter = AlertService()
-    @StateObject private var fileImporter = FileImportService()
-    @StateObject private var notifier = NotificationService()
     @StateObject private var tagSelectionModel = TagSelectionModel()
 
     private var sharedModelContainer: ModelContainer = {
@@ -101,42 +97,13 @@ struct My_PhotosApp: App {
 
         return container
     }()
-    private var tagStore: TagStore {
-        TagStore(context: ModelContext(sharedModelContainer))
-    }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
-        .environmentObject(modalPresenter)
-        .environmentObject(alerter)
-        .environmentObject(tagStore)
-        .environmentObject(fileImporter)
-        .environmentObject(notifier)
-        .environmentObject(tagSelectionModel)
-        .environmentObject(
-            EditTagPresenter(
-                modalPresenter: modalPresenter,
-                notifier: notifier,
-                tagStore: tagStore
-            )
-        )
-        .environmentObject(
-            ImportPhotosPresenter(
-                fileImporter: fileImporter,
-                notifier: notifier
-            )
-        )
-        .environmentObject(
-            DeleteTagPresenter(
-                alerter: alerter,
-                notifier: notifier,
-                tagStore: tagStore,
-                tagSelectionModel: tagSelectionModel
-            )
-        )
         .modelContainer(sharedModelContainer)
+        .environmentObject(tagSelectionModel)
         .commands {
             LibraryCommands(tagSelectionModel)
         }
