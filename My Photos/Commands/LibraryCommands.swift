@@ -45,6 +45,14 @@ struct LibraryCommands: Commands {
                 }
                 .keyboardShortcut("D", modifiers: [.command, .shift])
             }
+            
+            Divider()
+            
+            Button("Previous Photo") { AppIntents.navigateToPreviousPhoto() }
+                .keyboardShortcut("<", modifiers: [])
+            
+            Button("Next Photo") { AppIntents.navigateToNextPhoto() }
+                .keyboardShortcut(">", modifiers: [])
         }
     }
 }

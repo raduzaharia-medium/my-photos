@@ -2,7 +2,10 @@ import Foundation
 import SwiftUI
 
 extension View {
-    func setupSidebarHandlers(selection: Binding<Set<SidebarItem>>, filters: [Filter]) -> some View {
+    func setupSidebarHandlers(
+        selection: Binding<Set<SidebarItem>>,
+        filters: [Filter]
+    ) -> some View {
         return self.onReceive(
             NotificationCenter.default.publisher(for: .resetTagSelection)
         ) { _ in
@@ -12,6 +15,31 @@ extension View {
                 selection.wrappedValue = [SidebarItem.filter(firstFilter)]
             }
         }
+    }
+}
+
+extension View {
+    func setupPhotoNavigationHandlers(index: Binding<Int>, count: Int)
+        -> some View
+    {
+        return
+            self
+            .onReceive(
+                NotificationCenter.default.publisher(
+                    for: .navigateToPreviousPhoto
+                )
+            ) { _ in
+                if index.wrappedValue > 0 {
+                    index.wrappedValue = index.wrappedValue - 1
+                }
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(for: .navigateToNextPhoto)
+            ) { _ in
+                if index.wrappedValue + 1 < count {
+                    index.wrappedValue = index.wrappedValue + 1
+                }
+            }
     }
 }
 
