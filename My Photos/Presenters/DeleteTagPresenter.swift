@@ -51,7 +51,7 @@ class DeleteTagPresenter: ObservableObject {
                         do {
                             try self.tagStore.delete(tags.map(\.id))
 
-                            NotificationCenter.default.post(name: .resetTagSelection, object: nil)
+                            AppIntents.resetTagSelection()
                             self.notifier.show("Tags deleted", .success)
                         } catch {
                             self.notifier.show("Could not delete tags", .error)
