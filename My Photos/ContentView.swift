@@ -11,29 +11,6 @@ struct ContentView: View {
 
     private var tagStore: TagStore { TagStore(context: context) }
 
-    private var editTagPresenter: EditTagPresenter {
-        EditTagPresenter(
-            modalPresenter: modalPresenter,
-            notifier: notifier,
-            tagStore: tagStore
-        )
-    }
-
-    private var importPhotosPresenter: ImportPhotosPresenter {
-        ImportPhotosPresenter(
-            fileImporter: fileImporter,
-            notifier: notifier
-        )
-    }
-
-    private var deleteTagPresenter: DeleteTagPresenter {
-        DeleteTagPresenter(
-            alerter: alerter,
-            notifier: notifier,
-            tagStore: tagStore,
-        )
-    }
-
     @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
 
     var body: some View {
@@ -74,30 +51,12 @@ struct ContentView: View {
             allowsMultipleSelection: fileImporter.multipleSelection,
             onCompletion: fileImporter.action
         )
-        .onReceive(
-            NotificationCenter.default.publisher(for: .requestImportPhotos)
-        ) { note in
-            importPhotosPresenter.show()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .requestCreateTag))
-        { note in
-            editTagPresenter.show(nil)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .requestEditTag)) {
-            note in
-            guard let tag = note.object as? Tag else { return }
-            editTagPresenter.show(tag)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .requestDeleteTag))
-        { note in
-            guard let tag = note.object as? Tag else { return }
-            deleteTagPresenter.show(tag)
-        }
-        .onReceive(
-            NotificationCenter.default.publisher(for: .requestDeleteTags)
-        ) { note in
-            guard let tags = note.object as? [Tag] else { return }
-            deleteTagPresenter.show(tags)
-        }
+        .setupHandlers(
+            modalPresenter: modalPresenter,
+            notifier: notifier,
+            fileImporter: fileImporter,
+            alerter: alerter,
+            tagStore: tagStore
+        )
     }
 }
