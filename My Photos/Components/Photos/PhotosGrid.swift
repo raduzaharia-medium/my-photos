@@ -32,8 +32,8 @@ struct PhotosGrid: View {
                 .padding(.all)
             }
             .navigationDestination(for: Photo.self) { photo in
-                PhotoCard(photo, variant: .detail)
-                    .padding(16)
+                let index = photos.firstIndex(of: photo) ?? 0
+                PhotoNavigator(photos: photos, index: index)
             }
         }
     }
