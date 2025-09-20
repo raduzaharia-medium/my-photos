@@ -2,6 +2,20 @@ import Foundation
 import SwiftUI
 
 extension View {
+    func setupSidebarHandlers(selection: Binding<Set<SidebarItem>>, filters: [Filter]) -> some View {
+        return self.onReceive(
+            NotificationCenter.default.publisher(for: .resetTagSelection)
+        ) { _ in
+            selection.wrappedValue.removeAll()
+
+            if let firstFilter = filters.first {
+                selection.wrappedValue = [SidebarItem.filter(firstFilter)]
+            }
+        }
+    }
+}
+
+extension View {
     func setupHandlers(
         modalPresenter: ModalService,
         notifier: NotificationService,
@@ -24,7 +38,8 @@ extension View {
             tagStore: tagStore
         )
 
-        return self
+        return
+            self
             .onReceive(
                 NotificationCenter.default.publisher(for: .requestImportPhotos)
             ) { note in
@@ -55,4 +70,3 @@ extension View {
             }
     }
 }
-

@@ -42,15 +42,7 @@ struct SidebarView: View {
             AppIntents.resetTagSelection()
         }
         .focusedValue(\.sidebarSelection, $selection)
-        .onReceive(
-            NotificationCenter.default.publisher(for: .resetTagSelection)
-        ) { _ in
-            selection.removeAll()
-
-            if let firstFilter = filters.first {
-                selection = [SidebarItem.filter(firstFilter)]
-            }
-        }
+        .setupSidebarHandlers(selection: $selection, filters: filters)
         #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
         #endif
