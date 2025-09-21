@@ -27,7 +27,11 @@ struct PhotosGrid: View {
                 LazyVGrid(columns: columns, spacing: 8) {
                     ForEach(photos) { photo in
                         if isSelectionMode {
-                            PhotoCard(photo, variant: .grid)
+                            PhotoCard(
+                                photo,
+                                variant: .selectable,
+                                isSelected: bindingForPhotoSelection(photo)
+                            )
                         } else {
                             NavigationLink(value: photo) {
                                 PhotoCard(photo, variant: .grid)
@@ -50,8 +54,15 @@ struct PhotosGrid: View {
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
                     HStack(spacing: 6) {
-                        Image(systemName: isSelectionMode ? "checkmark.circle.fill" : "checkmark.circle.badge.plus")
-                            .help(isSelectionMode ? "Exit selection mode" : "Enter selection mode")
+                        Image(
+                            systemName: isSelectionMode
+                                ? "checkmark.circle.fill"
+                                : "checkmark.circle.badge.plus"
+                        )
+                        .help(
+                            isSelectionMode
+                                ? "Exit selection mode" : "Enter selection mode"
+                        )
 
                         Toggle(isOn: $isSelectionMode) { EmptyView() }
                             .toggleStyle(.switch)
@@ -66,5 +77,18 @@ struct PhotosGrid: View {
                 }
             }
         }
+    }
+
+    private func bindingForPhotoSelection(_ photo: Photo) -> Binding<Bool> {
+        Binding<Bool>(
+            get: { selectedPhotos.contains(photo) },
+            set: { newValue in
+                if newValue {
+                    selectedPhotos.insert(photo)
+                } else {
+                    selectedPhotos.remove(photo)
+                }
+            }
+        )
     }
 }
