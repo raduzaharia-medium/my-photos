@@ -113,8 +113,8 @@ struct PhotoCard: View {
             view.aspectRatio(1, contentMode: .fit)
         }
         .contentShape(Rectangle())
-        .onTapGesture {
-            if variant == .selectable {
+        .applyIf(variant == .selectable) { view in
+            view.onTapGesture {
                 isSelected.toggle()
             }
         }
