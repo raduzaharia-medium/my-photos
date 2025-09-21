@@ -2,6 +2,9 @@ import SwiftData
 import SwiftUI
 
 struct PhotosGrid: View {
+    @State private var isSelectionMode: Bool = false
+    @State private var selectedPhotos: Set<Photo> = []
+
     @Query(sort: \Photo.dateTaken, order: .reverse) private var allPhotos:
         [Photo]
 
@@ -23,17 +26,44 @@ struct PhotosGrid: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 8) {
                     ForEach(photos) { photo in
-                        NavigationLink(value: photo) {
+                        if isSelectionMode {
                             PhotoCard(photo, variant: .grid)
+                        } else {
+                            NavigationLink(value: photo) {
+                                PhotoCard(photo, variant: .grid)
+                            }
                         }
                     }
                     .buttonStyle(.plain)
                 }
                 .padding(.all)
             }
+            .navigationTitle("Photos")
             .navigationDestination(for: Photo.self) { photo in
-                let index = photos.firstIndex(of: photo) ?? 0
-                PhotoNavigator(photos: photos, index: index)
+                if isSelectionMode {
+                    EmptyView()
+                } else {
+                    let index = photos.firstIndex(of: photo) ?? 0
+                    PhotoNavigator(photos: photos, index: index)
+                }
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    HStack(spacing: 6) {
+                        Image(systemName: isSelectionMode ? "checkmark.circle.fill" : "checkmark.circle.badge.plus")
+                            .help(isSelectionMode ? "Exit selection mode" : "Enter selection mode")
+
+                        Toggle(isOn: $isSelectionMode) { EmptyView() }
+                            .toggleStyle(.switch)
+                            .controlSize(.small)
+                            .onChange(of: isSelectionMode) { _, newValue in
+                                if !newValue {
+                                    selectedPhotos.removeAll()
+                                }
+                            }
+                    }
+                    .padding(.horizontal, 4)
+                }
             }
         }
     }
