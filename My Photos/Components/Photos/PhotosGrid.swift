@@ -5,22 +5,35 @@ struct PhotosGrid: View {
     @State private var isSelectionMode: Bool = false
     @State private var selectedPhotos: Set<Photo> = []
 
+    var selectionCategory: SelectionCategory
+
     @Query(sort: \Photo.dateTaken, order: .reverse) private var allPhotos:
         [Photo]
 
     let sidebarSelection: Set<SidebarItem>
 
     private var photos: [Photo] {
-        allPhotos.filtered(by: sidebarSelection)
+        let base = allPhotos.filtered(by: sidebarSelection)
+        if isSelectionMode {
+            switch selectionCategory {
+            case .all:
+                return base
+            case .selected:
+                return base.filter { selectedPhotos.contains($0) }
+            }
+        } else {
+            return base
+        }
     }
     private let columns = [
         GridItem(.adaptive(minimum: 110, maximum: 200), spacing: 8)
     ]
 
-    init(_ sidebarSelection: Set<SidebarItem>) {
+    init(_ sidebarSelection: Set<SidebarItem>, selectionCategory: SelectionCategory = .all) {
         self.sidebarSelection = sidebarSelection
+        self.selectionCategory = selectionCategory
     }
-
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -42,6 +55,7 @@ struct PhotosGrid: View {
                 }
                 .padding(.all)
             }
+            .preference(key: PhotosSelectionModePreferenceKey.self, value: isSelectionMode)
             .navigationTitle("Photos")
             .navigationDestination(for: Photo.self) { photo in
                 if isSelectionMode {
@@ -92,3 +106,4 @@ struct PhotosGrid: View {
         )
     }
 }
+

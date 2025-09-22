@@ -44,6 +44,8 @@ struct PhotoNavigator: View {
                 .keyboardShortcut(.rightArrow, modifiers: [])
             }
         }
+        .toolbarBackground(.hidden, for: .automatic)
+        .navigationTitle(Text(photos[index].title))
         .setupPhotoNavigationHandlers(
             index: $index,
             count: photos.count
