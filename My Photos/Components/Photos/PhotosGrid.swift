@@ -2,15 +2,15 @@ import SwiftData
 import SwiftUI
 
 struct PhotosGrid: View {
+    private static let columns = [
+        GridItem(.adaptive(minimum: 110, maximum: 200), spacing: 8)
+    ]
+
     @Query(sort: \Photo.dateTaken, order: .reverse) private var allPhotos:
         [Photo]
 
     @State private var isSelectionMode: Bool = false
     @State private var selectedPhotos: Set<Photo> = []
-
-    private static let columns = [
-        GridItem(.adaptive(minimum: 110, maximum: 200), spacing: 8)
-    ]
 
     private var photos: [Photo] {
         let result = allPhotos.filtered(by: sidebarSelection)
@@ -35,7 +35,11 @@ struct PhotosGrid: View {
             ScrollView {
                 LazyVGrid(columns: Self.columns, spacing: 8) {
                     ForEach(photos) { photo in
-                        gridCell(for: photo)
+                        PhotosGridCell(
+                            photo: photo,
+                            isSelectionMode: isSelectionMode,
+                            isSelected: selectionBinding(photo)
+                        )
                     }
                     .buttonStyle(.plain)
                 }
@@ -59,7 +63,7 @@ struct PhotosGrid: View {
         }
     }
 
-    private func bindingForPhotoSelection(_ photo: Photo) -> Binding<Bool> {
+    private func selectionBinding(_ photo: Photo) -> Binding<Bool> {
         Binding<Bool>(
             get: { selectedPhotos.contains(photo) },
             set: { newValue in
@@ -70,20 +74,5 @@ struct PhotosGrid: View {
                 }
             }
         )
-    }
-
-    @ViewBuilder
-    private func gridCell(for photo: Photo) -> some View {
-        if isSelectionMode {
-            PhotoCard(
-                photo,
-                variant: .selectable,
-                isSelected: bindingForPhotoSelection(photo)
-            )
-        } else {
-            NavigationLink(value: photo) {
-                PhotoCard(photo, variant: .grid)
-            }
-        }
     }
 }
