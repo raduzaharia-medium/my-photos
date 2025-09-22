@@ -6,10 +6,12 @@ extension Notification.Name {
     static let requestDeleteTag = Notification.Name("requestDeleteTag")
     static let requestDeleteTags = Notification.Name("requestDeleteTags")
     static let requestImportPhotos = Notification.Name("requestImportPhotos")
-    
+
     static let resetTagSelection = Notification.Name("resetTagSelection")
-    
-    static let navigateToPreviousPhoto = Notification.Name("navigateToPreviousPhoto")
+
+    static let navigateToPreviousPhoto = Notification.Name(
+        "navigateToPreviousPhoto"
+    )
     static let navigateToNextPhoto = Notification.Name("navigateToNextPhoto")
 }
 
@@ -29,13 +31,16 @@ enum AppIntents {
     static func requestImportPhotos() {
         NotificationCenter.default.post(name: .requestImportPhotos, object: nil)
     }
-    
+
     static func resetTagSelection() {
         NotificationCenter.default.post(name: .resetTagSelection, object: nil)
     }
-    
+
     static func navigateToPreviousPhoto() {
-        NotificationCenter.default.post(name: .navigateToPreviousPhoto, object: nil)
+        NotificationCenter.default.post(
+            name: .navigateToPreviousPhoto,
+            object: nil
+        )
     }
     static func navigateToNextPhoto() {
         NotificationCenter.default.post(name: .navigateToNextPhoto, object: nil)
