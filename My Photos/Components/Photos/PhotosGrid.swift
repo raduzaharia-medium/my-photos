@@ -2,93 +2,59 @@ import SwiftData
 import SwiftUI
 
 struct PhotosGrid: View {
-    @State private var isSelectionMode: Bool = false
-    @State private var selectedPhotos: Set<Photo> = []
-
-    var selectionCategory: SelectionCategory
-
     @Query(sort: \Photo.dateTaken, order: .reverse) private var allPhotos:
         [Photo]
 
-    let sidebarSelection: Set<SidebarItem>
+    @State private var isSelectionMode: Bool = false
+    @State private var selectedPhotos: Set<Photo> = []
 
-    private var photos: [Photo] {
-        let base = allPhotos.filtered(by: sidebarSelection)
-        if isSelectionMode {
-            switch selectionCategory {
-            case .all:
-                return base
-            case .selected:
-                return base.filter { selectedPhotos.contains($0) }
-            }
-        } else {
-            return base
-        }
-    }
-    private let columns = [
+    private static let columns = [
         GridItem(.adaptive(minimum: 110, maximum: 200), spacing: 8)
     ]
 
-    init(_ sidebarSelection: Set<SidebarItem>, selectionCategory: SelectionCategory = .all) {
+    private var photos: [Photo] {
+        let result = allPhotos.filtered(by: sidebarSelection)
+        guard isSelectionMode else { return result }
+        guard selectionCategory == .selected else { return result }
+
+        return result.filter { selectedPhotos.contains($0) }
+    }
+    private var selectionCategory: SelectionCategory
+    private let sidebarSelection: Set<SidebarItem>
+
+    init(
+        _ sidebarSelection: Set<SidebarItem>,
+        selectionCategory: SelectionCategory = .all
+    ) {
         self.sidebarSelection = sidebarSelection
         self.selectionCategory = selectionCategory
     }
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVGrid(columns: columns, spacing: 8) {
+                LazyVGrid(columns: Self.columns, spacing: 8) {
                     ForEach(photos) { photo in
-                        if isSelectionMode {
-                            PhotoCard(
-                                photo,
-                                variant: .selectable,
-                                isSelected: bindingForPhotoSelection(photo)
-                            )
-                        } else {
-                            NavigationLink(value: photo) {
-                                PhotoCard(photo, variant: .grid)
-                            }
-                        }
+                        gridCell(for: photo)
                     }
                     .buttonStyle(.plain)
                 }
                 .padding(.all)
             }
-            .preference(key: PhotosSelectionModePreferenceKey.self, value: isSelectionMode)
+            .preference(
+                key: PhotosSelectionModePreferenceKey.self,
+                value: isSelectionMode
+            )
             .navigationTitle("Photos")
             .navigationDestination(for: Photo.self) { photo in
-                if isSelectionMode {
-                    EmptyView()
-                } else {
-                    let index = photos.firstIndex(of: photo) ?? 0
-                    PhotoNavigator(photos: photos, index: index)
-                }
+                let index = photos.firstIndex(of: photo) ?? 0
+                PhotoNavigator(photos: photos, index: index)
             }
             .toolbar {
-                ToolbarItemGroup(placement: .primaryAction) {
-                    HStack(spacing: 6) {
-                        Image(
-                            systemName: isSelectionMode
-                                ? "checkmark.circle.fill"
-                                : "checkmark.circle.badge.plus"
-                        )
-                        .help(
-                            isSelectionMode
-                                ? "Exit selection mode" : "Enter selection mode"
-                        )
-
-                        Toggle(isOn: $isSelectionMode) { EmptyView() }
-                            .toggleStyle(.switch)
-                            .controlSize(.small)
-                            .onChange(of: isSelectionMode) { _, newValue in
-                                if !newValue {
-                                    selectedPhotos.removeAll()
-                                }
-                            }
-                    }
-                    .padding(.horizontal, 4)
-                }
+                PhotosGridToolbar(
+                    isSelectionMode: $isSelectionMode,
+                    selectedPhotos: $selectedPhotos
+                )
             }
         }
     }
@@ -105,5 +71,19 @@ struct PhotosGrid: View {
             }
         )
     }
-}
 
+    @ViewBuilder
+    private func gridCell(for photo: Photo) -> some View {
+        if isSelectionMode {
+            PhotoCard(
+                photo,
+                variant: .selectable,
+                isSelected: bindingForPhotoSelection(photo)
+            )
+        } else {
+            NavigationLink(value: photo) {
+                PhotoCard(photo, variant: .grid)
+            }
+        }
+    }
+}
