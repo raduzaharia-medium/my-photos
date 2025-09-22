@@ -35,27 +35,11 @@ struct DetailView: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .principal) {
-                if isPhotosSelectionMode {
-                    Picker("Selection", selection: $selectionCategory) {
-                        ForEach(SelectionCategory.allCases) { c in
-                            Text(c.rawValue).tag(c)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
-                    .help("Filter by All or Selected while in selection mode")
-                } else {
-                    Picker("Tab", selection: Binding($tab)) {
-                        ForEach(DetailTab.allCases) { t in
-                            Text(t.rawValue).tag(t)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
-                    .help("Change how this collection is displayed")
-                }
-            }
+            DetailViewToolbar(
+                isSelectionMode: $isPhotosSelectionMode,
+                selectionCategory: $selectionCategory,
+                tab: $tab
+            )
         }
         .navigationTitle(
             ((selection?.allTags.count ?? 0) > 1)
