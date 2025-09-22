@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-enum DetailTab: String, CaseIterable, Identifiable {
+enum PresentationType: String, CaseIterable, Identifiable {
     case photos = "Grid"
     case map = "Map"
 
@@ -17,28 +17,28 @@ enum SelectionCategory: String, CaseIterable, Identifiable {
 
 struct DetailView: View {
     @FocusedBinding(\.sidebarSelection) private var selection
-    @State private var tab: DetailTab = .photos
+    @State private var presentationType: PresentationType = .photos
     @State private var isPhotosSelectionMode: Bool = false
     @State private var selectionCategory: SelectionCategory = .all
 
     var body: some View {
         Group {
-            switch tab {
+            switch presentationType {
             case .photos: PhotosGrid(selection ?? [], selectionCategory: selectionCategory)
             case .map: PhotosMap(selection ?? [])
             }
         }
         .onPreferenceChange(PhotosSelectionModePreferenceKey.self) { newValue in
             isPhotosSelectionMode = newValue
-            if newValue && tab == .map {
-                tab = .photos
+            if newValue && presentationType == .map {
+                presentationType = .photos
             }
         }
         .toolbar {
             DetailViewToolbar(
                 isSelectionMode: $isPhotosSelectionMode,
                 selectionCategory: $selectionCategory,
-                tab: $tab
+                presentationType: $presentationType
             )
         }
         .navigationTitle(

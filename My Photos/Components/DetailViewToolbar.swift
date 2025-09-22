@@ -3,7 +3,7 @@ import SwiftUI
 struct DetailViewToolbar: ToolbarContent {
     @Binding var isSelectionMode: Bool
     @Binding var selectionCategory: SelectionCategory
-    @Binding var tab: DetailTab
+    @Binding var presentationType: PresentationType
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .principal) {
@@ -17,8 +17,8 @@ struct DetailViewToolbar: ToolbarContent {
                 .labelsHidden()
                 .help("Filter by All or Selected while in selection mode")
             } else {
-                Picker("Tab", selection: Binding($tab)) {
-                    ForEach(DetailTab.allCases) { t in
+                Picker("Tab", selection: $presentationType) {
+                    ForEach(PresentationType.allCases) { t in
                         Text(t.rawValue).tag(t)
                     }
                 }
