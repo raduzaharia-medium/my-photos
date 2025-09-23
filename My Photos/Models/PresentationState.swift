@@ -1,6 +1,13 @@
 import Observation
 import SwiftUI
 
+enum PresentationMode: String, CaseIterable, Identifiable {
+    case grid = "Grid"
+    case map = "Map"
+
+    var id: String { rawValue }
+}
+
 @MainActor
 @Observable
 final class PresentationState {
