@@ -6,7 +6,15 @@ struct PhotosGridToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         @Bindable var presentation = presentationState
-        
+
+        let isSelectingBinding = Binding<Bool>(
+            get: { presentationState.isSelecting },
+            set: { newMode in
+                guard newMode != presentationState.isSelecting else { return }
+                AppIntents.toggleSelectionMode()
+            }
+        )
+
         ToolbarItemGroup(placement: .primaryAction) {
             HStack(spacing: 6) {
                 Image(
@@ -19,10 +27,12 @@ struct PhotosGridToolbar: ToolbarContent {
                         ? "Exit selection mode" : "Enter selection mode"
                 )
 
-                Toggle(isOn: $presentation.isSelecting) { EmptyView() }
+                Toggle(isOn: isSelectingBinding) { EmptyView() }
                     .toggleStyle(.switch)
                     .controlSize(.small)
-                    .onChange(of: presentationState.isSelecting) { _, newValue in
+                    .onChange(of: presentationState.isSelecting) {
+                        _,
+                        newValue in
                         if !newValue {
                             selectedPhotos.removeAll()
                         }

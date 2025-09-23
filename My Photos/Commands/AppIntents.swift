@@ -10,6 +10,7 @@ extension Notification.Name {
     static let resetTagSelection = Notification.Name("resetTagSelection")
     static let togglePresentationMode = Notification.Name("togglePresentationMode")
     static let toggleSelectionMode = Notification.Name("toggleSelectionMode")
+    static let toggleSelectionFilter = Notification.Name("toggleSelectionFilter")
 
     static let navigateToPreviousPhoto = Notification.Name(
         "navigateToPreviousPhoto"
@@ -42,6 +43,9 @@ enum AppIntents {
     }
     static func toggleSelectionMode() {
         NotificationCenter.default.post(name: .toggleSelectionMode, object: nil)
+    }
+    static func toggleSelectionFilter() {
+        NotificationCenter.default.post(name: .toggleSelectionFilter, object: nil)
     }
 
     static func navigateToPreviousPhoto() {

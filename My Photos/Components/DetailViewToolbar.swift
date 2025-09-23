@@ -13,19 +13,19 @@ struct DetailViewToolbar: ToolbarContent {
                 AppIntents.togglePresentationMode()
             }
         )
-        let selectionModeBinding = Binding<Bool>(
+        let selectionFilterBinding = Binding<Bool>(
             get: { presentationState.showOnlySelected },
             set: { newMode in
                 guard newMode != presentationState.showOnlySelected else {
                     return
                 }
-                AppIntents.toggleSelectionMode()
+                AppIntents.toggleSelectionFilter()
             }
         )
 
         ToolbarItem(placement: .principal) {
             if presentationState.isSelecting {
-                Picker("ShowOnlySelected", selection: selectionModeBinding) {
+                Picker("ShowOnlySelected", selection: selectionFilterBinding) {
                     Text("All").tag(false)
                     Text("Selected").tag(true)
                 }

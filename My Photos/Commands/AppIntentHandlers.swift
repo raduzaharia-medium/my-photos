@@ -17,6 +17,11 @@ extension View {
             NotificationCenter.default.publisher(for: .toggleSelectionMode)
         ) { _ in
             presentationState.isSelecting.toggle()
+            presentationState.showOnlySelected = false
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .toggleSelectionFilter)
+        ) { _ in
+            presentationState.showOnlySelected.toggle()
         }
     }
 
