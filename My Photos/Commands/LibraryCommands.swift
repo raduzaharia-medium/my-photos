@@ -64,6 +64,10 @@ struct LibraryCommands: Commands {
                 }
                 .keyboardShortcut("G", modifiers: [.command])
             }
+            
+            Button("Switch selection mode") {
+                AppIntents.toggleSelectionMode()
+            }
         }
     }
 }

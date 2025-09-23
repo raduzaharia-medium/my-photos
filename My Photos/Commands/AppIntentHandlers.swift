@@ -13,6 +13,10 @@ extension View {
             } else {
                 presentationState.presentationMode = .grid
             }
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .toggleSelectionMode)
+        ) { _ in
+            presentationState.isSelecting.toggle()
         }
     }
 
