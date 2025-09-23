@@ -8,7 +8,7 @@ struct DetailViewToolbar: ToolbarContent {
 
         ToolbarItem(placement: .principal) {
             if presentationState.isSelecting {
-                Picker("Selection", selection: $presentation.showOnlySelected) {
+                Picker("ShowOnlySelected", selection: $presentation.showOnlySelected) {
                     Text("All").tag(false)
                     Text("Selected").tag(true)
                 }
@@ -16,10 +16,9 @@ struct DetailViewToolbar: ToolbarContent {
                 .labelsHidden()
                 .help("Filter by All or Selected while in selection mode")
             } else {
-                Picker("Tab", selection: $presentation.presentationMode) {
-                    ForEach(PresentationMode.allCases) { t in
-                        Text(t.rawValue).tag(t)
-                    }
+                Picker("PresentationMode", selection: $presentation.presentationMode) {
+                    Text("Grid").tag(PresentationMode.grid)
+                    Text("Map").tag(PresentationMode.map)
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
