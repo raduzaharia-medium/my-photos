@@ -8,28 +8,32 @@ struct TagContextMenu: View {
     }
 
     var body: some View {
-        if selection.hasFilter {
+        if !selection.canEditOrDeleteSelection {
             EmptyView()
-        } else if let tag = selection.singleTag {
-            Button {
-                AppIntents.requestEditTag(tag)
-            } label: {
-                Label("Edit", systemImage: "pencil")
+        } else {
+            if selection.canEditSelection {
+                Button {
+                    AppIntents.requestEditTag(selection.selectedTags.first!)
+                } label: {
+                    Label("Edit", systemImage: "pencil")
+                }
             }
 
-            Button(role: .destructive) {
-                AppIntents.requestDeleteTag(tag)
-            } label: {
-                Label("Delete", systemImage: "trash")
-            }
-        } else if !selection.allTags.isEmpty {
-            Button(role: .destructive) {
-                AppIntents.requestDeleteTags(selection.allTags)
-            } label: {
-                Label(
-                    "Delete \(selection.allTags.count) Tags",
-                    systemImage: "trash"
-                )
+            if selection.canDeleteSelection {
+                Button(role: .destructive) {
+                    AppIntents.requestDeleteTag(selection.selectedTags.first!)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            } else if selection.canDeleteManySelection {
+                Button(role: .destructive) {
+                    AppIntents.requestDeleteTags(selection.selectedTags)
+                } label: {
+                    Label(
+                        "Delete \(selection.selectedTags.count) Tags",
+                        systemImage: "trash"
+                    )
+                }
             }
         }
     }

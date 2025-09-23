@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct LibraryCommands: Commands {
-    @FocusedBinding(\.sidebarSelection) var selection
+    @Binding var presentationState: PresentationState
 
     var body: some Commands {
         CommandMenu("Library") {
@@ -15,8 +15,8 @@ struct LibraryCommands: Commands {
                 .keyboardShortcut("T", modifiers: [.command, .shift])
 
             Button("Edit Tag…") {
-                guard selection?.count == 1,
-                    case .tag(let tag) = selection?.first
+                guard presentationState.photoFilter.count == 1,
+                    case .tag(let tag) = presentationState.photoFilter.first
                 else {
                     return
                 }
@@ -24,35 +24,46 @@ struct LibraryCommands: Commands {
                 AppIntents.requestEditTag(tag)
             }
             .keyboardShortcut("E", modifiers: [.command, .shift])
-            .disabled(
-                (selection?.allTags.isEmpty ?? true)
-                    || (selection?.hasFilter ?? false)
-            )
+            .disabled(!presentationState.canEditSelection)
 
-            if let tag = selection?.singleTag, !(selection?.hasFilter ?? false) {
+            if presentationState.canDeleteSelection {
                 Button("Delete Tag", role: .destructive) {
-                    AppIntents.requestDeleteTag(tag)
+                    AppIntents.requestDeleteTag(presentationState.selectedTags.first!)
                 }
                 .keyboardShortcut("D", modifiers: [.command, .shift])
             }
 
-            if let selectedTags = selection?.allTags, selectedTags.count > 1,
-               !(selection?.hasFilter ?? false)
-            {
-                Button("Delete \(selectedTags.count) Tags", role: .destructive)
-                {
-                    AppIntents.requestDeleteTags(selectedTags)
+            if presentationState.canDeleteManySelection {
+                Button(
+                    "Delete \(presentationState.selectedTags.count) Tags",
+                    role: .destructive
+                ) {
+                    AppIntents.requestDeleteTags(presentationState.selectedTags)
                 }
                 .keyboardShortcut("D", modifiers: [.command, .shift])
             }
-            
+
             Divider()
-            
+
             Button("Previous Photo") { AppIntents.navigateToPreviousPhoto() }
                 .keyboardShortcut("<", modifiers: [])
-            
+
             Button("Next Photo") { AppIntents.navigateToNextPhoto() }
                 .keyboardShortcut(">", modifiers: [])
+
+            Divider()
+
+            if presentationState.presentationMode == .grid {
+                Button("Switch to map view") {
+                    print("Something")
+                }
+                .keyboardShortcut("M", modifiers: [.command])
+            } else if presentationState.presentationMode == .map {
+                Button("Switch to grid view") {
+                    print("Something else")
+                }
+                .keyboardShortcut("G", modifiers: [.command])
+            }
         }
     }
 }

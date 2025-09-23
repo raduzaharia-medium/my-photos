@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SidebarView: View {
+    @Environment(PresentationState.self) private var presentationState
     @State private var selection: Set<SidebarItem> = []
 
     private let filters: [Filter]
@@ -41,8 +42,10 @@ struct SidebarView: View {
         .task {
             AppIntents.resetTagSelection()
         }
-        .focusedValue(\.sidebarSelection, $selection)
         .setupSidebarHandlers(selection: $selection, filters: filters)
+        .onChange(of: selection) { oldValue, newValue in
+            presentationState.photoFilter = newValue
+        }
         #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
         #endif

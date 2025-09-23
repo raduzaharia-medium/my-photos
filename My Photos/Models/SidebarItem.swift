@@ -32,22 +32,28 @@ extension FocusedValues {
     }
 }
 
-extension Sequence where Element == SidebarItem {
-    var allTags: [Tag] {
+extension Set where Element == SidebarItem {
+    var selectedTags: [Tag] {
         compactMap {
             if case .tag(let t) = $0 { t } else { nil }
         }
     }
-
-    var singleTag: Tag? {
-        let tags = allTags
-        return tags.count == 1 ? tags.first : nil
-    }
-    
-    var hasFilter: Bool {
-        contains { item in
-            if case .filter = item { return true }
-            return false
+    var selectedFilters: [Filter] {
+        compactMap {
+            if case .filter(let t) = $0 { t } else { nil }
         }
+    }
+
+    var canEditOrDeleteSelection: Bool {
+        selectedTags.count > 0 && selectedFilters.count == 0
+    }
+    var canEditSelection: Bool {
+        selectedTags.count == 1 && selectedFilters.count == 0
+    }
+    var canDeleteSelection: Bool {
+        selectedTags.count == 1 && selectedFilters.count == 0
+    }
+    var canDeleteManySelection: Bool {
+        selectedTags.count > 1 && selectedFilters.count == 0
     }
 }

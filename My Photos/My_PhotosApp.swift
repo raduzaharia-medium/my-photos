@@ -3,6 +3,8 @@ import SwiftUI
 
 @main
 struct My_PhotosApp: App {
+    @State private var presentationState = PresentationState()
+    
     private var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Photo.self, Tag.self,
@@ -83,8 +85,10 @@ struct My_PhotosApp: App {
             ContentView()
         }
         .modelContainer(sharedModelContainer)
+        .environment(presentationState)
         .commands {
-            LibraryCommands()
+            LibraryCommands(presentationState: $presentationState)
         }
     }
 }
+
