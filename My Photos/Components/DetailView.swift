@@ -19,5 +19,6 @@ struct DetailView: View {
                 ? "Multiple Collections"
                 : (presentationState.selectedTags.first?.name ?? "All Photos")
         )
+        .setupPresentationModeHandlers(presentationState: presentationState)
     }
 }

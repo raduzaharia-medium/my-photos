@@ -2,7 +2,6 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(PresentationState.self) private var presentationState
     @Environment(\.modelContext) private var context
 
     @StateObject private var modalPresenter = ModalService()
@@ -59,6 +58,5 @@ struct ContentView: View {
             alerter: alerter,
             tagStore: tagStore
         )
-        .setupPresentationModeHandlers(presentationState: presentationState)
     }
 }
