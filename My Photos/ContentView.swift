@@ -11,11 +11,9 @@ struct ContentView: View {
 
     private var tagStore: TagStore { TagStore(context: context) }
 
-    @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
-
     var body: some View {
         NavigationSplitView {
-            SidebarView(Filter.allCases, tags)
+            SidebarView()
         } detail: {
             DetailView()
         }

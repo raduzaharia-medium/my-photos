@@ -8,7 +8,7 @@ struct DetailView: View {
         Group {
             switch presentationState.presentationMode {
             case .grid: PhotosGrid()
-            case .map: PhotosMap(presentationState.photoFilter)
+            case .map: PhotosMap()
             }
         }
         .toolbar {

@@ -1,28 +1,19 @@
 import SwiftUI
+import SwiftData
 
 struct SidebarView: View {
     @Environment(PresentationState.self) private var presentationState
     @State private var selection: Set<SidebarItem> = []
-
-    private let filters: [Filter]
-    private let tags: [Tag]
+    @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
 
     private var groups: [TagKind: [Tag]] {
         Dictionary(grouping: tags, by: { $0.kind })
     }
 
-    init(
-        _ filters: [Filter],
-        _ tags: [Tag],
-    ) {
-        self.filters = filters
-        self.tags = tags
-    }
-
     var body: some View {
         List(selection: $selection) {
             Section("Filters") {
-                ForEach(filters, id: \.self) { filter in
+                ForEach(Filter.allCases, id: \.self) { filter in
                     SidebarRow(.filter(filter))
                 }
             }
@@ -42,7 +33,7 @@ struct SidebarView: View {
         .task {
             AppIntents.resetTagSelection()
         }
-        .setupSidebarHandlers(selection: $selection, filters: filters)
+        .setupSidebarHandlers(selection: $selection, filters: Filter.allCases)
         .onChange(of: selection) { oldValue, newValue in
             presentationState.photoFilter = newValue
         }

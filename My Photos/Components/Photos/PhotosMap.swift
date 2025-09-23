@@ -3,18 +3,13 @@ import SwiftData
 import SwiftUI
 
 struct PhotosMap: View {
+    @Environment(PresentationState.self) private var presentationState
     @Query(sort: \Photo.dateTaken, order: .reverse) private var allPhotos:
         [Photo]
     @State private var camera: MapCameraPosition = .automatic
 
-    let sidebarSelection: Set<SidebarItem>
-
     private var photos: [Photo] {
-        allPhotos.filtered(by: sidebarSelection)
-    }
-
-    init(_ sidebarSelection: Set<SidebarItem>) {
-        self.sidebarSelection = sidebarSelection
+        allPhotos.filtered(by: presentationState.photoFilter)
     }
 
     var body: some View {

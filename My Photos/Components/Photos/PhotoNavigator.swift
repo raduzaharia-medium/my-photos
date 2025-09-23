@@ -24,25 +24,7 @@ struct PhotoNavigator: View {
         }
         .focusable()
         .toolbar {
-            ToolbarItemGroup(placement: .automatic) {
-                Button(action: {
-                    AppIntents.navigateToPreviousPhoto()
-                }) {
-                    Image(systemName: "chevron.left")
-                }
-                .help("Previous photo")
-                .disabled(index <= 0)
-                .keyboardShortcut(.leftArrow, modifiers: [])
-
-                Button(action: {
-                    AppIntents.navigateToNextPhoto()
-                }) {
-                    Image(systemName: "chevron.right")
-                }
-                .help("Next photo")
-                .disabled(index + 1 >= photos.count)
-                .keyboardShortcut(.rightArrow, modifiers: [])
-            }
+            PhotoNavigatorToolbar(index: index, count: photos.count)
         }
         .toolbarBackground(.hidden, for: .automatic)
         .navigationTitle(Text(photos[index].title))
