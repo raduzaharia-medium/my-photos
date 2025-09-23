@@ -17,7 +17,7 @@ extension FocusedValues {
 final class PresentationState {
     var photoFilter: Set<SidebarItem> = []
     var presentationMode: PresentationMode = .grid
-    var isFilterActive: Bool = false
+    var showOnlySelected: Bool = false
     var isSelecting: Bool = false
 
     var selectedTags: [Tag] { photoFilter.selectedTags }

@@ -14,14 +14,9 @@ struct PhotosGrid: View {
     private var photos: [Photo] {
         let result = allPhotos.filtered(by: presentationState.photoFilter)
         guard presentationState.isSelecting else { return result }
-        guard selectionCategory == .selected else { return result }
+        guard presentationState.showOnlySelected else { return result }
 
         return result.filter { selectedPhotos.contains($0) }
-    }
-    private var selectionCategory: SelectionCategory
-
-    init(selectionCategory: SelectionCategory = .all) {
-        self.selectionCategory = selectionCategory
     }
 
     var body: some View {
