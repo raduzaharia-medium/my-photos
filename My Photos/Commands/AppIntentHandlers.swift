@@ -2,6 +2,20 @@ import Foundation
 import SwiftUI
 
 extension View {
+    func setupPresentationModeHandlers(presentationState: PresentationState)
+        -> some View
+    {
+        return self.onReceive(
+            NotificationCenter.default.publisher(for: .togglePresentationMode)
+        ) { _ in
+            if presentationState.presentationMode == .grid {
+                presentationState.presentationMode = .map
+            } else {
+                presentationState.presentationMode = .grid
+            }
+        }
+    }
+
     func setupSidebarHandlers(
         selection: Binding<Set<SidebarItem>>,
         filters: [Filter]
@@ -16,9 +30,7 @@ extension View {
             }
         }
     }
-}
 
-extension View {
     func setupPhotoNavigationHandlers(index: Binding<Int>, count: Int)
         -> some View
     {
@@ -41,9 +53,7 @@ extension View {
                 }
             }
     }
-}
 
-extension View {
     func setupHandlers(
         modalPresenter: ModalService,
         notifier: NotificationService,

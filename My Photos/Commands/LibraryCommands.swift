@@ -55,12 +55,12 @@ struct LibraryCommands: Commands {
 
             if presentationState.presentationMode == .grid {
                 Button("Switch to map view") {
-                    print("Something")
+                    AppIntents.togglePresentationMode()
                 }
                 .keyboardShortcut("M", modifiers: [.command])
             } else if presentationState.presentationMode == .map {
                 Button("Switch to grid view") {
-                    print("Something else")
+                    AppIntents.togglePresentationMode()
                 }
                 .keyboardShortcut("G", modifiers: [.command])
             }
