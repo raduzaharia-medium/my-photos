@@ -14,9 +14,9 @@ struct DetailViewToolbar: ToolbarContent {
             }
         )
         let selectionModeBinding = Binding<Bool>(
-            get: { presentationState.isSelecting },
+            get: { presentationState.showOnlySelected },
             set: { newMode in
-                guard newMode != presentationState.isSelecting else {
+                guard newMode != presentationState.showOnlySelected else {
                     return
                 }
                 AppIntents.toggleSelectionMode()
