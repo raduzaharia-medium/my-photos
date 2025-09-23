@@ -19,28 +19,24 @@ struct PhotosGrid: View {
     }
 
     var body: some View {
-        let selectionBinding: (Photo) -> Binding<Bool> = { photo in
-            Binding<Bool>(
-                get: { presentationState.isPhotoSelected(photo) },
-                set: { newValue in
-                    if newValue {
-                        AppIntents.selectPhoto(photo)
-                    } else {
-                        AppIntents.deselectPhoto(photo)
-                    }
-                }
-            )
-        }
-
         NavigationStack {
             ScrollView {
                 LazyVGrid(columns: Self.columns, spacing: 8) {
                     ForEach(photos) { photo in
-                        PhotosGridCell(
-                            photo: photo,
-                            isSelected: selectionBinding(photo)
-                        )
-                    }
+                        if presentationState.isSelecting {
+                            PhotoCard(
+                                photo,
+                                variant: .selectable,
+                                isSelected: presentationState.isPhotoSelected(photo)
+                            )
+                            .onTapGesture {
+                                AppIntents.togglePhotoSelection(photo)
+                            }
+                        } else {
+                            NavigationLink(value: photo) {
+                                PhotoCard(photo, variant: .grid)
+                            }
+                        }                    }
                     .buttonStyle(.plain)
                 }
                 .padding(.all)

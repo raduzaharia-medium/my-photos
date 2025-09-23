@@ -15,6 +15,16 @@ extension View {
         ) { note in
             guard let photo = note.object as? Photo else { return }
             presentationState.selectedPhotos.remove(photo)
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .togglePhotoSelection)
+        ) { note in
+            guard let photo = note.object as? Photo else { return }
+
+            if presentationState.selectedPhotos.contains(photo) {
+                presentationState.selectedPhotos.remove(photo)
+            } else {
+                presentationState.selectedPhotos.insert(photo)
+            }
         }
     }
 

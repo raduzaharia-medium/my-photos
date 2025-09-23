@@ -53,28 +53,14 @@ enum PhotoCardVariant: Hashable {
 }
 
 struct PhotoCard: View {
-    @Binding var isSelected: Bool
-
     private let photo: Photo
     private let variant: PhotoCardVariant
+    private var isSelected: Bool
 
-    init(_ photo: Photo, variant: PhotoCardVariant) {
+    init(_ photo: Photo, variant: PhotoCardVariant, isSelected: Bool = false) {
         self.photo = photo
         self.variant = variant
-        self._isSelected = PhotoCard.constantBinding(false)
-    }
-
-    init(_ photo: Photo, variant: PhotoCardVariant, isSelected: Binding<Bool>) {
-        self.photo = photo
-        self.variant = variant
-        self._isSelected = isSelected
-    }
-
-    private static func constantBinding(_ value: Bool) -> Binding<Bool> {
-        Binding<Bool>(
-            get: { value },
-            set: { _ in }
-        )
+        self.isSelected = isSelected
     }
 
     var body: some View {
@@ -113,11 +99,6 @@ struct PhotoCard: View {
             view.aspectRatio(1, contentMode: .fit)
         }
         .contentShape(Rectangle())
-        .applyIf(variant == .selectable) { view in
-            view.onTapGesture {
-                isSelected.toggle()
-            }
-        }
     }
 }
 
