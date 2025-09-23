@@ -1,18 +1,18 @@
 import SwiftUI
 
 struct PhotosGridCell: View {
+    @Environment(PresentationState.self) private var presentationState
+    
     let photo: Photo
-    let isSelectionMode: Bool
     let isSelected: Binding<Bool>
 
-    init(photo: Photo, isSelectionMode: Bool, isSelected: Binding<Bool>) {
+    init(photo: Photo, isSelected: Binding<Bool>) {
         self.photo = photo
-        self.isSelectionMode = isSelectionMode
         self.isSelected = isSelected
     }
 
     var body: some View {
-        if isSelectionMode {
+        if presentationState.isSelecting {
             PhotoCard(photo, variant: .selectable, isSelected: isSelected)
         } else {
             NavigationLink(value: photo) {

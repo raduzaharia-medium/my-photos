@@ -21,17 +21,6 @@ enum SidebarItem: Hashable {
     }
 }
 
-struct SidebarSelectionFocusedKey: FocusedValueKey {
-    typealias Value = Binding<Set<SidebarItem>>
-}
-
-extension FocusedValues {
-    var sidebarSelection: Binding<Set<SidebarItem>>? {
-        get { self[SidebarSelectionFocusedKey.self] }
-        set { self[SidebarSelectionFocusedKey.self] = newValue }
-    }
-}
-
 extension Set where Element == SidebarItem {
     var selectedTags: [Tag] {
         compactMap {

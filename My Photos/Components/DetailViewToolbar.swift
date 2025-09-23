@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct DetailViewToolbar: ToolbarContent {
-    @Binding var isSelectionMode: Bool
+    @Environment(PresentationState.self) private var presentationState
     @Binding var selectionCategory: SelectionCategory
     @Binding var presentationMode: PresentationMode
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            if isSelectionMode {
+            if presentationState.isSelecting {
                 Picker("Selection", selection: $selectionCategory) {
                     ForEach(SelectionCategory.allCases) { c in
                         Text(c.rawValue).tag(c)

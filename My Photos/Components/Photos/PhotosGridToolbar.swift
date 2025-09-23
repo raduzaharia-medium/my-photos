@@ -1,19 +1,28 @@
 import SwiftUI
 
 struct PhotosGridToolbar: ToolbarContent {
-    @Binding var isSelectionMode: Bool
+    @Environment(PresentationState.self) private var presentationState
     @Binding var selectedPhotos: Set<Photo>
 
     var body: some ToolbarContent {
+        @Bindable var presentation = presentationState
+        
         ToolbarItemGroup(placement: .primaryAction) {
             HStack(spacing: 6) {
-                Image(systemName: isSelectionMode ? "checkmark.circle.fill" : "checkmark.circle.badge.plus")
-                    .help(isSelectionMode ? "Exit selection mode" : "Enter selection mode")
+                Image(
+                    systemName: presentationState.isSelecting
+                        ? "checkmark.circle.fill"
+                        : "checkmark.circle.badge.plus"
+                )
+                .help(
+                    presentationState.isSelecting
+                        ? "Exit selection mode" : "Enter selection mode"
+                )
 
-                Toggle(isOn: $isSelectionMode) { EmptyView() }
+                Toggle(isOn: $presentation.isSelecting) { EmptyView() }
                     .toggleStyle(.switch)
                     .controlSize(.small)
-                    .onChange(of: isSelectionMode) { _, newValue in
+                    .onChange(of: presentationState.isSelecting) { _, newValue in
                         if !newValue {
                             selectedPhotos.removeAll()
                         }
