@@ -2,7 +2,6 @@ import SwiftUI
 
 struct PhotosGridToolbar: ToolbarContent {
     @Environment(PresentationState.self) private var presentationState
-    @Binding var selectedPhotos: Set<Photo>
 
     var body: some ToolbarContent {
         @Bindable var presentation = presentationState
@@ -30,13 +29,6 @@ struct PhotosGridToolbar: ToolbarContent {
                 Toggle(isOn: isSelectingBinding) { EmptyView() }
                     .toggleStyle(.switch)
                     .controlSize(.small)
-                    .onChange(of: presentationState.isSelecting) {
-                        _,
-                        newValue in
-                        if !newValue {
-                            selectedPhotos.removeAll()
-                        }
-                    }
             }
             .padding(.horizontal, 4)
         }

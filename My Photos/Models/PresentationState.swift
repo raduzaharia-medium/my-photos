@@ -5,6 +5,7 @@ import SwiftUI
 @Observable
 final class PresentationState {
     var photoFilter: Set<SidebarItem> = []
+    var selectedPhotos: Set<Photo> = []
     var presentationMode: PresentationMode = .grid
     var showOnlySelected: Bool = false
     var isSelecting: Bool = false
@@ -16,4 +17,8 @@ final class PresentationState {
     var canEditSelection: Bool { photoFilter.canEditSelection }
     var canDeleteSelection: Bool { photoFilter.canDeleteSelection }
     var canDeleteManySelection: Bool { photoFilter.canDeleteManySelection }
+    
+    func isPhotoSelected(_ photo: Photo) -> Bool {
+        return selectedPhotos.contains(photo)
+    }
 }

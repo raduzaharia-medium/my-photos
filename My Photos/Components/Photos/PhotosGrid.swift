@@ -9,17 +9,29 @@ struct PhotosGrid: View {
     @Environment(PresentationState.self) private var presentationState
     @Query(sort: \Photo.dateTaken, order: .reverse) private var allPhotos:
         [Photo]
-    @State private var selectedPhotos: Set<Photo> = []
 
     private var photos: [Photo] {
         let result = allPhotos.filtered(by: presentationState.photoFilter)
         guard presentationState.isSelecting else { return result }
         guard presentationState.showOnlySelected else { return result }
 
-        return result.filter { selectedPhotos.contains($0) }
+        return result.filter { presentationState.selectedPhotos.contains($0) }
     }
 
     var body: some View {
+        let selectionBinding: (Photo) -> Binding<Bool> = { photo in
+            Binding<Bool>(
+                get: { presentationState.isPhotoSelected(photo) },
+                set: { newValue in
+                    if newValue {
+                        AppIntents.selectPhoto(photo)
+                    } else {
+                        AppIntents.deselectPhoto(photo)
+                    }
+                }
+            )
+        }
+
         NavigationStack {
             ScrollView {
                 LazyVGrid(columns: Self.columns, spacing: 8) {
@@ -38,21 +50,9 @@ struct PhotosGrid: View {
                 PhotoNavigator(photos: photos, index: index)
             }
             .toolbar {
-                PhotosGridToolbar(selectedPhotos: $selectedPhotos)
+                PhotosGridToolbar()
             }
+            .setupPhotoSelectionHandlers(presentationState: presentationState)
         }
-    }
-
-    private func selectionBinding(_ photo: Photo) -> Binding<Bool> {
-        Binding<Bool>(
-            get: { selectedPhotos.contains(photo) },
-            set: { newValue in
-                if newValue {
-                    selectedPhotos.insert(photo)
-                } else {
-                    selectedPhotos.remove(photo)
-                }
-            }
-        )
     }
 }

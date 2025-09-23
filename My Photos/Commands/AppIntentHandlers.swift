@@ -2,6 +2,22 @@ import Foundation
 import SwiftUI
 
 extension View {
+    func setupPhotoSelectionHandlers(presentationState: PresentationState)
+        -> some View
+    {
+        return self.onReceive(
+            NotificationCenter.default.publisher(for: .selectPhoto)
+        ) { note in
+            guard let photo = note.object as? Photo else { return }
+            presentationState.selectedPhotos.insert(photo)
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .deselectPhoto)
+        ) { note in
+            guard let photo = note.object as? Photo else { return }
+            presentationState.selectedPhotos.remove(photo)
+        }
+    }
+
     func setupPresentationModeHandlers(presentationState: PresentationState)
         -> some View
     {
@@ -18,6 +34,7 @@ extension View {
         ) { _ in
             presentationState.isSelecting.toggle()
             presentationState.showOnlySelected = false
+            presentationState.selectedPhotos.removeAll()
         }.onReceive(
             NotificationCenter.default.publisher(for: .toggleSelectionFilter)
         ) { _ in

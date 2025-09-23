@@ -16,6 +16,8 @@ extension Notification.Name {
         "navigateToPreviousPhoto"
     )
     static let navigateToNextPhoto = Notification.Name("navigateToNextPhoto")
+    static let selectPhoto = Notification.Name("selectPhoto")
+    static let deselectPhoto = Notification.Name("deselectPhoto")
 }
 
 enum AppIntents {
@@ -56,5 +58,11 @@ enum AppIntents {
     }
     static func navigateToNextPhoto() {
         NotificationCenter.default.post(name: .navigateToNextPhoto, object: nil)
+    }
+    static func selectPhoto(_ photo: Photo) {
+        NotificationCenter.default.post(name: .selectPhoto, object: photo)
+    }
+    static func deselectPhoto(_ photo: Photo) {
+        NotificationCenter.default.post(name: .deselectPhoto, object: photo)
     }
 }
