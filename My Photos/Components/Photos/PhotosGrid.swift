@@ -27,7 +27,9 @@ struct PhotosGrid: View {
                             PhotoCard(
                                 photo,
                                 variant: .selectable,
-                                isSelected: presentationState.isPhotoSelected(photo)
+                                isSelected: presentationState.isPhotoSelected(
+                                    photo
+                                )
                             )
                             .onTapGesture {
                                 AppIntents.togglePhotoSelection(photo)
@@ -36,7 +38,8 @@ struct PhotosGrid: View {
                             NavigationLink(value: photo) {
                                 PhotoCard(photo, variant: .grid)
                             }
-                        }                    }
+                        }
+                    }
                     .buttonStyle(.plain)
                 }
                 .padding(.all)
