@@ -62,8 +62,13 @@ struct ContentView: View {
             presentationState: presentationState,
             photoStore: photoStore
         )
-        .onAppear() {
+        .setupTagLoadingHandlers(
+            presentationState: presentationState,
+            tagStore: tagStore
+        )
+        .onAppear {
             AppIntents.loadPhotos()
+            AppIntents.loadTags()
         }
     }
 }

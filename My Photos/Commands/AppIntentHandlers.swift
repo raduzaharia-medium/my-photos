@@ -2,6 +2,19 @@ import Foundation
 import SwiftUI
 
 extension View {
+    func setupTagLoadingHandlers(
+        presentationState: PresentationState,
+        tagStore: TagStore
+    ) -> some View {
+        return self.onReceive(
+            NotificationCenter.default.publisher(for: .loadTags)
+        ) { _ in
+            let tags = tagStore.getTags()
+            presentationState.tags = tags
+        }
+
+    }
+
     func setupPhotoLoadingHandlers(
         presentationState: PresentationState,
         photoStore: PhotoStore

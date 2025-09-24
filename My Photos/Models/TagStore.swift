@@ -13,6 +13,18 @@ final class TagStore {
         self.context = context
     }
 
+    func getTags() -> [Tag] {
+        let descriptor = FetchDescriptor<Tag>(
+            sortBy: [
+                SortDescriptor(\Tag.name, order: .forward)
+            ]
+        )
+
+        if let fetched = try? context.fetch(descriptor) { return fetched }
+        return []
+
+    }
+
     func create(name: String, kind: TagKind) throws {
         let tag = Tag(name: name, kind: kind)
 

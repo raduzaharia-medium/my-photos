@@ -12,6 +12,8 @@ enum PresentationMode: String, CaseIterable, Identifiable {
 @Observable
 final class PresentationState {
     var photos: [Photo] = []
+    var tags: [Tag] = []
+
     var photoFilter: Set<SidebarItem> = []
     var selectedPhotos: Set<Photo> = []
     var presentationMode: PresentationMode = .grid
@@ -19,6 +21,7 @@ final class PresentationState {
     var isSelecting: Bool = false
     var currentPhoto: Photo? = nil
 
+    var groupedTags: [TagKind: [Tag]] { Dictionary(grouping: tags, by: \.kind) }
     var filteredPhotos: [Photo] {
         let result = photos.filtered(by: photoFilter)
         guard isSelecting else { return result }
@@ -38,7 +41,7 @@ final class PresentationState {
     var canEditSelection: Bool { photoFilter.canEditSelection }
     var canDeleteSelection: Bool { photoFilter.canDeleteSelection }
     var canDeleteManySelection: Bool { photoFilter.canDeleteManySelection }
-   
+
     func isPhotoSelected(_ photo: Photo) -> Bool {
         return selectedPhotos.contains(photo)
     }

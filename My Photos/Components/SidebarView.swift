@@ -1,13 +1,7 @@
 import SwiftUI
-import SwiftData
 
 struct SidebarView: View {
     @Environment(PresentationState.self) private var presentationState
-    @Query(sort: \Tag.name, order: .forward) private var tags: [Tag]
-
-    private var groups: [TagKind: [Tag]] {
-        Dictionary(grouping: tags, by: { $0.kind })
-    }
 
     private var selectionBinding: Binding<Set<SidebarItem>> {
         Binding(
@@ -27,7 +21,7 @@ struct SidebarView: View {
             }
 
             ForEach(TagKind.allCases, id: \.self) { kind in
-                let sectionTags = groups[kind] ?? []
+                let sectionTags = presentationState.groupedTags[kind] ?? []
 
                 if !sectionTags.isEmpty {
                     Section(kind.title) {
