@@ -2,16 +2,13 @@ import SwiftUI
 
 final class EditTagPresenter: ObservableObject {
     let modalPresenter: ModalService
-    let notifier: NotificationService
     let tagStore: TagStore
 
     init(
         modalPresenter: ModalService,
-        notifier: NotificationService,
         tagStore: TagStore
     ) {
         self.modalPresenter = modalPresenter
-        self.notifier = notifier
         self.tagStore = tagStore
     }
 
@@ -29,7 +26,6 @@ final class EditTagPresenter: ObservableObject {
                                 kind: kind
                             )
                             
-                            self.notifier.show("Tag saved", .success)
                             self.modalPresenter.dismiss()
                         }
                     },

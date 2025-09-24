@@ -64,6 +64,7 @@ struct ContentView: View {
         )
         .setupTagLoadingHandlers(
             presentationState: presentationState,
+            notifier: notifier,
             tagStore: tagStore
         )
         .onAppear {

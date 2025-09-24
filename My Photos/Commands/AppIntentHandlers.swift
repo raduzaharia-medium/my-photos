@@ -4,6 +4,7 @@ import SwiftUI
 extension View {
     func setupTagLoadingHandlers(
         presentationState: PresentationState,
+        notifier: NotificationService,
         tagStore: TagStore
     ) -> some View {
         return self.onReceive(
@@ -17,8 +18,17 @@ extension View {
             guard let tag = note.object as? Tag else { return }
             guard let name = note.userInfo?["name"] as? String else { return }
             guard let kind = note.userInfo?["kind"] as? TagKind else { return }
-            
-            try? tagStore.update(tag.persistentModelID, name: name, kind: kind)
+
+            do {
+                try tagStore.update(
+                    tag.persistentModelID,
+                    name: name,
+                    kind: kind
+                )
+                notifier.show("Tag updated", .success)
+            } catch {
+                notifier.show("Could not update tag", .error)
+            }
         }
     }
 
@@ -158,7 +168,6 @@ extension View {
     ) -> some View {
         let editTagPresenter = EditTagPresenter(
             modalPresenter: modalPresenter,
-            notifier: notifier,
             tagStore: tagStore
         )
         let importPhotosPresenter = ImportPhotosPresenter(
