@@ -3,16 +3,10 @@ import SwiftUI
 final class DeleteTagPresenter: ObservableObject {
     let alerter: AlertService
     let notifier: NotificationService
-    let tagStore: TagStore
 
-    init(
-        alerter: AlertService,
-        notifier: NotificationService,
-        tagStore: TagStore,
-    ) {
+    init(alerter: AlertService, notifier: NotificationService) {
         self.alerter = alerter
         self.notifier = notifier
-        self.tagStore = tagStore
     }
 
     @MainActor
@@ -24,14 +18,8 @@ final class DeleteTagPresenter: ObservableObject {
                 actionLabel: "Delete",
                 onAction: {
                     withAnimation {
-                        do {
-                            try self.tagStore.delete(tag.id)
-
-                            AppIntents.resetPhotoFilter()
-                            self.notifier.show("Tag deleted", .success)
-                        } catch {
-                            self.notifier.show("Could not delete tag", .error)
-                        }
+                        AppIntents.deleteTag(tag)
+                        AppIntents.resetPhotoFilter()
                     }
                 }
             )
@@ -48,14 +36,9 @@ final class DeleteTagPresenter: ObservableObject {
                 actionLabel: "Delete",
                 onAction: {
                     withAnimation {
-                        do {
-                            try self.tagStore.delete(tags.map(\.id))
+                        AppIntents.deleteTags(tags)
+                        AppIntents.resetPhotoFilter()
 
-                            AppIntents.resetPhotoFilter()
-                            self.notifier.show("Tags deleted", .success)
-                        } catch {
-                            self.notifier.show("Could not delete tags", .error)
-                        }
                     }
                 }
             )

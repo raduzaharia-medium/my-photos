@@ -29,6 +29,29 @@ extension View {
             } catch {
                 notifier.show("Could not update tag", .error)
             }
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .deleteTag)
+        ) { note in
+            guard let tag = note.object as? Tag else { return }
+
+            do {
+                try tagStore.delete(tag.persistentModelID)
+                notifier.show("Tag deleted", .success)
+            } catch {
+                notifier.show("Could not delete tag", .error)
+            }
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(for: .deleteTags)
+        ) { note in
+            guard let tags = note.object as? [Tag] else { return }
+
+            do {
+                try tagStore.delete(tags.map(\.persistentModelID))
+                notifier.show("Tags deleted", .success)
+            } catch {
+                notifier.show("Could not delete tags", .error)
+            }
         }
     }
 
@@ -173,8 +196,7 @@ extension View {
         )
         let deleteTagPresenter = DeleteTagPresenter(
             alerter: alerter,
-            notifier: notifier,
-            tagStore: tagStore
+            notifier: notifier
         )
         let pickTagPresenter = PickTagPresenter(
             modalPresenter: modalPresenter,
