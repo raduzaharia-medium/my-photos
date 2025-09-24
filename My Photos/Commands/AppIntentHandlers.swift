@@ -34,6 +34,7 @@ extension View {
 
     func setupPhotoLoadingHandlers(
         presentationState: PresentationState,
+        notifier: NotificationService,
         photoStore: PhotoStore
     ) -> some View {
         return self.onReceive(
@@ -69,8 +70,7 @@ extension View {
             do {
                 try photoStore.tagPhotos(presentationState.selectedPhotos, tag)
             } catch {
-                // TODO: Surface error to the user via a notifier if available
-                print("Failed to tag photos: \(error)")
+                notifier.show("Failed to tag photos", .error)
             }
         }
     }
