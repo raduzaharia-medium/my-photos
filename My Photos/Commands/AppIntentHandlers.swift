@@ -2,19 +2,23 @@ import Foundation
 import SwiftUI
 
 extension View {
+    func setupPhotoLoadingHandlers(
+        presentationState: PresentationState,
+        photoStore: PhotoStore
+    ) -> some View {
+        return self.onReceive(
+            NotificationCenter.default.publisher(for: .loadPhotos)
+        ) { _ in
+            let photos = photoStore.getPhotos()
+            presentationState.photos = photos
+        }
+    }
+
     func setupPhotoSelectionHandlers(presentationState: PresentationState)
         -> some View
     {
         return
             self
-            .onReceive(
-                NotificationCenter.default.publisher(for: .updatePhotos)
-            ) { note in
-                guard let photos = note.object as? [Photo] else {
-                    return
-                }
-                presentationState.photos = photos
-            }
             .onReceive(
                 NotificationCenter.default.publisher(for: .selectPhoto)
             ) { note in

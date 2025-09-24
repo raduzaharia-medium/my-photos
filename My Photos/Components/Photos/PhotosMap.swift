@@ -1,11 +1,8 @@
 import MapKit
-import SwiftData
 import SwiftUI
 
 struct PhotosMap: View {
     @Environment(PresentationState.self) private var presentationState
-    @Query(sort: \Photo.dateTaken, order: .reverse) private var allPhotos:
-        [Photo]
     @State private var camera: MapCameraPosition = .automatic
 
     var body: some View {
@@ -22,7 +19,7 @@ struct PhotosMap: View {
             }
         }
         .onAppear() {
-            AppIntents.updatePhotos(allPhotos)
+            AppIntents.loadPhotos()
         }
     }
 }

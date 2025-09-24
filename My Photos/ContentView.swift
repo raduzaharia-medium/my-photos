@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.modelContext) private var context
+    @Environment(PresentationState.self) private var presentationState
 
     @StateObject private var modalPresenter = ModalService()
     @StateObject private var alerter = AlertService()
@@ -10,6 +11,7 @@ struct ContentView: View {
     @StateObject private var notifier = NotificationService()
 
     private var tagStore: TagStore { TagStore(context: context) }
+    private var photoStore: PhotoStore { PhotoStore(context: context) }
 
     var body: some View {
         NavigationSplitView {
@@ -55,6 +57,10 @@ struct ContentView: View {
             fileImporter: fileImporter,
             alerter: alerter,
             tagStore: tagStore
+        )
+        .setupPhotoLoadingHandlers(
+            presentationState: presentationState,
+            photoStore: photoStore
         )
     }
 }

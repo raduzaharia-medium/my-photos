@@ -1,4 +1,3 @@
-import SwiftData
 import SwiftUI
 
 struct PhotosGrid: View {
@@ -7,8 +6,6 @@ struct PhotosGrid: View {
     ]
 
     @Environment(PresentationState.self) private var presentationState
-    @Query(sort: \Photo.dateTaken, order: .reverse) private var allPhotos:
-        [Photo]
 
     var body: some View {
         NavigationStack {
@@ -49,7 +46,7 @@ struct PhotosGrid: View {
                 PhotosGridToolbar()
             }
             .onAppear() {
-                AppIntents.updatePhotos(allPhotos)
+                AppIntents.loadPhotos()
             }
             .setupPhotoSelectionHandlers(presentationState: presentationState)
         }
