@@ -166,7 +166,6 @@ extension View {
         let pickTagPresenter = PickTagPresenter(
             modalPresenter: modalPresenter,
             notifier: notifier,
-            tagStore: tagStore
         )
 
         return
