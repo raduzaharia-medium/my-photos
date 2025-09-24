@@ -1,6 +1,6 @@
 import SwiftUI
 
-class DeleteTagPresenter: ObservableObject {
+final class DeleteTagPresenter: ObservableObject {
     let alerter: AlertService
     let notifier: NotificationService
     let tagStore: TagStore

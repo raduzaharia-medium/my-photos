@@ -35,4 +35,12 @@ final class PhotoStore {
 
         return (try? context.fetch(descriptor)) ?? []
     }
+    
+    func tagPhotos(_ photos: Set<Photo>, _ tag: Tag) throws {
+        for photo in photos {
+            photo.tags.append(tag)
+        }
+        
+        try context.save()
+    }
 }

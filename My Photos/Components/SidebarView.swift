@@ -23,11 +23,9 @@ struct SidebarView: View {
             ForEach(TagKind.allCases, id: \.self) { kind in
                 let sectionTags = presentationState.groupedTags[kind] ?? []
 
-                if !sectionTags.isEmpty {
-                    Section(kind.title) {
-                        ForEach(sectionTags, id: \.persistentModelID) { tag in
-                            SidebarRow(.tag(tag))
-                        }
+                Section(kind.title) {
+                    ForEach(sectionTags, id: \.persistentModelID) { tag in
+                        SidebarRow(.tag(tag))
                     }
                 }
             }

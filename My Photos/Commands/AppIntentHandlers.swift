@@ -29,7 +29,7 @@ extension View {
         ) { _ in
             presentationState.photoFilter.removeAll()
             presentationState.photoFilter.insert(SidebarItem.filter(.all))
-            
+
             let photos = photoStore.getPhotos()
             presentationState.photos = photos
         }.onReceive(
@@ -38,12 +38,23 @@ extension View {
             guard let photoFilters = note.object as? Set<SidebarItem> else {
                 return
             }
-            
+
             presentationState.photoFilter.removeAll()
             presentationState.photoFilter.formUnion(photoFilters)
-        
+
             let photos = photoStore.getPhotos(photoFilters)
             presentationState.photos = photos
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .tagSelectedPhotos)
+        ) { note in
+            guard let tag = note.object as? Tag else { return }
+            
+            do {
+                try photoStore.tagPhotos(presentationState.selectedPhotos, tag)
+            } catch {
+                // TODO: Surface error to the user via a notifier if available
+                print("Failed to tag photos: \(error)")
+            }
         }
     }
 
@@ -152,17 +163,22 @@ extension View {
             notifier: notifier,
             tagStore: tagStore
         )
+        let pickTagPresenter = PickTagPresenter(
+            modalPresenter: modalPresenter,
+            notifier: notifier,
+            tagStore: tagStore
+        )
 
         return
             self
             .onReceive(
                 NotificationCenter.default.publisher(for: .requestImportPhotos)
-            ) { note in
+            ) { _ in
                 importPhotosPresenter.show()
             }
             .onReceive(
                 NotificationCenter.default.publisher(for: .requestCreateTag)
-            ) { note in
+            ) { _ in
                 editTagPresenter.show(nil)
             }
             .onReceive(
@@ -182,6 +198,11 @@ extension View {
             ) { note in
                 guard let tags = note.object as? [Tag] else { return }
                 deleteTagPresenter.show(tags)
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(for: .requestTagPhotos)
+            ) { _ in
+                pickTagPresenter.show()
             }
     }
 }

@@ -38,7 +38,9 @@ struct TagEditorSheet: View {
                         .textFieldStyle(.roundedBorder)
                         .focused($nameFocused)
                         .submitLabel(.done)
-                        .onSubmit(save)
+                        .onSubmit {
+                            onSave(tag, trimmedName, kind)
+                        }
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
@@ -60,17 +62,13 @@ struct TagEditorSheet: View {
                         Button("Cancel", role: .cancel) { onCancel() }
                     }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Save", action: save)
-                            .keyboardShortcut(.defaultAction)
+                        Button("Save", role: .confirm) {
+                            onSave(tag, trimmedName, kind)
+                        }.keyboardShortcut(.defaultAction)
                             .disabled(!canSave)
                     }
                 }
                 .interactiveDismissDisabled(!canSave)
         }
-    }
-
-    private func save() {
-        guard canSave else { return }
-        onSave(tag, trimmedName, kind)
     }
 }

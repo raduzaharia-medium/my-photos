@@ -1,6 +1,6 @@
 import SwiftUI
 
-class ImportPhotosPresenter: ObservableObject {
+final class ImportPhotosPresenter: ObservableObject {
     let fileImporter: FileImportService
     let notifier: NotificationService
 

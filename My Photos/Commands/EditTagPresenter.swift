@@ -1,16 +1,20 @@
 import SwiftUI
 
-class EditTagPresenter: ObservableObject {
+final class EditTagPresenter: ObservableObject {
     let modalPresenter: ModalService
     let notifier: NotificationService
     let tagStore: TagStore
 
-    init(modalPresenter: ModalService, notifier: NotificationService, tagStore: TagStore) {
+    init(
+        modalPresenter: ModalService,
+        notifier: NotificationService,
+        tagStore: TagStore
+    ) {
         self.modalPresenter = modalPresenter
         self.notifier = notifier
         self.tagStore = tagStore
     }
-    
+
     @MainActor
     func show(_ tag: Tag?) {
         withAnimation {
@@ -20,7 +24,11 @@ class EditTagPresenter: ObservableObject {
                     onSave: { original, name, kind in
                         withAnimation {
                             do {
-                                try self.tagStore.upsert(original?.id, name: name, kind: kind)
+                                try self.tagStore.upsert(
+                                    original?.id,
+                                    name: name,
+                                    kind: kind
+                                )
                                 self.notifier.show("Tag saved", .success)
                             } catch {
                                 self.notifier.show("Could not save tag", .error)
@@ -34,4 +42,3 @@ class EditTagPresenter: ObservableObject {
         }
     }
 }
-
