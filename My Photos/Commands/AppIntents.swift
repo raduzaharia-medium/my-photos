@@ -7,7 +7,9 @@ extension Notification.Name {
     static let requestDeleteTags = Notification.Name("requestDeleteTags")
     static let requestImportPhotos = Notification.Name("requestImportPhotos")
 
-    static let resetTagSelection = Notification.Name("resetTagSelection")
+    static let resetPhotoFilter = Notification.Name("resetPhotoFilter")
+    static let updatePhotoFilter = Notification.Name("updatePhotoFilter")
+    
     static let togglePresentationMode = Notification.Name("togglePresentationMode")
     static let toggleSelectionMode = Notification.Name("toggleSelectionMode")
     static let toggleSelectionFilter = Notification.Name("toggleSelectionFilter")
@@ -38,9 +40,13 @@ enum AppIntents {
         NotificationCenter.default.post(name: .requestImportPhotos, object: nil)
     }
 
-    static func resetTagSelection() {
-        NotificationCenter.default.post(name: .resetTagSelection, object: nil)
+    static func resetPhotoFilter() {
+        NotificationCenter.default.post(name: .resetPhotoFilter, object: nil)
     }
+    static func updatePhotoFilter(_ photoFilters: Set<SidebarItem>) {
+        NotificationCenter.default.post(name: .updatePhotoFilter, object: photoFilters)
+    }
+    
     static func togglePresentationMode() {
         NotificationCenter.default.post(name: .togglePresentationMode, object: nil)
     }

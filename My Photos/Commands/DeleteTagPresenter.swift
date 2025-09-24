@@ -27,7 +27,7 @@ class DeleteTagPresenter: ObservableObject {
                         do {
                             try self.tagStore.delete(tag.id)
 
-                            AppIntents.resetTagSelection()
+                            AppIntents.resetPhotoFilter()
                             self.notifier.show("Tag deleted", .success)
                         } catch {
                             self.notifier.show("Could not delete tag", .error)
@@ -51,7 +51,7 @@ class DeleteTagPresenter: ObservableObject {
                         do {
                             try self.tagStore.delete(tags.map(\.id))
 
-                            AppIntents.resetTagSelection()
+                            AppIntents.resetPhotoFilter()
                             self.notifier.show("Tags deleted", .success)
                         } catch {
                             self.notifier.show("Could not delete tags", .error)

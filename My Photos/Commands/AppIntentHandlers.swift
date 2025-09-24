@@ -52,18 +52,21 @@ extension View {
         }
     }
 
-    func setupSidebarHandlers(
-        selection: Binding<Set<SidebarItem>>,
-        filters: [Filter]
-    ) -> some View {
+    func setupSidebarHandlers(presentationState: PresentationState) -> some View
+    {
         return self.onReceive(
-            NotificationCenter.default.publisher(for: .resetTagSelection)
+            NotificationCenter.default.publisher(for: .resetPhotoFilter)
         ) { _ in
-            selection.wrappedValue.removeAll()
-
-            if let firstFilter = filters.first {
-                selection.wrappedValue = [SidebarItem.filter(firstFilter)]
+            presentationState.photoFilter.removeAll()
+            presentationState.photoFilter.insert(SidebarItem.filter(.all))
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .updatePhotoFilter)
+        ) { note in
+            guard let photoFilters = note.object as? Set<SidebarItem> else {
+                return
             }
+            presentationState.photoFilter.removeAll()
+            presentationState.photoFilter.formUnion(photoFilters)
         }
     }
 
