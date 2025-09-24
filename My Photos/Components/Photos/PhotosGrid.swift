@@ -45,9 +45,6 @@ struct PhotosGrid: View {
             .toolbar {
                 PhotosGridToolbar()
             }
-            .onAppear() {
-                AppIntents.loadPhotos()
-            }
             .setupPhotoSelectionHandlers(presentationState: presentationState)
         }
     }

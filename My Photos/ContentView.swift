@@ -62,5 +62,8 @@ struct ContentView: View {
             presentationState: presentationState,
             photoStore: photoStore
         )
+        .onAppear() {
+            AppIntents.loadPhotos()
+        }
     }
 }

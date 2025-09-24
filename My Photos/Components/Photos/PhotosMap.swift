@@ -18,8 +18,5 @@ struct PhotosMap: View {
                 }
             }
         }
-        .onAppear() {
-            AppIntents.loadPhotos()
-        }
     }
 }
