@@ -22,21 +22,24 @@ struct PhotosGridToolbar: ToolbarContent {
                     } label: {
                         Image(systemName: "tag")
                     }.controlSize(.regular)
-                        .disabled(presentationState.selectedPhotos.isEmpty)
+                        .disabled(
+                            presentationState.selectedPhotos.isEmpty
+                                && !presentationState.allPhotosSelected
+                        )
 
                     Button {
-
+                        AppIntents.toggleSelectAllPhotos()
                     } label: {
                         Image(
-                            systemName: presentationState.isSelecting
+                            systemName: presentationState.allPhotosSelected
                                 ? "checkmark.circle.fill"
                                 : "checkmark.circle"
                         )
                     }.controlSize(.regular)
-                    
+
                     Spacer()
                 }
-                
+
                 Image(systemName: "checkmark.circle.badge.plus")
                     .help(
                         presentationState.isSelecting

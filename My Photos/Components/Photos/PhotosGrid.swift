@@ -16,9 +16,8 @@ struct PhotosGrid: View {
                             PhotoCard(
                                 photo,
                                 variant: .selectable,
-                                isSelected: presentationState.isPhotoSelected(
-                                    photo
-                                )
+                                isSelected: presentationState.allPhotosSelected
+                                    || presentationState.isPhotoSelected(photo)
                             )
                             .onTapGesture {
                                 AppIntents.togglePhotoSelection(photo)

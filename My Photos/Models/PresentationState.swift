@@ -32,6 +32,9 @@ final class PresentationState {
         guard let currentPhoto else { return nil }
         return filteredPhotos.firstIndex(of: currentPhoto)
     }
+    var allPhotosSelected: Bool {
+        return Set(filteredPhotos).isSubset(of: selectedPhotos)
+    }
 
     var selectedTags: [Tag] { photoFilter.selectedTags }
     var selectedFilters: [Filter] { photoFilter.selectedFilters }

@@ -35,6 +35,9 @@ extension Notification.Name {
     static let selectPhoto = Notification.Name("selectPhoto")
     static let deselectPhoto = Notification.Name("deselectPhoto")
     static let togglePhotoSelection = Notification.Name("togglePhotoSelection")
+    static let toggleSelectAllPhotos = Notification.Name(
+        "toggleSelectAllPhotos"
+    )
     static let tagSelectedPhotos = Notification.Name("tagSelectedPhotos")
 }
 
@@ -74,7 +77,7 @@ enum AppIntents {
     static func deleteTags(_ tags: [Tag]) {
         NotificationCenter.default.post(name: .deleteTags, object: tags)
     }
-    
+
     static func resetPhotoFilter() {
         NotificationCenter.default.post(name: .resetPhotoFilter, object: nil)
     }
@@ -133,6 +136,12 @@ enum AppIntents {
         NotificationCenter.default.post(
             name: .togglePhotoSelection,
             object: photo
+        )
+    }
+    static func toggleSelectAllPhotos() {
+        NotificationCenter.default.post(
+            name: .toggleSelectAllPhotos,
+            object: nil
         )
     }
     static func tagSelectedPhotos(_ tag: Tag) {

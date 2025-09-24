@@ -136,6 +136,11 @@ extension View {
                 } else {
                     presentationState.selectedPhotos.insert(photo)
                 }
+            }.onReceive(
+                NotificationCenter.default.publisher(for: .toggleSelectAllPhotos)
+            ) { note in
+                presentationState.selectedPhotos.removeAll()
+                presentationState.selectedPhotos.formUnion(presentationState.photos)
             }
     }
 
