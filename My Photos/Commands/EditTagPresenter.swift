@@ -2,14 +2,9 @@ import SwiftUI
 
 final class EditTagPresenter: ObservableObject {
     let modalPresenter: ModalService
-    let tagStore: TagStore
 
-    init(
-        modalPresenter: ModalService,
-        tagStore: TagStore
-    ) {
+    init(modalPresenter: ModalService) {
         self.modalPresenter = modalPresenter
-        self.tagStore = tagStore
     }
 
     @MainActor
@@ -25,7 +20,7 @@ final class EditTagPresenter: ObservableObject {
                                 name: name,
                                 kind: kind
                             )
-                            
+
                             self.modalPresenter.dismiss()
                         }
                     },

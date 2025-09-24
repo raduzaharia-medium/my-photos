@@ -166,10 +166,7 @@ extension View {
         alerter: AlertService,
         tagStore: TagStore
     ) -> some View {
-        let editTagPresenter = EditTagPresenter(
-            modalPresenter: modalPresenter,
-            tagStore: tagStore
-        )
+        let editTagPresenter = EditTagPresenter(modalPresenter: modalPresenter)
         let importPhotosPresenter = ImportPhotosPresenter(
             fileImporter: fileImporter,
             notifier: notifier
