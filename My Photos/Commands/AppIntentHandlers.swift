@@ -75,6 +75,19 @@ extension View {
                 presentationState.photos = photos
             }
         }.onReceive(
+            NotificationCenter.default.publisher(for: .importPhotos)
+        ) { note in
+            withAnimation {
+                guard let folder = note.object as? URL else { return }
+
+                // TODO: Import photos
+                notifier.show(
+                    "Imported \(folder.lastPathComponent)",
+                    .success
+                )
+
+            }
+        }.onReceive(
             NotificationCenter.default.publisher(for: .resetPhotoFilter)
         ) { _ in
             withAnimation {

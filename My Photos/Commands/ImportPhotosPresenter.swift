@@ -16,11 +16,7 @@ final class ImportPhotosPresenter: ObservableObject {
                 switch result {
                 case .success(let urls):
                     guard let folder = urls.first else { return }
-                    self.notifier.show(
-                        "Imported \(folder.lastPathComponent)",
-                        .success
-                    )
-
+                    AppIntents.importPhotos(folder)
                 case .failure(let error):
                     self.notifier.show(
                         "Failed to import: \(error.localizedDescription)",

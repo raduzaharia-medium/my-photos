@@ -25,6 +25,7 @@ extension Notification.Name {
     )
 
     static let loadPhotos = Notification.Name("loadPhotos")
+    static let importPhotos = Notification.Name("importPhotos")
     static let resetPhotoNavigation = Notification.Name("resetPhotoNavigation")
     static let navigateToPhoto = Notification.Name("navigateToPhoto")
     static let navigateToPreviousPhoto = Notification.Name(
@@ -106,6 +107,9 @@ enum AppIntents {
 
     static func loadPhotos() {
         NotificationCenter.default.post(name: .loadPhotos, object: nil)
+    }
+    static func importPhotos(_ folder: URL) {
+        NotificationCenter.default.post(name: .importPhotos, object: folder)
     }
     static func resetPhotoNavigation() {
         NotificationCenter.default.post(
