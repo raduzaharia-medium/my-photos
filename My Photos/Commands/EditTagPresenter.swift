@@ -23,16 +23,13 @@ final class EditTagPresenter: ObservableObject {
                     tag,
                     onSave: { original, name, kind in
                         withAnimation {
-                            do {
-                                try self.tagStore.upsert(
-                                    original?.id,
-                                    name: name,
-                                    kind: kind
-                                )
-                                self.notifier.show("Tag saved", .success)
-                            } catch {
-                                self.notifier.show("Could not save tag", .error)
-                            }
+                            AppIntents.editTag(
+                                original!,
+                                name: name,
+                                kind: kind
+                            )
+                            
+                            self.notifier.show("Tag saved", .success)
                             self.modalPresenter.dismiss()
                         }
                     },

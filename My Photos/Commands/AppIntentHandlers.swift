@@ -11,8 +11,15 @@ extension View {
         ) { _ in
             let tags = tagStore.getTags()
             presentationState.tags = tags
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .editTag)
+        ) { note in
+            guard let tag = note.object as? Tag else { return }
+            guard let name = note.userInfo?["name"] as? String else { return }
+            guard let kind = note.userInfo?["kind"] as? TagKind else { return }
+            
+            try? tagStore.update(tag.persistentModelID, name: name, kind: kind)
         }
-
     }
 
     func setupPhotoLoadingHandlers(
@@ -48,7 +55,7 @@ extension View {
             NotificationCenter.default.publisher(for: .tagSelectedPhotos)
         ) { note in
             guard let tag = note.object as? Tag else { return }
-            
+
             do {
                 try photoStore.tagPhotos(presentationState.selectedPhotos, tag)
             } catch {
