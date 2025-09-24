@@ -36,6 +36,9 @@ extension View {
 
             do {
                 try tagStore.delete(tag.persistentModelID)
+                presentationState.tags.removeAll(where: {
+                    $0.persistentModelID == tag.persistentModelID
+                })
                 notifier.show("Tag deleted", .success)
             } catch {
                 notifier.show("Could not delete tag", .error)
@@ -45,9 +48,13 @@ extension View {
             NotificationCenter.default.publisher(for: .deleteTags)
         ) { note in
             guard let tags = note.object as? [Tag] else { return }
+            let ids = Set(tags.map(\.persistentModelID))
 
             do {
                 try tagStore.delete(tags.map(\.persistentModelID))
+                presentationState.tags.removeAll {
+                    ids.contains($0.persistentModelID)
+                }
                 notifier.show("Tags deleted", .success)
             } catch {
                 notifier.show("Could not delete tags", .error)
@@ -63,16 +70,20 @@ extension View {
         return self.onReceive(
             NotificationCenter.default.publisher(for: .loadPhotos)
         ) { _ in
-            let photos = photoStore.getPhotos()
-            presentationState.photos = photos
+            withAnimation {
+                let photos = photoStore.getPhotos()
+                presentationState.photos = photos
+            }
         }.onReceive(
             NotificationCenter.default.publisher(for: .resetPhotoFilter)
         ) { _ in
-            presentationState.photoFilter.removeAll()
-            presentationState.photoFilter.insert(SidebarItem.filter(.all))
+            withAnimation {
+                presentationState.photoFilter.removeAll()
+                presentationState.photoFilter.insert(SidebarItem.filter(.all))
 
-            let photos = photoStore.getPhotos()
-            presentationState.photos = photos
+                let photos = photoStore.getPhotos()
+                presentationState.photos = photos
+            }
         }.onReceive(
             NotificationCenter.default.publisher(for: .updatePhotoFilter)
         ) { note in
@@ -80,11 +91,13 @@ extension View {
                 return
             }
 
-            presentationState.photoFilter.removeAll()
-            presentationState.photoFilter.formUnion(photoFilters)
+            withAnimation {
+                presentationState.photoFilter.removeAll()
+                presentationState.photoFilter.formUnion(photoFilters)
 
-            let photos = photoStore.getPhotos(photoFilters)
-            presentationState.photos = photos
+                let photos = photoStore.getPhotos(photoFilters)
+                presentationState.photos = photos
+            }
         }.onReceive(
             NotificationCenter.default.publisher(for: .tagSelectedPhotos)
         ) { note in
@@ -146,7 +159,9 @@ extension View {
         }.onReceive(
             NotificationCenter.default.publisher(for: .toggleSelectionFilter)
         ) { _ in
-            presentationState.showOnlySelected.toggle()
+            withAnimation {
+                presentationState.showOnlySelected.toggle()
+            }
         }
     }
 
