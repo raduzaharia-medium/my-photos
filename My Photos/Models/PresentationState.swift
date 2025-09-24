@@ -23,11 +23,10 @@ final class PresentationState {
 
     var groupedTags: [TagKind: [Tag]] { Dictionary(grouping: tags, by: \.kind) }
     var filteredPhotos: [Photo] {
-        let result = photos.filtered(by: photoFilter)
-        guard isSelecting else { return result }
-        guard showOnlySelected else { return result }
+        guard isSelecting else { return photos }
+        guard showOnlySelected else { return photos }
 
-        return result.filter { selectedPhotos.contains($0) }
+        return photos.filter { selectedPhotos.contains($0) }
     }
     var currentPhotoIndex: Int? {
         guard let currentPhoto else { return nil }

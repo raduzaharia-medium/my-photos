@@ -35,7 +35,6 @@ struct SidebarView: View {
         .task {
             AppIntents.resetPhotoFilter()
         }
-        .setupSidebarHandlers(presentationState: presentationState)
         #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
         #endif

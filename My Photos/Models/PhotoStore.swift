@@ -18,4 +18,21 @@ final class PhotoStore {
         if let fetched = try? context.fetch(descriptor) { return fetched }
         return []
     }
+    func getPhotos(_ filters: Set<SidebarItem>) -> [Photo] {
+        let selectedTags = filters.selectedTags
+        let selectedTagNames = selectedTags.map(\.name)
+        var descriptor = FetchDescriptor<Photo>(
+            sortBy: [SortDescriptor(\Photo.dateTaken, order: .reverse)]
+        )
+
+        if !selectedTags.isEmpty {
+            descriptor.predicate = #Predicate<Photo> { photo in
+                photo.tags.contains { tag in
+                    selectedTagNames.contains(tag.name)
+                }
+            }
+        }
+
+        return (try? context.fetch(descriptor)) ?? []
+    }
 }

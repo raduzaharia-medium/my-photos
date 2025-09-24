@@ -24,6 +24,26 @@ extension View {
         ) { _ in
             let photos = photoStore.getPhotos()
             presentationState.photos = photos
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .resetPhotoFilter)
+        ) { _ in
+            presentationState.photoFilter.removeAll()
+            presentationState.photoFilter.insert(SidebarItem.filter(.all))
+            
+            let photos = photoStore.getPhotos()
+            presentationState.photos = photos
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .updatePhotoFilter)
+        ) { note in
+            guard let photoFilters = note.object as? Set<SidebarItem> else {
+                return
+            }
+            
+            presentationState.photoFilter.removeAll()
+            presentationState.photoFilter.formUnion(photoFilters)
+        
+            let photos = photoStore.getPhotos(photoFilters)
+            presentationState.photos = photos
         }
     }
 
@@ -76,24 +96,6 @@ extension View {
             NotificationCenter.default.publisher(for: .toggleSelectionFilter)
         ) { _ in
             presentationState.showOnlySelected.toggle()
-        }
-    }
-
-    func setupSidebarHandlers(presentationState: PresentationState) -> some View
-    {
-        return self.onReceive(
-            NotificationCenter.default.publisher(for: .resetPhotoFilter)
-        ) { _ in
-            presentationState.photoFilter.removeAll()
-            presentationState.photoFilter.insert(SidebarItem.filter(.all))
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .updatePhotoFilter)
-        ) { note in
-            guard let photoFilters = note.object as? Set<SidebarItem> else {
-                return
-            }
-            presentationState.photoFilter.removeAll()
-            presentationState.photoFilter.formUnion(photoFilters)
         }
     }
 
