@@ -5,27 +5,37 @@ extension View {
     func setupPhotoSelectionHandlers(presentationState: PresentationState)
         -> some View
     {
-        return self.onReceive(
-            NotificationCenter.default.publisher(for: .selectPhoto)
-        ) { note in
-            guard let photo = note.object as? Photo else { return }
-            presentationState.selectedPhotos.insert(photo)
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .deselectPhoto)
-        ) { note in
-            guard let photo = note.object as? Photo else { return }
-            presentationState.selectedPhotos.remove(photo)
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .togglePhotoSelection)
-        ) { note in
-            guard let photo = note.object as? Photo else { return }
-
-            if presentationState.selectedPhotos.contains(photo) {
-                presentationState.selectedPhotos.remove(photo)
-            } else {
-                presentationState.selectedPhotos.insert(photo)
+        return
+            self
+            .onReceive(
+                NotificationCenter.default.publisher(for: .updatePhotos)
+            ) { note in
+                guard let photos = note.object as? [Photo] else {
+                    return
+                }
+                presentationState.photos = photos
             }
-        }
+            .onReceive(
+                NotificationCenter.default.publisher(for: .selectPhoto)
+            ) { note in
+                guard let photo = note.object as? Photo else { return }
+                presentationState.selectedPhotos.insert(photo)
+            }.onReceive(
+                NotificationCenter.default.publisher(for: .deselectPhoto)
+            ) { note in
+                guard let photo = note.object as? Photo else { return }
+                presentationState.selectedPhotos.remove(photo)
+            }.onReceive(
+                NotificationCenter.default.publisher(for: .togglePhotoSelection)
+            ) { note in
+                guard let photo = note.object as? Photo else { return }
+
+                if presentationState.selectedPhotos.contains(photo) {
+                    presentationState.selectedPhotos.remove(photo)
+                } else {
+                    presentationState.selectedPhotos.insert(photo)
+                }
+            }
     }
 
     func setupPresentationModeHandlers(presentationState: PresentationState)
@@ -70,10 +80,7 @@ extension View {
         }
     }
 
-    func setupPhotoNavigationHandlers(
-        presentationState: PresentationState,
-        photos: [Photo]
-    )
+    func setupPhotoNavigationHandlers(presentationState: PresentationState)
         -> some View
     {
         return
@@ -96,12 +103,12 @@ extension View {
                     for: .navigateToPreviousPhoto
                 )
             ) { _ in
-                presentationState.selectPreviousPhoto(photos)
+                presentationState.goToPreviousPhoto()
             }
             .onReceive(
                 NotificationCenter.default.publisher(for: .navigateToNextPhoto)
             ) { _ in
-                presentationState.selectNextPhoto(photos)
+                presentationState.goToNextPhoto()
             }
     }
 

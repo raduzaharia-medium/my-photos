@@ -8,13 +8,9 @@ struct PhotosMap: View {
         [Photo]
     @State private var camera: MapCameraPosition = .automatic
 
-    private var photos: [Photo] {
-        allPhotos.filtered(by: presentationState.photoFilter)
-    }
-
     var body: some View {
         Map(position: $camera) {
-            ForEach(photos) { photo in
+            ForEach(presentationState.filteredPhotos) { photo in
                 Annotation("",
                     coordinate: CLLocationCoordinate2D(
                         latitude: photo.location.latitude,
@@ -24,6 +20,9 @@ struct PhotosMap: View {
                     PhotoCard(photo, variant: .pin)
                 }
             }
+        }
+        .onAppear() {
+            AppIntents.updatePhotos(allPhotos)
         }
     }
 }

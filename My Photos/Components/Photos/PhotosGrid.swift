@@ -11,12 +11,10 @@ struct PhotosGrid: View {
         [Photo]
 
     var body: some View {
-        let filteredPhotos = presentationState.getFilteredPhotos(allPhotos)
-
         NavigationStack {
             ScrollView {
                 LazyVGrid(columns: Self.columns, spacing: 8) {
-                    ForEach(filteredPhotos) { photo in
+                    ForEach(presentationState.filteredPhotos) { photo in
                         if presentationState.isSelecting {
                             PhotoCard(
                                 photo,
@@ -39,7 +37,7 @@ struct PhotosGrid: View {
                 .padding(.all)
             }
             .navigationDestination(for: Photo.self) { photo in
-                PhotoNavigator(photos: filteredPhotos)
+                PhotoNavigator()
                     .onAppear {
                         AppIntents.navigateToPhoto(photo)
                     }
@@ -49,6 +47,9 @@ struct PhotosGrid: View {
             }
             .toolbar {
                 PhotosGridToolbar()
+            }
+            .onAppear() {
+                AppIntents.updatePhotos(allPhotos)
             }
             .setupPhotoSelectionHandlers(presentationState: presentationState)
         }

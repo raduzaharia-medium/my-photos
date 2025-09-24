@@ -3,12 +3,6 @@ import SwiftUI
 struct PhotoNavigatorToolbar: ToolbarContent {
     @Environment(PresentationState.self) private var presentationState
 
-    let photos: [Photo]
-
-    init(_ photos: [Photo]) {
-        self.photos = photos
-    }
-
     var body: some ToolbarContent {
         ToolbarItemGroup(placement: .automatic) {
             Button(action: {
@@ -17,7 +11,7 @@ struct PhotoNavigatorToolbar: ToolbarContent {
                 Image(systemName: "chevron.left")
             }
             .help("Previous photo")
-            .disabled(presentationState.getCurrentPhotoIndex(photos) ?? 0 <= 0)
+            .disabled(presentationState.currentPhotoIndex ?? 0 <= 0)
             .keyboardShortcut(.leftArrow, modifiers: [])
 
             Button(action: {
@@ -27,8 +21,8 @@ struct PhotoNavigatorToolbar: ToolbarContent {
             }
             .help("Next photo")
             .disabled(
-                presentationState.getCurrentPhotoIndex(photos) ?? 0
-                    >= presentationState.getFilteredPhotos(photos).count - 1
+                presentationState.currentPhotoIndex ?? 0
+                    >= presentationState.filteredPhotos.count - 1
             )
             .keyboardShortcut(.rightArrow, modifiers: [])
         }

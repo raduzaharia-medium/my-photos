@@ -18,6 +18,7 @@ extension Notification.Name {
         "toggleSelectionFilter"
     )
 
+    static let updatePhotos = Notification.Name("updatePhotos")
     static let resetPhotoNavigation = Notification.Name("resetPhotoNavigation")
     static let navigateToPhoto = Notification.Name("navigateToPhoto")
     static let navigateToPreviousPhoto = Notification.Name(
@@ -73,8 +74,14 @@ enum AppIntents {
         )
     }
 
+    static func updatePhotos(_ photos: [Photo]) {
+        NotificationCenter.default.post(name: .updatePhotos, object: photos)
+    }
     static func resetPhotoNavigation() {
-        NotificationCenter.default.post(name: .resetPhotoNavigation, object: nil)
+        NotificationCenter.default.post(
+            name: .resetPhotoNavigation,
+            object: nil
+        )
     }
     static func navigateToPhoto(_ photo: Photo) {
         NotificationCenter.default.post(name: .navigateToPhoto, object: photo)
