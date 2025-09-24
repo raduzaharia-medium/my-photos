@@ -26,10 +26,7 @@ struct PhotoNavigator: View {
         }
         .focusable()
         .toolbar {
-            PhotoNavigatorToolbar(
-                index: presentationState.getCurrentPhotoIndex(photos) ?? 0,
-                count: photos.count
-            )
+            PhotoNavigatorToolbar(photos)
         }
         .toolbarBackground(.hidden, for: .automatic)
         .navigationTitle(
