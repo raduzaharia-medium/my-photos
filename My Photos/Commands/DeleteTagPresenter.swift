@@ -2,11 +2,9 @@ import SwiftUI
 
 final class DeleteTagPresenter: ObservableObject {
     let alerter: AlertService
-    let notifier: NotificationService
 
-    init(alerter: AlertService, notifier: NotificationService) {
+    init(alerter: AlertService) {
         self.alerter = alerter
-        self.notifier = notifier
     }
 
     @MainActor
@@ -38,7 +36,6 @@ final class DeleteTagPresenter: ObservableObject {
                     withAnimation {
                         AppIntents.deleteTags(tags)
                         AppIntents.resetPhotoFilter()
-
                     }
                 }
             )

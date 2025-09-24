@@ -2,11 +2,9 @@ import SwiftUI
 
 final class PickTagPresenter: ObservableObject {
     let modalPresenter: ModalService
-    let notifier: NotificationService
 
-    init(modalPresenter: ModalService, notifier: NotificationService) {
+    init(modalPresenter: ModalService) {
         self.modalPresenter = modalPresenter
-        self.notifier = notifier
     }
 
     @MainActor

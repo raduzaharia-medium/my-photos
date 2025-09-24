@@ -137,10 +137,14 @@ extension View {
                     presentationState.selectedPhotos.insert(photo)
                 }
             }.onReceive(
-                NotificationCenter.default.publisher(for: .toggleSelectAllPhotos)
+                NotificationCenter.default.publisher(
+                    for: .toggleSelectAllPhotos
+                )
             ) { note in
                 presentationState.selectedPhotos.removeAll()
-                presentationState.selectedPhotos.formUnion(presentationState.photos)
+                presentationState.selectedPhotos.formUnion(
+                    presentationState.photos
+                )
             }
     }
 
@@ -214,14 +218,8 @@ extension View {
             fileImporter: fileImporter,
             notifier: notifier
         )
-        let deleteTagPresenter = DeleteTagPresenter(
-            alerter: alerter,
-            notifier: notifier
-        )
-        let pickTagPresenter = PickTagPresenter(
-            modalPresenter: modalPresenter,
-            notifier: notifier,
-        )
+        let deleteTagPresenter = DeleteTagPresenter(alerter: alerter)
+        let pickTagPresenter = PickTagPresenter(modalPresenter: modalPresenter)
 
         return
             self
