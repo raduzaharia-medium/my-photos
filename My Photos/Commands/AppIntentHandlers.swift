@@ -70,26 +70,38 @@ extension View {
         }
     }
 
-    func setupPhotoNavigationHandlers(index: Binding<Int>, count: Int)
+    func setupPhotoNavigationHandlers(
+        presentationState: PresentationState,
+        photos: [Photo]
+    )
         -> some View
     {
         return
             self
             .onReceive(
+                NotificationCenter.default.publisher(for: .resetPhotoNavigation)
+            ) { note in
+                presentationState.currentPhoto = nil
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(for: .navigateToPhoto)
+            ) { note in
+                guard let photo = note.object as? Photo else {
+                    return
+                }
+                presentationState.currentPhoto = photo
+            }
+            .onReceive(
                 NotificationCenter.default.publisher(
                     for: .navigateToPreviousPhoto
                 )
             ) { _ in
-                if index.wrappedValue > 0 {
-                    index.wrappedValue = index.wrappedValue - 1
-                }
+                presentationState.selectPreviousPhoto(photos)
             }
             .onReceive(
                 NotificationCenter.default.publisher(for: .navigateToNextPhoto)
             ) { _ in
-                if index.wrappedValue + 1 < count {
-                    index.wrappedValue = index.wrappedValue + 1
-                }
+                presentationState.selectNextPhoto(photos)
             }
     }
 

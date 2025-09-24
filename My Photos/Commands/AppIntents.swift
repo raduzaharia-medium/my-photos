@@ -9,15 +9,22 @@ extension Notification.Name {
 
     static let resetPhotoFilter = Notification.Name("resetPhotoFilter")
     static let updatePhotoFilter = Notification.Name("updatePhotoFilter")
-    
-    static let togglePresentationMode = Notification.Name("togglePresentationMode")
-    static let toggleSelectionMode = Notification.Name("toggleSelectionMode")
-    static let toggleSelectionFilter = Notification.Name("toggleSelectionFilter")
 
+    static let togglePresentationMode = Notification.Name(
+        "togglePresentationMode"
+    )
+    static let toggleSelectionMode = Notification.Name("toggleSelectionMode")
+    static let toggleSelectionFilter = Notification.Name(
+        "toggleSelectionFilter"
+    )
+
+    static let resetPhotoNavigation = Notification.Name("resetPhotoNavigation")
+    static let navigateToPhoto = Notification.Name("navigateToPhoto")
     static let navigateToPreviousPhoto = Notification.Name(
         "navigateToPreviousPhoto"
     )
     static let navigateToNextPhoto = Notification.Name("navigateToNextPhoto")
+
     static let selectPhoto = Notification.Name("selectPhoto")
     static let deselectPhoto = Notification.Name("deselectPhoto")
     static let togglePhotoSelection = Notification.Name("togglePhotoSelection")
@@ -44,19 +51,34 @@ enum AppIntents {
         NotificationCenter.default.post(name: .resetPhotoFilter, object: nil)
     }
     static func updatePhotoFilter(_ photoFilters: Set<SidebarItem>) {
-        NotificationCenter.default.post(name: .updatePhotoFilter, object: photoFilters)
+        NotificationCenter.default.post(
+            name: .updatePhotoFilter,
+            object: photoFilters
+        )
     }
-    
+
     static func togglePresentationMode() {
-        NotificationCenter.default.post(name: .togglePresentationMode, object: nil)
+        NotificationCenter.default.post(
+            name: .togglePresentationMode,
+            object: nil
+        )
     }
     static func toggleSelectionMode() {
         NotificationCenter.default.post(name: .toggleSelectionMode, object: nil)
     }
     static func toggleSelectionFilter() {
-        NotificationCenter.default.post(name: .toggleSelectionFilter, object: nil)
+        NotificationCenter.default.post(
+            name: .toggleSelectionFilter,
+            object: nil
+        )
     }
 
+    static func resetPhotoNavigation() {
+        NotificationCenter.default.post(name: .resetPhotoNavigation, object: nil)
+    }
+    static func navigateToPhoto(_ photo: Photo) {
+        NotificationCenter.default.post(name: .navigateToPhoto, object: photo)
+    }
     static func navigateToPreviousPhoto() {
         NotificationCenter.default.post(
             name: .navigateToPreviousPhoto,
@@ -66,6 +88,7 @@ enum AppIntents {
     static func navigateToNextPhoto() {
         NotificationCenter.default.post(name: .navigateToNextPhoto, object: nil)
     }
+
     static func selectPhoto(_ photo: Photo) {
         NotificationCenter.default.post(name: .selectPhoto, object: photo)
     }
@@ -73,6 +96,9 @@ enum AppIntents {
         NotificationCenter.default.post(name: .deselectPhoto, object: photo)
     }
     static func togglePhotoSelection(_ photo: Photo) {
-        NotificationCenter.default.post(name: .togglePhotoSelection, object: photo)
+        NotificationCenter.default.post(
+            name: .togglePhotoSelection,
+            object: photo
+        )
     }
 }

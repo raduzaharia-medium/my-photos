@@ -10,19 +10,13 @@ struct PhotosGrid: View {
     @Query(sort: \Photo.dateTaken, order: .reverse) private var allPhotos:
         [Photo]
 
-    private var photos: [Photo] {
-        let result = allPhotos.filtered(by: presentationState.photoFilter)
-        guard presentationState.isSelecting else { return result }
-        guard presentationState.showOnlySelected else { return result }
-
-        return result.filter { presentationState.selectedPhotos.contains($0) }
-    }
-
     var body: some View {
+        let filteredPhotos = presentationState.getFilteredPhotos(allPhotos)
+
         NavigationStack {
             ScrollView {
                 LazyVGrid(columns: Self.columns, spacing: 8) {
-                    ForEach(photos) { photo in
+                    ForEach(filteredPhotos) { photo in
                         if presentationState.isSelecting {
                             PhotoCard(
                                 photo,
@@ -45,8 +39,13 @@ struct PhotosGrid: View {
                 .padding(.all)
             }
             .navigationDestination(for: Photo.self) { photo in
-                let index = photos.firstIndex(of: photo) ?? 0
-                PhotoNavigator(photos: photos, index: index)
+                PhotoNavigator(photos: filteredPhotos)
+                    .onAppear {
+                        AppIntents.navigateToPhoto(photo)
+                    }
+                    .onDisappear {
+                        AppIntents.resetPhotoNavigation()
+                    }
             }
             .toolbar {
                 PhotosGridToolbar()
