@@ -66,7 +66,8 @@ extension View {
     func setupPhotoLoadingHandlers(
         presentationState: PresentationState,
         notifier: NotificationService,
-        photoStore: PhotoStore
+        photoStore: PhotoStore,
+        fileStore: FileStore
     ) -> some View {
         return self.onReceive(
             NotificationCenter.default.publisher(for: .loadPhotos)
@@ -79,38 +80,27 @@ extension View {
             NotificationCenter.default.publisher(for: .importPhotos)
         ) { note in
             withAnimation {
-                guard let folder = note.object as? URL else { return }
-                guard
-                    let urls = FileManager.default.enumerator(
-                        at: folder,
-                        includingPropertiesForKeys: nil
+                guard let folder = note.object as? URL else {
+                    notifier.show(
+                        "Could not import folder",
+                        .error
                     )
-                else { return }
-                
-                let didAccess = folder.startAccessingSecurityScopedResource()
-                defer {
-                    if didAccess { folder.stopAccessingSecurityScopedResource() }
+                    return
+                }
+                guard let photos = try? fileStore.parseImageFiles(in: folder)
+                else {
+                    notifier.show(
+                        "Could not import \(folder.lastPathComponent)",
+                        .error
+                    )
+                    return
+
                 }
 
-                let imageFiles = urls.compactMap { $0 as? URL }
-                    .filter { url in
-                        (try? url.resourceValues(forKeys: [
-                            .isRegularFileKey, .contentTypeKey,
-                        ]))
-                        .map { values in
-                            values.isRegularFile == true
-                                && values.contentType?.conforms(to: .image)
-                                    == true
-                        } ?? false
-                    }
+                try? photoStore.insertPhotos(photos)
 
-                print(imageFiles)
-
-                notifier.show(
-                    "Imported \(folder.lastPathComponent)",
-                    .success
-                )
-
+                AppIntents.loadPhotos()
+                notifier.show("Imported \(folder.lastPathComponent)", .success)
             }
         }.onReceive(
             NotificationCenter.default.publisher(for: .resetPhotoFilter)

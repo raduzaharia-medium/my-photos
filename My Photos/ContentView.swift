@@ -12,6 +12,7 @@ struct ContentView: View {
 
     private var tagStore: TagStore { TagStore(context: context) }
     private var photoStore: PhotoStore { PhotoStore(context: context) }
+    private var fileStore: FileStore { FileStore() }
 
     var body: some View {
         NavigationSplitView {
@@ -61,7 +62,8 @@ struct ContentView: View {
         .setupPhotoLoadingHandlers(
             presentationState: presentationState,
             notifier: notifier,
-            photoStore: photoStore
+            photoStore: photoStore,
+            fileStore: fileStore
         )
         .setupTagLoadingHandlers(
             presentationState: presentationState,

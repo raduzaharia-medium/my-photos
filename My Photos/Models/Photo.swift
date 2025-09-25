@@ -15,17 +15,17 @@ struct GeoCoordinate: Codable, Hashable {
 final class Photo: Identifiable {
     @Attribute(.unique) var id: UUID
     var title: String
-    var dateTaken: Date
-    var location: GeoCoordinate
+    var dateTaken: Date?
+    var location: GeoCoordinate?
     
     @Relationship(inverse: \Tag.photos) var tags: [Tag]
     
     public init(
         id: UUID = .init(),
         title: String,
-        dateTaken: Date,
-        location: GeoCoordinate,
-        tags: [Tag] = []
+        dateTaken: Date?,
+        location: GeoCoordinate?,
+        tags: [Tag] = [],
     ) {
         self.id = id
         self.title = title

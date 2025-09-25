@@ -7,6 +7,18 @@ final class PhotoStore {
     init(context: ModelContext) {
         self.context = context
     }
+    
+    func insertPhoto(_ photo: Photo) throws {
+        context.insert(photo)
+        try context.save()
+    }
+    func insertPhotos(_ photos: [Photo]) throws {
+        for photo in photos {
+            context.insert(photo)
+        }
+        
+        try context.save()
+    }
 
     func getPhotos() -> [Photo] {
         let descriptor = FetchDescriptor<Photo>(

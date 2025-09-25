@@ -8,13 +8,15 @@ struct PhotosMap: View {
     var body: some View {
         Map(position: $camera) {
             ForEach(presentationState.filteredPhotos) { photo in
-                Annotation("",
-                    coordinate: CLLocationCoordinate2D(
-                        latitude: photo.location.latitude,
-                        longitude: photo.location.longitude
-                    )
-                ) {
-                    PhotoCard(photo, variant: .pin)
+                if let loc = photo.location {
+                    Annotation("",
+                        coordinate: CLLocationCoordinate2D(
+                            latitude: loc.latitude,
+                            longitude: loc.longitude
+                        )
+                    ) {
+                        PhotoCard(photo, variant: .pin)
+                    }
                 }
             }
         }
