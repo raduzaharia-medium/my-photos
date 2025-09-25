@@ -1,26 +1,50 @@
 import Foundation
 import ImageIO
+import MapKit
 import UniformTypeIdentifiers
 
 struct FileStore {
-    func parseImageFiles(in url: URL) throws -> [Photo] {
+    func parseImageFiles(in url: URL) async throws -> [Photo] {
         let didAccess = url.startAccessingSecurityScopedResource()
         defer {
             if didAccess { url.stopAccessingSecurityScopedResource() }
         }
 
         let imageFiles = try getImageFiles(in: url)
-        let result: [Photo] = imageFiles.compactMap { imageFile -> Photo? in
-            guard let props = try? readEXIF(in: imageFile) else { return nil }
-                        
+        var result: [Photo] = []
+
+        for imageFile in imageFiles {
+            let props = try readEXIF(in: imageFile)
+            if props.isEmpty { continue }
+
             let title = getTitle(from: props) ?? imageFile.lastPathComponent
             let dateTaken = getDateTaken(from: props)
             let location = getLocation(from: props)
 
-            return Photo(
-                title: title,
-                dateTaken: dateTaken,
-                location: location
+            if let location {
+                if let request = MKReverseGeocodingRequest(
+                    location: CLLocation(
+                        latitude: location.latitude,
+                        longitude: location.longitude
+                    )
+                ) {
+                    let items = try await request.mapItems
+                    if let item = items.first {
+                        let placemark = item.addressRepresentations?.description
+                        print("Resolved place: \(placemark)")
+                    } else {
+                        print("No reverse geocoding results.")
+                    }
+                    print(request.description)
+                }
+            }
+
+            result.append(
+                Photo(
+                    title: title,
+                    dateTaken: dateTaken,
+                    location: location
+                )
             )
         }
 

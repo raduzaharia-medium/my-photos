@@ -79,30 +79,33 @@ extension View {
         }.onReceive(
             NotificationCenter.default.publisher(for: .importPhotos)
         ) { note in
-            withAnimation {
-                guard let folder = note.object as? URL else {
-                    notifier.show(
-                        "Could not import folder",
-                        .error
-                    )
-                    return
+            guard let folder = note.object as? URL else {
+                notifier.show(
+                    "Could not import folder",
+                    .error
+                )
+                return
+            }
+            
+            Task {
+                if let photos = try? await fileStore.parseImageFiles(in: folder) {
+                    try? photoStore.insertPhotos(photos)
+
+                    let refreshedPhotos = photoStore.getPhotos()
+                    await MainActor.run {
+                        withAnimation {
+                            presentationState.photos = refreshedPhotos
+                        }
+                        notifier.show("Imported \(folder.lastPathComponent)", .success)
+                    }
+                } else {
+                    await MainActor.run {
+                        notifier.show(
+                            "Could not import \(folder.lastPathComponent)",
+                            .error
+                        )
+                    }
                 }
-                guard let photos = try? fileStore.parseImageFiles(in: folder)
-                else {
-                    notifier.show(
-                        "Could not import \(folder.lastPathComponent)",
-                        .error
-                    )
-                    return
-
-                }
-
-                try? photoStore.insertPhotos(photos)
-
-                let refreshedPhotos = photoStore.getPhotos()
-                presentationState.photos = refreshedPhotos
-                
-                notifier.show("Imported \(folder.lastPathComponent)", .success)
             }
         }.onReceive(
             NotificationCenter.default.publisher(for: .resetPhotoFilter)
