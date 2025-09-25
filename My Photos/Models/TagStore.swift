@@ -25,11 +25,28 @@ final class TagStore {
 
     }
 
-    func create(name: String, kind: TagKind) throws {
+    func create(name: String, kind: TagKind) throws -> Tag {
         let tag = Tag(name: name, kind: kind)
 
         context.insert(tag)
         try context.save()
+        
+        return tag
+    }
+    
+    func createIfMissing(name: String, kind: TagKind) throws -> Tag {
+        let tags = getTags().filter { $0.name == name && $0.kind == kind }
+        if !tags.isEmpty {
+            return tags.first!
+        }
+        
+        let tag = Tag(name: name, kind: kind)
+
+        context.insert(tag)
+        try context.save()
+        
+        return tag
+
     }
 
     func update(_ id: PersistentIdentifier, name: String, kind: TagKind) throws

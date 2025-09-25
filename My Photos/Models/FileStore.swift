@@ -1,7 +1,4 @@
-import Foundation
-import ImageIO
 import MapKit
-import UniformTypeIdentifiers
 
 struct FileStore {
     func parseImageFiles(in url: URL) async throws -> [Photo] {

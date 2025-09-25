@@ -63,6 +63,7 @@ struct ContentView: View {
             presentationState: presentationState,
             notifier: notifier,
             photoStore: photoStore,
+            tagStore: tagStore,
             fileStore: fileStore
         )
         .setupTagLoadingHandlers(
