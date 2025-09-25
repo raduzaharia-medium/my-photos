@@ -99,7 +99,9 @@ extension View {
 
                 try? photoStore.insertPhotos(photos)
 
-                AppIntents.loadPhotos()
+                let refreshedPhotos = photoStore.getPhotos()
+                presentationState.photos = refreshedPhotos
+                
                 notifier.show("Imported \(folder.lastPathComponent)", .success)
             }
         }.onReceive(
