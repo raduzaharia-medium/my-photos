@@ -11,12 +11,18 @@ struct GeoCoordinate: Codable, Hashable {
     }
 }
 
+struct Place: Codable, Hashable {
+    var city: String?
+    var country: String?
+}
+
 @Model
 final class Photo: Identifiable {
     @Attribute(.unique) var id: UUID
     var title: String
     var dateTaken: Date?
     var location: GeoCoordinate?
+    var place: Place?
     
     @Relationship(inverse: \Tag.photos) var tags: [Tag]
     
@@ -24,13 +30,15 @@ final class Photo: Identifiable {
         id: UUID = .init(),
         title: String,
         dateTaken: Date?,
-        location: GeoCoordinate?,
+        location: GeoCoordinate? = nil,
+        place: Place? = nil,
         tags: [Tag] = [],
     ) {
         self.id = id
         self.title = title
         self.dateTaken = dateTaken
         self.location = location
+        self.place = place
         self.tags = tags
     }
     
