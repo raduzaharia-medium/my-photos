@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UniformTypeIdentifiers
 
 extension View {
     func setupTagLoadingHandlers(
@@ -79,8 +80,32 @@ extension View {
         ) { note in
             withAnimation {
                 guard let folder = note.object as? URL else { return }
+                guard
+                    let urls = FileManager.default.enumerator(
+                        at: folder,
+                        includingPropertiesForKeys: nil
+                    )
+                else { return }
+                
+                let didAccess = folder.startAccessingSecurityScopedResource()
+                defer {
+                    if didAccess { folder.stopAccessingSecurityScopedResource() }
+                }
 
-                // TODO: Import photos
+                let imageFiles = urls.compactMap { $0 as? URL }
+                    .filter { url in
+                        (try? url.resourceValues(forKeys: [
+                            .isRegularFileKey, .contentTypeKey,
+                        ]))
+                        .map { values in
+                            values.isRegularFile == true
+                                && values.contentType?.conforms(to: .image)
+                                    == true
+                        } ?? false
+                    }
+
+                print(imageFiles)
+
                 notifier.show(
                     "Imported \(folder.lastPathComponent)",
                     .success
