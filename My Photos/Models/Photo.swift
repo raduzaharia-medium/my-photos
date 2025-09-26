@@ -11,34 +11,29 @@ struct GeoCoordinate: Codable, Hashable {
     }
 }
 
-struct Place: Codable, Hashable {
-    var city: String?
-    var country: String?
-}
-
 @Model
 final class Photo: Identifiable {
     @Attribute(.unique) var id: UUID
     var title: String
+    var caption: String?
     var dateTaken: Date?
     var location: GeoCoordinate?
-    var place: Place?
     
     @Relationship(inverse: \Tag.photos) var tags: [Tag]
     
     public init(
         id: UUID = .init(),
         title: String,
+        description: String? = nil,
         dateTaken: Date?,
         location: GeoCoordinate? = nil,
-        place: Place? = nil,
         tags: [Tag] = [],
     ) {
         self.id = id
         self.title = title
+        self.caption = description
         self.dateTaken = dateTaken
         self.location = location
-        self.place = place
         self.tags = tags
     }
     

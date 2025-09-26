@@ -90,26 +90,12 @@ extension View {
             
             Task {
                 if let photos = try? await fileStore.parseImageFiles(in: folder) {
-                    
                     for photo in photos {
-                        if let place = photo.place {
-                            if let country = place.country {                                
-                                let countryTag = try tagStore.createIfMissing(name: country, kind: .place)
-                                
-                                if let city = place.city {
-                                    let cityTag = try tagStore.createIfMissing(name: city, kind: .place)
-                                    countryTag.children.append(cityTag)
-                                }
-                                
-                                photo.tags.append(countryTag)
-                            } else if let city = place.city {
-                                let cityTag = try tagStore.createIfMissing(name: city, kind: .place)
-                                photo.tags.append(cityTag)
-                            }
-                        }
+                        try? tagStore.insert(photo.tags)
+                        try? photoStore.insert(photo)
                     }
                     
-                    try? photoStore.insertPhotos(photos)
+                    try? photoStore.insert(photos)
 
                     let tags = tagStore.getTags()
                     presentationState.tags = tags

@@ -8,11 +8,11 @@ final class PhotoStore {
         self.context = context
     }
     
-    func insertPhoto(_ photo: Photo) throws {
+    func insert(_ photo: Photo) throws {
         context.insert(photo)
         try context.save()
     }
-    func insertPhotos(_ photos: [Photo]) throws {
+    func insert(_ photos: [Photo]) throws {
         for photo in photos {
             context.insert(photo)
         }

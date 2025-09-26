@@ -34,6 +34,19 @@ final class TagStore {
         return tag
     }
     
+    func insert(_ tag: Tag) throws {
+        context.insert(tag)
+        try context.save()
+    }
+    
+    func insert(_ tags: [Tag]) throws {
+        for tag in tags {
+            context.insert(tag)
+        }
+        
+        try context.save()
+    }
+    
     func createIfMissing(name: String, kind: TagKind) throws -> Tag {
         let tags = getTags().filter { $0.name == name && $0.kind == kind }
         if !tags.isEmpty {
@@ -46,10 +59,9 @@ final class TagStore {
         try context.save()
         
         return tag
-
     }
 
-    func update(_ id: PersistentIdentifier, name: String, kind: TagKind) throws
+    func update(_ id: PersistentIdentifier, name: String, kind: TagKind) throws -> Tag
     {
         guard let tag = context.model(for: id) as? Tag else {
             throw TagStoreError.tagNotFound
@@ -59,9 +71,11 @@ final class TagStore {
         tag.kind = kind
 
         try context.save()
+        
+        return tag
     }
 
-    func upsert(_ id: PersistentIdentifier?, name: String, kind: TagKind) throws
+    func upsert(_ id: PersistentIdentifier?, name: String, kind: TagKind) throws -> Tag
     {
         if let id {
             try update(id, name: name, kind: kind)

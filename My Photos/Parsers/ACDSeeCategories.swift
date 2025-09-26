@@ -1,22 +1,50 @@
 import Foundation
 import ImageIO
 
-let namespace = "http://ns.acdsee.com/iptc/1.0/"
-
 struct ACDSeeCategories {
-    static func parse(from tags: [CGImageMetadataTag]) -> [String] {
-        guard
-            let xml = tags.first(where: {
-                (CGImageMetadataTagCopyNamespace($0) as String?) == namespace
-                    && (CGImageMetadataTagCopyName($0) as String?)
-                        == "categories"
-            }).flatMap(tagToString)
-        else { return [] }
+    private let namespace = "http://ns.acdsee.com/iptc/1.0/"
+    private let tags: [CGImageMetadataTag]
 
-        return parseACDSeeCategoriesXML(xml)
+    init(_ tags: [CGImageMetadataTag]) { self.tags = tags }
+
+    var xml: String? {
+        let xml = tags.first(where: { tag in
+            let ns = CGImageMetadataTagCopyNamespace(tag) as String?
+            let name = CGImageMetadataTagCopyName(tag) as String?
+
+            return ns == namespace && name == "categories"
+        })
+        .flatMap(tagToString)
+
+        guard let xml else { return nil }
+        return xml
+    }
+    var categoriesXml: XMLDocument? {
+        guard let xml else { return nil }
+        guard let doc = try? XMLDocument(xmlString: xml) else { return nil }
+
+        return doc
+    }
+    var placesXml: XMLDocument? {
+        guard let categoriesXml else { return nil }
+
+        let xpath = "//Category[normalize-space(text())='Places']"
+        let nodes = try? categoriesXml.nodes(forXPath: xpath) as? [XMLElement]
+        guard let nodes else { return nil }
+
+        guard let node = nodes.first else { return nil }
+
+        node.detach()
+
+        return XMLDocument(rootElement: node)
     }
 
-    private static func tagToString(_ tag: CGImageMetadataTag) -> String? {
+    var places: [Tag] {
+        guard let placesXml else { return [] }
+        return placesXml.buildTags(kind: .place)
+    }
+
+    private func tagToString(_ tag: CGImageMetadataTag) -> String? {
         guard let any = CGImageMetadataTagCopyValue(tag) else { return nil }
 
         if let s = any as? String { return s }
@@ -26,21 +54,39 @@ struct ACDSeeCategories {
 
         return String(describing: any)
     }
+}
 
-    private static func parseACDSeeCategoriesXML(_ xmlString: String)
-        -> [String]
-    {
-        guard let data = xmlString.data(using: .utf8) else { return [] }
-        let delegate = ACDSeeCategoriesDelegate()
-        let parser = XMLParser(data: data)
+extension XMLDocument {
+    func buildTags(kind: TagKind) -> [Tag] {
+        guard let root = rootElement() else { return [] }
+        var tops: [Tag] = []
 
-        parser.delegate = delegate
+        func visit(_ node: XMLElement, parent: Tag?) {
+            guard let name = node.categoryLabel() else { return }
 
-        if parser.parse() {
-            var seen = Set<String>()
-            return delegate.paths.filter { seen.insert($0).inserted }
-        } else {
-            return []
+            let tag = Tag(name: name, kind: kind, parent: parent)
+            if parent == nil { tops.append(tag) }
+
+            for case let child as XMLElement in node.children ?? [] {
+                visit(child, parent: tag)
+            }
         }
+
+        for case let child as XMLElement in root.children ?? [] {
+            visit(child, parent: nil)
+        }
+        return tops
     }
+}
+
+extension XMLElement {
+    func categoryLabel() -> String? {
+        let text = (children ?? [])
+            .filter { $0.kind == .text }
+            .compactMap { $0.stringValue }
+            .joined()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return text.isEmpty ? nil : text
+    }
+
 }
