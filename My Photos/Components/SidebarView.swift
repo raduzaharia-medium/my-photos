@@ -22,10 +22,19 @@ struct SidebarView: View {
 
             ForEach(TagKind.allCases, id: \.self) { kind in
                 let sectionTags = presentationState.groupedTags[kind] ?? []
+                let roots = sectionTags.filter {
+                    $0.parent == nil || $0.parent?.kind != kind
+                }
 
                 Section(kind.title) {
-                    ForEach(sectionTags, id: \.persistentModelID) { tag in
-                        SidebarRow(.tag(tag))
+                    ForEach(
+                        roots.sorted {
+                            $0.name.localizedCaseInsensitiveCompare($1.name)
+                                == .orderedAscending
+                        },
+                        id: \.persistentModelID
+                    ) { root in
+                        TagTree(tag: root, kind: kind)
                     }
                 }
             }
