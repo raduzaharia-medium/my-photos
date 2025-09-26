@@ -87,25 +87,38 @@ extension View {
                 )
                 return
             }
-            
+
             Task {
-                if let photos = try? await fileStore.parseImageFiles(in: folder) {
+                if let photos = try? await fileStore.parseImageFiles(in: folder)
+                {
                     for photo in photos {
-                        try? tagStore.insert(photo.tags)
+                        var resolved: [Tag] = []
+                        resolved.reserveCapacity(photo.tags.count)
+
+                        for t in photo.tags {
+                            let ensured = tagStore.ensureTagAndChildren(
+                                t,
+                                parent: t.parent
+                            )
+                            resolved.append(ensured)
+                        }
+                        photo.tags = resolved
+
                         try? photoStore.insert(photo)
                     }
-                    
-                    try? photoStore.insert(photos)
 
                     let tags = tagStore.getTags()
                     presentationState.tags = tags
-                    
+
                     let refreshedPhotos = photoStore.getPhotos()
                     await MainActor.run {
                         withAnimation {
                             presentationState.photos = refreshedPhotos
                         }
-                        notifier.show("Imported \(folder.lastPathComponent)", .success)
+                        notifier.show(
+                            "Imported \(folder.lastPathComponent)",
+                            .success
+                        )
                     }
                 } else {
                     await MainActor.run {
