@@ -15,11 +15,15 @@ final class EditTagPresenter: ObservableObject {
                     tag,
                     onSave: { original, name, kind in
                         withAnimation {
-                            AppIntents.editTag(
-                                original!,
-                                name: name,
-                                kind: kind
-                            )
+                            if let original {
+                                AppIntents.editTag(
+                                    original,
+                                    name: name,
+                                    kind: kind
+                                )
+                            } else {
+                                AppIntents.createTag(name: name, kind: kind)
+                            }
 
                             self.modalPresenter.dismiss()
                         }

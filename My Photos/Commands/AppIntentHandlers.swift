@@ -31,6 +31,22 @@ extension View {
                 notifier.show("Could not update tag", .error)
             }
         }.onReceive(
+            NotificationCenter.default.publisher(for: .createTag)
+        ) { note in
+            guard let name = note.userInfo?["name"] as? String else { return }
+            guard let kind = note.userInfo?["kind"] as? TagKind else { return }
+
+            do {
+                try tagStore.create(name: name, kind: kind)
+                
+                let tags = tagStore.getTags()
+                presentationState.tags = tags
+
+                notifier.show("Tag created", .success)
+            } catch {
+                notifier.show("Could not create tag", .error)
+            }
+        }.onReceive(
             NotificationCenter.default.publisher(for: .deleteTag)
         ) { note in
             guard let tag = note.object as? Tag else { return }

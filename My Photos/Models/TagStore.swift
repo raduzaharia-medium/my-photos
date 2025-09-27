@@ -29,6 +29,7 @@ final class TagStore {
         return tags.first
     }
 
+    @discardableResult
     func create(name: String, kind: TagKind) throws -> Tag {
         let tag = Tag(name: name, kind: kind)
 
@@ -106,6 +107,7 @@ final class TagStore {
         return tag
     }
 
+    @discardableResult
     func update(_ id: PersistentIdentifier, name: String, kind: TagKind) throws
         -> Tag
     {

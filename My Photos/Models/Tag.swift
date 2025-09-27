@@ -37,7 +37,7 @@ extension TagKind {
 
 @Model
 final class Tag: Identifiable, Hashable {
-    var name: String
+    var name: String 
     var kind: TagKind
 
     @Relationship(inverse: \Tag.parent) var children: [Tag] = []

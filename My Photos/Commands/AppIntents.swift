@@ -8,6 +8,7 @@ extension Notification.Name {
     static let requestImportPhotos = Notification.Name("requestImportPhotos")
     static let requestTagPhotos = Notification.Name("requestTagPhotos")
 
+    static let createTag = Notification.Name("createTag")
     static let loadTags = Notification.Name("loadTags")
     static let editTag = Notification.Name("editTag")
     static let deleteTag = Notification.Name("deleteTag")
@@ -64,6 +65,13 @@ enum AppIntents {
 
     static func loadTags() {
         NotificationCenter.default.post(name: .loadTags, object: nil)
+    }
+    static func createTag(name: String, kind: TagKind) {
+        NotificationCenter.default.post(
+            name: .createTag,
+            object: nil,
+            userInfo: ["name": name, "kind": kind]
+        )
     }
     static func editTag(_ tag: Tag, name: String, kind: TagKind) {
         NotificationCenter.default.post(
