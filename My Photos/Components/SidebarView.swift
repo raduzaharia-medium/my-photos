@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SidebarView: View {
     @Environment(PresentationState.self) private var presentationState
@@ -24,18 +25,27 @@ struct SidebarView: View {
                 let sectionTags = presentationState.groupedTags[kind] ?? []
                 let roots = sectionTags.filter {
                     $0.parent == nil || $0.parent?.kind != kind
+                }.sorted {
+                    $0.name.localizedCaseInsensitiveCompare($1.name)
+                        == .orderedAscending
                 }
 
                 Section(kind.title) {
-                    ForEach(
-                        roots.sorted {
-                            $0.name.localizedCaseInsensitiveCompare($1.name)
-                                == .orderedAscending
-                        },
-                        id: \.persistentModelID
-                    ) { root in
+                    ForEach(roots) { root in
                         TagTree(tag: root, kind: kind)
                     }
+                }
+                .dropDestination(for: TagDragItem.self) { items, _ in
+                    guard let incoming = items.first else { return false }
+                    guard
+                        let dragged = presentationState.tags.first(where: {
+                            $0.name == incoming.name && $0.kind == incoming.kind
+                        })
+                    else { return false }
+                  
+                    dragged.kind = kind
+                    return true
+                } isTargeted: { _ in
                 }
             }
         }
