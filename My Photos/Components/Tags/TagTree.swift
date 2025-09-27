@@ -31,9 +31,6 @@ struct TagTree: View {
                     current = c.parent
                 }
 
-                print(dragged.name, tag.name)
-                print(dragged.kind, tag.kind)
-
                 dragged.kind = tag.kind
                 dragged.parent = tag
 
