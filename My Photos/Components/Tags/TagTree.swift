@@ -5,55 +5,39 @@ struct TagTree: View {
     let tag: Tag
     let kind: TagKind
 
-    @Environment(PresentationState.self) private var presentationState
+    @Environment(PresentationState.self) private var state
 
     @ViewBuilder
     private var row: some View {
         SidebarRow(.tag(tag))
-            .draggable(TagDragItem(name: tag.name, kind: tag.kind))
+            .draggable(TagDragItem(tag.id))
             .dropDestination(for: TagDragItem.self) { items, location in
-                guard let incoming = items.first else { return false }
-                guard
-                    let dragged = presentationState.tags.first(where: {
-                        $0.name == incoming.name && $0.kind == incoming.kind
-                    })
-                else { return false }
-                guard dragged.persistentModelID != tag.persistentModelID else {
-                    return false
+                for incoming in items {
+                    let dragged = state.getTag(incoming.id)
+                    guard let dragged else { return false }
+
+                    AppIntents.editTag(
+                        dragged,
+                        name: dragged.name,
+                        kind: tag.kind,
+                        parent: tag
+                    )
                 }
 
-                var current: Tag? = tag.parent
-                while let c = current {
-                    if c.persistentModelID == dragged.persistentModelID {
-                        return false
-                    }
-
-                    current = c.parent
-                }
-                
-                AppIntents.editTag(
-                    dragged,
-                    name: dragged.name,
-                    kind: tag.kind,
-                    parent: tag
-                )
                 AppIntents.loadTags()
-
                 return true
             } isTargeted: { _ in
             }
     }
 
     private var children: [Tag] {
-        presentationState.tags
-            .filter {
-                $0.kind == kind && $0.parent?.persistentModelID == tag.persistentModelID
-            }
+        state.tags.filter { $0.kind == kind && $0.parent?.id == tag.id }
             .sorted {
-                $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+                $0.name.localizedCaseInsensitiveCompare($1.name)
+                    == .orderedAscending
             }
     }
-    
+
     var body: some View {
         if children.isEmpty {
             row

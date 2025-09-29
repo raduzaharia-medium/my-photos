@@ -2,11 +2,11 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct SidebarView: View {
-    @Environment(PresentationState.self) private var presentationState
+    @Environment(PresentationState.self) private var state
 
     private var selectionBinding: Binding<Set<SidebarItem>> {
         Binding(
-            get: { presentationState.photoFilter },
+            get: { state.photoFilter },
             set: { newValue in
                 AppIntents.updatePhotoFilter(newValue)
             }
@@ -22,7 +22,7 @@ struct SidebarView: View {
             }
 
             ForEach(TagKind.allCases, id: \.self) { kind in
-                let sectionTags = presentationState.groupedTags[kind] ?? []
+                let sectionTags = state.groupedTags[kind] ?? []
                 let roots = sectionTags.filter {
                     $0.parent == nil || $0.parent?.kind != kind
                 }.sorted {
@@ -36,16 +36,18 @@ struct SidebarView: View {
                     }
                 }
                 .dropDestination(for: TagDragItem.self) { items, _ in
-                    guard let incoming = items.first else { return false }
-                    guard
-                        let dragged = presentationState.tags.first(where: {
-                            $0.name == incoming.name && $0.kind == incoming.kind
-                        })
-                    else { return false }
-                  
-                    AppIntents.editTag(dragged, name: dragged.name, kind: kind)
+                    for incoming in items {
+                        let dragged = state.getTag(incoming.id)
+                        guard let dragged else { return false }
+
+                        AppIntents.editTag(
+                            dragged,
+                            name: dragged.name,
+                            kind: kind
+                        )
+                    }
+
                     AppIntents.loadTags()
-                    
                     return true
                 } isTargeted: { _ in
                 }

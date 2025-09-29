@@ -44,6 +44,10 @@ final class PresentationState {
     var canDeleteSelection: Bool { photoFilter.canDeleteSelection }
     var canDeleteManySelection: Bool { photoFilter.canDeleteManySelection }
 
+    func getTag(_ id: UUID) -> Tag? {
+        return tags.first(where: { $0.id == id })
+    }
+    
     func isPhotoSelected(_ photo: Photo) -> Bool {
         return selectedPhotos.contains(photo)
     }

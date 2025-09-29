@@ -69,7 +69,7 @@ private struct NotificationModifier: ViewModifier {
                         .task(id: isPresented) {
                             dismissTask?.cancel()
                             guard isPresented else { return }
-
+                            
                             let task = Task { @MainActor in
                                 try? await Task.sleep(
                                     nanoseconds: UInt64(

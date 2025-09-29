@@ -1,3 +1,4 @@
+import Foundation
 import SwiftData
 
 enum TagKind: String, Codable, Hashable, CaseIterable, Identifiable {
@@ -37,6 +38,7 @@ extension TagKind {
 
 @Model
 final class Tag: Identifiable, Hashable {
+    @Attribute(.unique) var id = UUID()
     var name: String
     var kind: TagKind
 
