@@ -38,12 +38,7 @@ extension TagKind {
 @Model
 final class Tag: Identifiable, Hashable {
     var name: String
-    var kind: TagKind {
-        didSet {
-            guard kind != oldValue else { return }
-            propagateKindToDescendants(kind)
-        }
-    }
+    var kind: TagKind
 
     @Relationship(inverse: \Tag.parent) var children: [Tag] = []
     @Relationship var parent: Tag?
@@ -53,12 +48,5 @@ final class Tag: Identifiable, Hashable {
         self.name = name
         self.kind = kind
         self.parent = parent
-    }
-
-    private func propagateKindToDescendants(_ newKind: TagKind) {
-        for child in children {
-            guard child.kind != newKind else { continue }
-            child.kind = newKind
-        }
     }
 }

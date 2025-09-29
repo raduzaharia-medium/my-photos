@@ -20,7 +20,7 @@ extension View {
             guard let name = note.userInfo?["name"] as? String else { return }
             guard let kind = note.userInfo?["kind"] as? TagKind else { return }
             let parent = note.userInfo?["parent"] as? Tag
-
+            
             do {
                 try tagStore.update(
                     tag.persistentModelID,
@@ -28,6 +28,7 @@ extension View {
                     kind: kind,
                     parent: parent
                 )
+                
                 let tags = tagStore.getTags()
                 presentationState.tags = tags
                 notifier.show("Tag updated", .success)

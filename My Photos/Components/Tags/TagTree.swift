@@ -30,12 +30,12 @@ struct TagTree: View {
 
                     current = c.parent
                 }
-
+                
                 AppIntents.editTag(
                     dragged,
                     name: dragged.name,
-                    kind: currentTag.kind,
-                    parent: currentTag
+                    kind: tag.kind,
+                    parent: tag
                 )
                 AppIntents.loadTags()
 

@@ -108,7 +108,12 @@ final class TagStore {
     }
 
     @discardableResult
-    func update(_ id: PersistentIdentifier, name: String, kind: TagKind, parent: Tag? = nil) throws
+    func update(
+        _ id: PersistentIdentifier,
+        name: String,
+        kind: TagKind,
+        parent: Tag? = nil
+    ) throws
         -> Tag
     {
         guard let tag = context.model(for: id) as? Tag else {
@@ -118,6 +123,12 @@ final class TagStore {
         tag.name = name
         tag.kind = kind
         tag.parent = parent
+
+        var stack = tag.children
+        while let node = stack.popLast() {
+            node.kind = kind
+            stack.append(contentsOf: node.children)
+        }
 
         try context.save()
         return tag
