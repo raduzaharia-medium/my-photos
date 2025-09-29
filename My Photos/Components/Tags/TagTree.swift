@@ -31,8 +31,13 @@ struct TagTree: View {
                     current = c.parent
                 }
 
-                dragged.kind = tag.kind
-                dragged.parent = tag
+                AppIntents.editTag(
+                    dragged,
+                    name: dragged.name,
+                    kind: currentTag.kind,
+                    parent: currentTag
+                )
+                AppIntents.loadTags()
 
                 return true
             } isTargeted: { _ in

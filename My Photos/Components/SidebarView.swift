@@ -43,7 +43,9 @@ struct SidebarView: View {
                         })
                     else { return false }
                   
-                    dragged.kind = kind
+                    AppIntents.editTag(dragged, name: dragged.name, kind: kind)
+                    AppIntents.loadTags()
+                    
                     return true
                 } isTargeted: { _ in
                 }

@@ -10,7 +10,7 @@ extension View {
     ) -> some View {
         return self.onReceive(
             NotificationCenter.default.publisher(for: .loadTags)
-        ) { _ in
+        ) { _ in            
             let tags = tagStore.getTags()
             presentationState.tags = tags
         }.onReceive(
@@ -19,13 +19,17 @@ extension View {
             guard let tag = note.object as? Tag else { return }
             guard let name = note.userInfo?["name"] as? String else { return }
             guard let kind = note.userInfo?["kind"] as? TagKind else { return }
+            let parent = note.userInfo?["parent"] as? Tag
 
             do {
                 try tagStore.update(
                     tag.persistentModelID,
                     name: name,
-                    kind: kind
+                    kind: kind,
+                    parent: parent
                 )
+                let tags = tagStore.getTags()
+                presentationState.tags = tags
                 notifier.show("Tag updated", .success)
             } catch {
                 notifier.show("Could not update tag", .error)

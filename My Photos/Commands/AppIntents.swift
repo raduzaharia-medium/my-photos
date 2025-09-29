@@ -73,11 +73,14 @@ enum AppIntents {
             userInfo: ["name": name, "kind": kind]
         )
     }
-    static func editTag(_ tag: Tag, name: String, kind: TagKind) {
+    static func editTag(_ tag: Tag, name: String, kind: TagKind, parent: Tag? = nil) {
+        var userInfo: [String: Any] = ["name": name, "kind": kind]
+        if let parent { userInfo["parent"] = parent }
+        
         NotificationCenter.default.post(
             name: .editTag,
             object: tag,
-            userInfo: ["name": name, "kind": kind]
+            userInfo: userInfo
         )
     }
     static func deleteTag(_ tag: Tag) {
