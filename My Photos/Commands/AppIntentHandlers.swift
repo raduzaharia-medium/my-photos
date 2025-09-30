@@ -10,7 +10,7 @@ extension View {
     ) -> some View {
         return self.onReceive(
             NotificationCenter.default.publisher(for: .loadTags)
-        ) { _ in            
+        ) { _ in
             let tags = tagStore.getTags()
             presentationState.tags = tags
         }.onReceive(
@@ -20,7 +20,7 @@ extension View {
             guard let name = note.userInfo?["name"] as? String else { return }
             guard let kind = note.userInfo?["kind"] as? TagKind else { return }
             let parent = note.userInfo?["parent"] as? Tag
-                        
+
             do {
                 try tagStore.update(
                     tag.persistentModelID,
@@ -28,7 +28,7 @@ extension View {
                     kind: kind,
                     parent: parent
                 )
-                
+
                 let tags = tagStore.getTags()
                 presentationState.tags = tags
                 notifier.show("Tag updated", .success)
@@ -43,7 +43,7 @@ extension View {
 
             do {
                 try tagStore.create(name: name, kind: kind)
-                
+
                 let tags = tagStore.getTags()
                 presentationState.tags = tags
 
@@ -177,10 +177,10 @@ extension View {
         }.onReceive(
             NotificationCenter.default.publisher(for: .tagSelectedPhotos)
         ) { note in
-            guard let tag = note.object as? Tag else { return }
+            guard let tags = note.object as? [Tag] else { return }
 
             do {
-                try photoStore.tagPhotos(presentationState.selectedPhotos, tag)
+                try photoStore.tagPhotos(presentationState.selectedPhotos, tags)
             } catch {
                 notifier.show("Failed to tag photos", .error)
             }
@@ -217,10 +217,16 @@ extension View {
                     for: .toggleSelectAllPhotos
                 )
             ) { note in
-                presentationState.selectedPhotos.removeAll()
-                presentationState.selectedPhotos.formUnion(
-                    presentationState.photos
-                )
+                if presentationState.selectedPhotos.count
+                    != presentationState.photos.count
+                {
+                    presentationState.selectedPhotos.removeAll()
+                    presentationState.selectedPhotos.formUnion(
+                        presentationState.photos
+                    )
+                } else {
+                    presentationState.selectedPhotos.removeAll()
+                }
             }
     }
 

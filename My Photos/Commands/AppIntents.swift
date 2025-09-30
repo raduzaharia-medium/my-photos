@@ -159,7 +159,7 @@ enum AppIntents {
             object: nil
         )
     }
-    static func tagSelectedPhotos(_ tag: Tag) {
-        NotificationCenter.default.post(name: .tagSelectedPhotos, object: tag)
+    static func tagSelectedPhotos(_ tags: [Tag]) {
+        NotificationCenter.default.post(name: .tagSelectedPhotos, object: tags)
     }
 }

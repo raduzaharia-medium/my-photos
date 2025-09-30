@@ -48,9 +48,13 @@ final class PhotoStore {
         return (try? context.fetch(descriptor)) ?? []
     }
     
-    func tagPhotos(_ photos: Set<Photo>, _ tag: Tag) throws {
+    func tagPhotos(_ photos: Set<Photo>, _ tags: [Tag]) throws {
         for photo in photos {
-            photo.tags.append(tag)
+            for tag in tags {
+                if !photo.tags.contains(where: { $0.id == tag.id }) {
+                    photo.tags.append(tag)
+                }
+            }
         }
         
         try context.save()
