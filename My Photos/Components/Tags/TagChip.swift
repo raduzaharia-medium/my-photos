@@ -6,8 +6,15 @@ struct TagChip: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Label(tag.name, systemImage: tag.kind.icon)
-                .labelStyle(.titleAndIcon)
+            Label {
+                Text(tag.name)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+            } icon: {
+                Image(systemName: tag.kind.icon)
+                    .symbolRenderingMode(.hierarchical)
+            }
+
             Button(action: onRemove) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.system(size: 12))
@@ -17,11 +24,10 @@ struct TagChip: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .background(
-            Capsule().fill(.ultraThinMaterial)
-        )
+        .background(.ultraThinMaterial, in: Capsule())
         .overlay(
             Capsule().stroke(.quaternary, lineWidth: 1)
         )
+        .layoutPriority(1)
     }
 }

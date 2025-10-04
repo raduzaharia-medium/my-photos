@@ -29,7 +29,7 @@ struct TagSuggestions: View {
             $0.name.lowercased().contains(searchText.wrappedValue.lowercased())
         }
 
-        return Section("Suggestions") {
+        return VStack(alignment: .leading, spacing: 8) {
             if matches.isEmpty {
                 Text("No matching tags")
                     .foregroundStyle(.secondary)
@@ -49,4 +49,3 @@ struct TagSuggestions: View {
         }
     }
 }
-

@@ -29,10 +29,18 @@ struct My_PhotosApp: App {
         let tag1 = Tag(name: "Alice", kind: .person)
         let tag2 = Tag(name: "Beach", kind: .place)
         let tag3 = Tag(name: "Birthday", kind: .event)
+        let tag4 = Tag(name: "Something", kind: .custom)
+        let tag5 = Tag(name: "Something else", kind: .custom)
+        let tag6 = Tag(name: "With-Dash", kind: .custom)
+        let tag7 = Tag(name: "Nothing", kind: .custom)
 
         context.insert(tag1)
         context.insert(tag2)
         context.insert(tag3)
+        context.insert(tag4)
+        context.insert(tag5)
+        context.insert(tag6)
+        context.insert(tag7)
 
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
