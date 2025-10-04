@@ -51,6 +51,17 @@ struct SidebarView: View {
                     return true
                 } isTargeted: { _ in
                 }
+                .dropDestination(for: PhotoDragItem.self) { items, _ in
+                    for incoming in items {
+                        let dragged = state.getPhoto(incoming.id)
+                        guard let dragged else { return false }
+
+                        // AppIntents.tagPhotos(withIDs: ids, tag: tag)
+                    }
+
+                    return true
+                } isTargeted: { _ in
+                }
             }
         }
         .task {
