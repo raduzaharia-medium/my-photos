@@ -9,6 +9,10 @@ struct TagDragItem: Codable, Transferable, Hashable {
     }
     
     static var transferRepresentation: some TransferRepresentation {
-        CodableRepresentation(contentType: .json)
+        CodableRepresentation(contentType: .tagDragItem)
     }
+}
+
+extension UTType {
+    static let tagDragItem = UTType(exportedAs: "studio.zar.my-photos.tag-drag-item")
 }

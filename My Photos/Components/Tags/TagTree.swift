@@ -11,22 +11,33 @@ struct TagTree: View {
     private var row: some View {
         SidebarRow(.tag(tag))
             .draggable(TagDragItem(tag.id))
-            .dropDestination(for: TagDragItem.self) { items, location in
-                for incoming in items {
-                    let dragged = state.getTag(incoming.id)
-                    guard let dragged else { return false }
-
-                    AppIntents.editTag(
-                        dragged,
-                        name: dragged.name,
-                        kind: tag.kind,
-                        parent: tag
-                    )
+            .contentShape(Rectangle())
+            .dropDestination(for: SidebarDropItem.self, isEnabled: true) { items, session in
+                if let tagItem = items.compactMap({ item -> TagDragItem? in
+                    if case .tag(let t) = item { return t }
+                    return nil
+                }).first {
+                    if let dragged = state.getTag(tagItem.id) {
+                        AppIntents.editTag(
+                            dragged,
+                            name: dragged.name,
+                            kind: tag.kind,
+                            parent: tag
+                        )
+                        AppIntents.loadTags()
+                    }
                 }
 
-                AppIntents.loadTags()
-                return true
-            } isTargeted: { _ in
+                if let photoItem = items.compactMap({ item -> PhotoDragItem? in
+                    if case .photo(let p) = item { return p }
+                    return nil
+                }).first {
+                    if let dragged = state.getPhoto(photoItem.id) {
+                        // TODO: Implement your tagging flow here
+                        // e.g., AppIntents.tagPhotos([dragged], with: tag)
+                        print("Dropped photo: \(dragged) onto tag: \(tag.name)")
+                    }
+                }
             }
     }
 

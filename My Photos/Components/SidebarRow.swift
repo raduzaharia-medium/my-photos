@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct SidebarRow: View {
+    @Environment(PresentationState.self) private var state
+
     let item: SidebarItem
 
     init(_ item: SidebarItem) { self.item = item }

@@ -35,10 +35,12 @@ struct SidebarView: View {
                         TagTree(tag: root, kind: kind)
                     }
                 }
-                .dropDestination(for: TagDragItem.self) { items, _ in
+                .dropDestination(for: TagDragItem.self, isEnabled: true) {
+                    items,
+                    _ in
                     for incoming in items {
                         let dragged = state.getTag(incoming.id)
-                        guard let dragged else { return false }
+                        guard let dragged else { return }
 
                         AppIntents.editTag(
                             dragged,
@@ -48,19 +50,6 @@ struct SidebarView: View {
                     }
 
                     AppIntents.loadTags()
-                    return true
-                } isTargeted: { _ in
-                }
-                .dropDestination(for: PhotoDragItem.self) { items, _ in
-                    for incoming in items {
-                        let dragged = state.getPhoto(incoming.id)
-                        guard let dragged else { return false }
-
-                        // AppIntents.tagPhotos(withIDs: ids, tag: tag)
-                    }
-
-                    return true
-                } isTargeted: { _ in
                 }
             }
         }

@@ -1,6 +1,5 @@
-import Foundation
-import UniformTypeIdentifiers
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct PhotoDragItem: Transferable, Codable, Hashable {
     let id: UUID
@@ -10,6 +9,10 @@ struct PhotoDragItem: Transferable, Codable, Hashable {
     }
 
     static var transferRepresentation: some TransferRepresentation {
-        CodableRepresentation(contentType: .json)
+        CodableRepresentation(contentType: .photoDragItem)
     }
+}
+
+extension UTType {
+    static let photoDragItem = UTType(exportedAs: "studio.zar.my-photos.photo-drag-item")
 }

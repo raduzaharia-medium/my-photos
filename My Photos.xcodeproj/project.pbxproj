@@ -29,9 +29,22 @@
 		173582FC2E50754000A76804 /* My PhotosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "My PhotosUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		17DB82FB2E91655300B98C1B /* Exceptions for "My Photos" folder in "My Photos" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"My-Photos-Info.plist",
+			);
+			target = 173582E12E50753F00A76804 /* My Photos */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		173582E42E50753F00A76804 /* My Photos */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				17DB82FB2E91655300B98C1B /* Exceptions for "My Photos" folder in "My Photos" target */,
+			);
 			path = "My Photos";
 			sourceTree = "<group>";
 		};
@@ -400,6 +413,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "My-Photos-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "My Photos";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -442,6 +456,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "My-Photos-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "My Photos";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

@@ -47,6 +47,9 @@ final class PresentationState {
     func getTag(_ id: UUID) -> Tag? {
         return tags.first(where: { $0.id == id })
     }
+    func getPhoto(_ id: UUID) -> Photo? {
+        return photos.first(where: { $0.id == id })
+    }
     
     func isPhotoSelected(_ photo: Photo) -> Bool {
         return selectedPhotos.contains(photo)
