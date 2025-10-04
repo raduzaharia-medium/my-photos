@@ -1,6 +1,6 @@
+import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
-import Foundation
 
 enum SidebarDropItem: Transferable {
     case tag(TagDragItem)
@@ -15,6 +15,20 @@ enum SidebarDropItem: Transferable {
         DataRepresentation(importedContentType: .photoDragItem) { data in
             let item = try JSONDecoder().decode(PhotoDragItem.self, from: data)
             return .photo(item)
+        }
+    }
+}
+
+extension Collection where Element == SidebarDropItem {
+    var tags: [TagDragItem] {
+        compactMap {
+            if case .tag(let tag) = $0 { tag } else { nil }
+        }
+    }
+
+    var photos: [PhotoDragItem] {
+        compactMap {
+            if case .photo(let photo) = $0 { photo } else { nil }
         }
     }
 }
