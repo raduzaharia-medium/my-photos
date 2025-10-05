@@ -22,7 +22,9 @@ struct PhotosGrid: View {
                             .onTapGesture {
                                 AppIntents.togglePhotoSelection(photo)
                             }
-                            .draggable(PhotoDragItem(photo.id))
+                            .draggable(PhotoDragItem(photo.id)) {
+                                DragPreviewStack(count: presentationState.selectedPhotos.count)
+                            }
                         } else {
                             NavigationLink(value: photo) {
                                 PhotoCard(photo, variant: .grid)

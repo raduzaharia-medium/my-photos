@@ -63,9 +63,8 @@ struct TagTree: View {
     private func handlePhotoDrop(_ photoItems: [PhotoDragItem]) {
         for photoItem in photoItems {
             if let dragged = state.getPhoto(photoItem.id) {
-                // TODO: Implement your tagging flow here
-                // e.g., AppIntents.tagPhotos([dragged], with: tag)
-                print("Dropped photo: \(dragged) onto tag: \(tag.name)")
+                AppIntents.tagSelectedPhotos([tag])
+                AppIntents.toggleSelectionMode()
             }
         }
     }
