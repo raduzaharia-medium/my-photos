@@ -1,56 +1,45 @@
 import SwiftUI
 
 struct TagSuggestions: View {
-    @Environment(PresentationState.self) private var presentationState
-
-    private var searchText: Binding<String>
-    private var kind: TagKind
+    @Binding var highlightedIndex: Int?
+    
+    private var suggestions: [Tag]
     private var onSelect: ((Tag) -> Void)?
-
-    private var allTags: [Tag] {
-        presentationState.tags.sorted {
-            $0.name.localizedCaseInsensitiveCompare($1.name)
-                == .orderedAscending
-        }
-    }
-    private var filteredTags: [Tag] {
-        if searchText.wrappedValue.isEmpty { return allTags }
-        return allTags.filter {
-            $0.name.localizedCaseInsensitiveContains(searchText.wrappedValue)
-        }
-    }
-
+    
     init(
-        _ searchText: Binding<String>,
-        kind: TagKind = .custom,
+        suggestions: [Tag],
+        highlightedIndex: Binding<Int?> = .constant(nil),
         onSelect: ((Tag) -> Void)? = nil
     ) {
-        self.searchText = searchText
-        self.kind = kind
+        self.suggestions = suggestions
+        self._highlightedIndex = highlightedIndex
         self.onSelect = onSelect
     }
 
     var body: some View {
-        let matches = filteredTags.filter {
-            $0.name.lowercased().contains(searchText.wrappedValue.lowercased())
-                && $0.kind == kind
-        }
+        let matches = suggestions
 
         return VStack(alignment: .leading, spacing: 8) {
             if matches.isEmpty {
                 Text("No matching tags")
                     .foregroundStyle(.secondary)
             } else {
-                ForEach(matches) { tag in
+                ForEach(matches.indices, id: \.self) { index in
+                    let tag = matches[index]
+                    let isHighlighted = (index == highlightedIndex)
+
                     Button {
-                        if let onSelect {
-                            onSelect(tag)
-                        } else {
-                            searchText.wrappedValue = tag.name
-                        }
+                        onSelect?(tag)
                     } label: {
                         Label(tag.name, systemImage: tag.kind.icon)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 6)
+                            .padding(.horizontal, 8)
+                            .background(isHighlighted ? Color.accentColor.opacity(0.15) : Color.clear)
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                            .contentShape(Rectangle())
                     }
+                    .buttonStyle(.plain)
                 }
             }
         }

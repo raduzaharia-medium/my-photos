@@ -1,14 +1,29 @@
 import SwiftUI
 
+#if os(macOS) || targetEnvironment(macCatalyst)
+    import AppKit
+#endif
+
 struct TagInput: View {
     @Environment(PresentationState.self) private var presentationState
 
     @Binding var selected: [Tag]
     @State private var searchText = ""
+    @FocusState private var isTextFieldFocused: Bool
+    @State private var highlightedIndex: Int? = nil
 
     let title: String
     let kind: TagKind
-    
+
+    // Mirror TagSuggestions' filtering so we know the count for keyboard navigation
+    private var suggestions: [Tag] {
+        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return [] }
+        return presentationState.tags
+            .filter { $0.kind == kind }
+            .filter { $0.name.range(of: trimmed, options: [.caseInsensitive, .diacriticInsensitive]) != nil }
+    }
+
     init(title: String, kind: TagKind, selected: Binding<[Tag]>) {
         self.title = title
         self.kind = kind
@@ -32,8 +47,17 @@ struct TagInput: View {
                 TextField("", text: $searchText)
                     .padding(.leading, selected.isEmpty ? 6 : 0)
                     .textFieldStyle(.plain)
+                    .focused($isTextFieldFocused)
                     .onSubmit { prepareAddTag() }
+                    .arrowKeyNavigation(
+                        onUp: { moveHighlight(-1, total: suggestions.count) },
+                        onDown: { moveHighlight(1, total: suggestions.count) },
+                        onReturn: { submitFromKeyboard() }
+                    )
             }
+            .contentShape(Rectangle())
+            .onTapGesture { isTextFieldFocused = true }
+            .cursorIBeamIfAvailable()
             .padding(4)
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
@@ -45,10 +69,27 @@ struct TagInput: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
-                TagSuggestions($searchText, kind: kind) { tag in
+                TagSuggestions(suggestions: suggestions, highlightedIndex: $highlightedIndex) { tag in
                     addTag(tag)
                 }
             }
+        }
+    }
+
+    private func submitFromKeyboard() {
+        if let index = highlightedIndex, suggestions.indices.contains(index) {
+            addTag(suggestions[index])
+        } else {
+            prepareAddTag()
+        }
+    }
+    private func moveHighlight(_ delta: Int, total: Int) {
+        let next = (highlightedIndex ?? -1) + delta
+
+        if total > 0 {
+            highlightedIndex = min(max(0, next), total - 1)
+        } else {
+            highlightedIndex = nil
         }
     }
 
@@ -60,6 +101,7 @@ struct TagInput: View {
 
     private func prepareAddTag() {
         let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        highlightedIndex = nil
         guard !trimmed.isEmpty else { return }
 
         if let exact = presentationState.tags.first(where: {
@@ -79,6 +121,59 @@ struct TagInput: View {
                 selected.append(tag)
             }
             searchText = ""
+            highlightedIndex = nil
         }
     }
 }
+
+extension View {
+    @ViewBuilder
+    fileprivate func cursorIBeamIfAvailable() -> some View {
+        #if os(macOS)
+            self.onHover { hovering in
+                if hovering {
+                    NSCursor.iBeam.push()
+                } else {
+                    NSCursor.pop()
+                }
+            }
+        #else
+            self
+        #endif
+    }
+    
+    @ViewBuilder
+    func arrowKeyNavigation(onUp: @escaping () -> Void,
+                            onDown: @escaping () -> Void,
+                            onReturn: @escaping () -> Void) -> some View {
+        #if os(macOS)
+            self.onKeyPress { key in
+                switch key.key {
+                case .upArrow:
+                    onUp()
+                    return .handled
+                case .downArrow:
+                    onDown()
+                    return .handled
+                case .return:
+                    onReturn()
+                    return .handled
+                default:
+                    return .ignored
+                }
+            }
+        #else
+            self.onMoveCommand { direction in
+                switch direction {
+                case .up:
+                    onUp()
+                case .down:
+                    onDown()
+                default:
+                    break
+                }
+            }
+        #endif
+    }
+}
+
