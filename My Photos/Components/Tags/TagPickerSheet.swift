@@ -1,18 +1,11 @@
 import SwiftUI
 
 struct TagPickerSheet: View {
-    @Environment(PresentationState.self) private var presentationState
+    @State private var people: [Tag] = []
+    @State private var places: [Tag] = []
+    @State private var events: [Tag] = []
 
-    @State private var searchText = ""
-    
-    @State private var selectedPeople: [Tag] = []
-    @State private var selectedPlaces: [Tag] = []
-    @State private var selectedEvents: [Tag] = []
-    
-    var selectedTags: [Tag] {
-        selectedPeople + selectedPlaces + selectedEvents
-    }
-    
+    var tags: [Tag] { people + places + events }
     var onSave: ([Tag]) -> Void
     var onCancel: () -> Void
 
@@ -28,9 +21,9 @@ struct TagPickerSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    TagInput(title: "People", kind: .person, selected: $selectedPeople)
-                    TagInput(title: "Places", kind: .place, selected: $selectedPlaces)
-                    TagInput(title: "Events", kind: .event, selected: $selectedEvents)
+                    TagInput("People", kind: .person, selected: $people)
+                    TagInput("Places", kind: .place, selected: $places)
+                    TagInput("Events", kind: .event, selected: $events)
                 }
             }
             .padding(20)
@@ -42,10 +35,10 @@ struct TagPickerSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", role: .confirm) {
-                        if !selectedTags.isEmpty { onSave(selectedTags) }
+                        if !tags.isEmpty { onSave(tags) }
                     }
                     .keyboardShortcut(.defaultAction)
-                    .disabled(selectedTags.isEmpty)
+                    .disabled(tags.isEmpty)
                 }
             }
         }

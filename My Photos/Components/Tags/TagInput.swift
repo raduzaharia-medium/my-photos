@@ -15,7 +15,7 @@ struct TagInput: View {
         return presentationState.getTags(searchText: searchText, kind: kind)
     }
 
-    init(title: String, kind: TagKind, selected: Binding<[Tag]>) {
+    init(_ title: String, kind: TagKind, selected: Binding<[Tag]>) {
         self.title = title
         self.kind = kind
         self._selected = selected
@@ -56,10 +56,6 @@ struct TagInput: View {
             )
 
             if !searchText.isEmpty {
-                Text("Suggestions")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
                 TagSuggestions(
                     suggestions: suggestions,
                     highlightedIndex: $highlightedIndex

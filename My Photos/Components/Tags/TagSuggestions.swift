@@ -2,10 +2,10 @@ import SwiftUI
 
 struct TagSuggestions: View {
     @Binding var highlightedIndex: Int?
-    
+
     private var suggestions: [Tag]
     private var onSelect: ((Tag) -> Void)?
-    
+
     init(
         suggestions: [Tag],
         highlightedIndex: Binding<Int?> = .constant(nil),
@@ -20,6 +20,10 @@ struct TagSuggestions: View {
         let matches = suggestions
 
         return VStack(alignment: .leading, spacing: 8) {
+            Text("Suggestions")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
             if matches.isEmpty {
                 Text("No matching tags")
                     .foregroundStyle(.secondary)
@@ -35,7 +39,11 @@ struct TagSuggestions: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.vertical, 6)
                             .padding(.horizontal, 8)
-                            .background(isHighlighted ? Color.accentColor.opacity(0.15) : Color.clear)
+                            .background(
+                                isHighlighted
+                                    ? Color.accentColor.opacity(0.15)
+                                    : Color.clear
+                            )
                             .clipShape(RoundedRectangle(cornerRadius: 6))
                             .contentShape(Rectangle())
                     }
