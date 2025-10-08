@@ -4,6 +4,7 @@ struct TagSuggestions: View {
     @Environment(PresentationState.self) private var presentationState
 
     private var searchText: Binding<String>
+    private var kind: TagKind
     private var onSelect: ((Tag) -> Void)?
 
     private var allTags: [Tag] {
@@ -19,14 +20,20 @@ struct TagSuggestions: View {
         }
     }
 
-    init(_ searchText: Binding<String>, onSelect: ((Tag) -> Void)? = nil) {
+    init(
+        _ searchText: Binding<String>,
+        kind: TagKind = .custom,
+        onSelect: ((Tag) -> Void)? = nil
+    ) {
         self.searchText = searchText
+        self.kind = kind
         self.onSelect = onSelect
     }
 
     var body: some View {
         let matches = filteredTags.filter {
             $0.name.lowercased().contains(searchText.wrappedValue.lowercased())
+                && $0.kind == kind
         }
 
         return VStack(alignment: .leading, spacing: 8) {

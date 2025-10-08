@@ -61,11 +61,7 @@ struct TagTree: View {
     }
 
     private func handlePhotoDrop(_ photoItems: [PhotoDragItem]) {
-        for photoItem in photoItems {
-            if let dragged = state.getPhoto(photoItem.id) {
-                AppIntents.tagSelectedPhotos([tag])
-                AppIntents.toggleSelectionMode()
-            }
-        }
+        AppIntents.tagSelectedPhotos([tag])
+        AppIntents.toggleSelectionMode()
     }
 }
