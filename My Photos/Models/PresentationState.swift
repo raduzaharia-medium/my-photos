@@ -50,7 +50,22 @@ final class PresentationState {
     func getPhoto(_ id: UUID) -> Photo? {
         return photos.first(where: { $0.id == id })
     }
-    
+
+    func getTags(of kind: TagKind) -> [Tag] {
+        return tags.filter { $0.kind == kind }
+    }
+    func getTags(searchText: String, kind: TagKind) -> [Tag] {
+        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return [] }
+
+        return getTags(of: kind).filter {
+            $0.name.range(
+                of: trimmed,
+                options: [.caseInsensitive, .diacriticInsensitive]
+            ) != nil
+        }
+    }
+
     func isPhotoSelected(_ photo: Photo) -> Bool {
         return selectedPhotos.contains(photo)
     }

@@ -1,9 +1,5 @@
 import SwiftUI
 
-#if os(macOS) || targetEnvironment(macCatalyst)
-    import AppKit
-#endif
-
 struct TagInput: View {
     @Environment(PresentationState.self) private var presentationState
 
@@ -15,13 +11,8 @@ struct TagInput: View {
     let title: String
     let kind: TagKind
 
-    // Mirror TagSuggestions' filtering so we know the count for keyboard navigation
     private var suggestions: [Tag] {
-        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return [] }
-        return presentationState.tags
-            .filter { $0.kind == kind }
-            .filter { $0.name.range(of: trimmed, options: [.caseInsensitive, .diacriticInsensitive]) != nil }
+        return presentationState.getTags(searchText: searchText, kind: kind)
     }
 
     init(title: String, kind: TagKind, selected: Binding<[Tag]>) {
@@ -69,7 +60,10 @@ struct TagInput: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
 
-                TagSuggestions(suggestions: suggestions, highlightedIndex: $highlightedIndex) { tag in
+                TagSuggestions(
+                    suggestions: suggestions,
+                    highlightedIndex: $highlightedIndex
+                ) { tag in
                     addTag(tag)
                 }
             }
@@ -125,55 +119,3 @@ struct TagInput: View {
         }
     }
 }
-
-extension View {
-    @ViewBuilder
-    fileprivate func cursorIBeamIfAvailable() -> some View {
-        #if os(macOS)
-            self.onHover { hovering in
-                if hovering {
-                    NSCursor.iBeam.push()
-                } else {
-                    NSCursor.pop()
-                }
-            }
-        #else
-            self
-        #endif
-    }
-    
-    @ViewBuilder
-    func arrowKeyNavigation(onUp: @escaping () -> Void,
-                            onDown: @escaping () -> Void,
-                            onReturn: @escaping () -> Void) -> some View {
-        #if os(macOS)
-            self.onKeyPress { key in
-                switch key.key {
-                case .upArrow:
-                    onUp()
-                    return .handled
-                case .downArrow:
-                    onDown()
-                    return .handled
-                case .return:
-                    onReturn()
-                    return .handled
-                default:
-                    return .ignored
-                }
-            }
-        #else
-            self.onMoveCommand { direction in
-                switch direction {
-                case .up:
-                    onUp()
-                case .down:
-                    onDown()
-                default:
-                    break
-                }
-            }
-        #endif
-    }
-}
-
