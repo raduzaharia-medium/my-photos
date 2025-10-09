@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct TagPickerSheet: View {
-    @ObservedObject var people: TagInputState
-    @ObservedObject var places: TagInputState
-    @ObservedObject var events: TagInputState
+    @State private var people: TagInputState
+    @State private var places: TagInputState
+    @State private var events: TagInputState
 
     var tags: [Tag] { people.selected + places.selected + events.selected }
     var onSave: ([Tag]) -> Void
@@ -17,9 +17,9 @@ struct TagPickerSheet: View {
         onSave: @escaping ([Tag]) -> Void,
         onCancel: @escaping () -> Void
     ) {
-        self.people = people
-        self.places = places
-        self.events = events
+        self._people = State(initialValue: people)
+        self._places = State(initialValue: places)
+        self._events = State(initialValue: events)
 
         self.onSave = onSave
         self.onCancel = onCancel
@@ -29,9 +29,9 @@ struct TagPickerSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    TagInput("People", state: people)
-                    TagInput("Places", state: places)
-                    TagInput("Events", state: events)
+                    TagInput("People", state: $people)
+                    TagInput("Places", state: $places)
+                    TagInput("Events", state: $events)
                 }
             }
             .padding(20)

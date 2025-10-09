@@ -3,7 +3,7 @@ import SwiftUI
 struct TagInput: View {
     @Environment(PresentationState.self) private var presentationState
     @FocusState private var isTextFieldFocused: Bool
-    @ObservedObject var state: TagInputState
+    @Binding var state: TagInputState
 
     var suggestions: [Tag] {
         return presentationState.getTags(
@@ -14,9 +14,9 @@ struct TagInput: View {
 
     let title: String
 
-    init(_ title: String, state: TagInputState) {
+    init(_ title: String, state: Binding<TagInputState>) {
         self.title = title
-        self.state = state
+        self._state = state
     }
 
     var body: some View {
@@ -29,7 +29,7 @@ struct TagInput: View {
                 ForEach(state.selected) { tag in
                     TagChip(
                         tag: tag,
-                        onRemove: { state.removeTag(tag: tag) }
+                        onRemove: { state.removeTag(tag) }
                     )
                 }
 
@@ -37,11 +37,11 @@ struct TagInput: View {
                     .padding(.leading, state.selected.isEmpty ? 6 : 0)
                     .textFieldStyle(.plain)
                     .focused($isTextFieldFocused)
-                    .onSubmit { state.submitFromKeyboard(suggestions: suggestions) }
+                    .onSubmit { state.submitFromKeyboard(suggestions) }
                     .arrowKeyNavigation(
-                        onUp: { state.highlightPrevious(count: suggestions.count) },
-                        onDown: { state.highlightNext(count: suggestions.count) },
-                        onReturn: { state.submitFromKeyboard(suggestions: suggestions) }
+                        onUp: { state.highlightPrevious(suggestions.count) },
+                        onDown: { state.highlightNext(suggestions.count) },
+                        onReturn: { state.submitFromKeyboard(suggestions) }
                     )
             }
             .contentShape(Rectangle())

@@ -1,17 +1,16 @@
 import SwiftUI
 
-final class TagInputState: ObservableObject {
-    @Published var searchText: String = ""
-    @Published var selected: [Tag] = []
-    @Published var highlightedIndex: Int? = nil
-
+struct TagInputState {
+    var searchText: String = ""
+    var selected: [Tag] = []
+    var highlightedIndex: Int? = nil
     let kind: TagKind
 
     init(_ kind: TagKind) {
         self.kind = kind
     }
 
-    func addTag(_ tag: Tag) {
+    mutating func addTag(_ tag: Tag) {
         if !selected.contains(where: { $0.id == tag.id }) {
             selected.append(tag)
         }
@@ -20,27 +19,24 @@ final class TagInputState: ObservableObject {
         highlightedIndex = nil
     }
 
-    func removeTag(tag: Tag) {
+    mutating func removeTag(_ tag: Tag) {
         selected.removeAll { $0.id == tag.id }
     }
 
-    @MainActor
-    func submitFromKeyboard(suggestions: [Tag]) {
+    mutating func submitFromKeyboard(_ suggestions: [Tag]) {
         if let index = highlightedIndex, suggestions.indices.contains(index) {
             addTag(suggestions[index])
         }
     }
 
-    @MainActor
-    func highlightNext(count: Int) {
+    mutating func highlightNext(_ count: Int) {
         guard count > 0 else { return }
         let current = highlightedIndex ?? 0
 
         highlightedIndex = min(current + 1, count - 1)
     }
 
-    @MainActor
-    func highlightPrevious(count: Int) {
+    mutating func highlightPrevious(_ count: Int) {
         guard count > 0 else { return }
         let current = highlightedIndex ?? 0
 
@@ -55,7 +51,7 @@ final class PickTagPresenter: ObservableObject {
     private let events: TagInputState
 
     let modalPresenter: ModalService
-    
+
     init(modalPresenter: ModalService) {
         self.modalPresenter = modalPresenter
 
