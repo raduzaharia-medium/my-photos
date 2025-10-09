@@ -2,21 +2,22 @@ import SwiftUI
 
 struct TagInput: View {
     @Environment(PresentationState.self) private var presentationState
+    @Environment(TagPickerState.self) private var tagPickerState
     @FocusState private var isTextFieldFocused: Bool
-    @Binding var state: TagInputState
+
+    let title: String
+    let kind: TagKind
 
     var suggestions: [Tag] {
         return presentationState.getTags(
-            searchText: state.searchText,
-            kind: state.kind
+            searchText: tagPickerState.searchText[kind] ?? "",
+            kind: kind
         )
     }
 
-    let title: String
-
-    init(_ title: String, state: Binding<TagInputState>) {
+    init(_ title: String, kind: TagKind) {
         self.title = title
-        self._state = state
+        self.kind = kind
     }
 
     var body: some View {
@@ -26,22 +27,34 @@ struct TagInput: View {
                 .foregroundStyle(.secondary)
 
             FlowLayout(spacing: 8, lineSpacing: 4) {
-                ForEach(state.selected) { tag in
+                ForEach(Array(tagPickerState.tags[kind] ?? []), id: \.self) { tag in
                     TagChip(
                         tag: tag,
-                        onRemove: { state.removeTag(tag) }
+                        onRemove: { tagPickerState.removeTag(tag) }
                     )
                 }
 
-                TextField("", text: $state.searchText)
-                    .padding(.leading, state.selected.isEmpty ? 6 : 0)
+                TextField("", text: Binding(
+                    get: { tagPickerState.searchText[kind] ?? "" },
+                    set: { tagPickerState.searchText[kind] = $0 }
+                ))
+                    .padding(
+                        .leading,
+                        tagPickerState.tags[kind]?.isEmpty ?? true ? 6 : 0
+                    )
                     .textFieldStyle(.plain)
                     .focused($isTextFieldFocused)
-                    .onSubmit { state.submitFromKeyboard(suggestions) }
+                    .onSubmit { tagPickerState.addSelection(kind, suggestions) }
                     .arrowKeyNavigation(
-                        onUp: { state.highlightPrevious(suggestions.count) },
-                        onDown: { state.highlightNext(suggestions.count) },
-                        onReturn: { state.submitFromKeyboard(suggestions) }
+                        onUp: {
+                            tagPickerState.selectPrevious(kind, suggestions.count)
+                        },
+                        onDown: {
+                            tagPickerState.selectNext(kind, suggestions.count)
+                        },
+                        onReturn: {
+                            tagPickerState.addSelection(kind, suggestions)
+                        }
                     )
             }
             .contentShape(Rectangle())
@@ -53,12 +66,15 @@ struct TagInput: View {
                     .stroke(.quaternary, lineWidth: 1)
             )
 
-            if !state.searchText.isEmpty {
+            if !(tagPickerState.searchText[kind] ?? "").isEmpty {
                 TagSuggestions(
                     suggestions: suggestions,
-                    highlightedIndex: $state.highlightedIndex
+                    highlightedIndex: Binding<Int?>(
+                        get: { tagPickerState.selectedIndex[kind] ?? nil },
+                        set: { tagPickerState.selectedIndex[kind] = $0 }
+                    )
                 ) { tag in
-                    state.addTag(tag)
+                    tagPickerState.addTag(tag)
                 }
             }
         }

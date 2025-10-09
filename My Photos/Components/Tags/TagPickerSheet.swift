@@ -1,26 +1,15 @@
 import SwiftUI
 
 struct TagPickerSheet: View {
-    @State private var people: TagInputState
-    @State private var places: TagInputState
-    @State private var events: TagInputState
+    @Environment(TagPickerState.self) private var tagPickerState
 
-    var tags: [Tag] { people.selected + places.selected + events.selected }
     var onSave: ([Tag]) -> Void
     var onCancel: () -> Void
 
     init(
-        people: TagInputState,
-        places: TagInputState,
-        events: TagInputState,
-
         onSave: @escaping ([Tag]) -> Void,
         onCancel: @escaping () -> Void
     ) {
-        self._people = State(initialValue: people)
-        self._places = State(initialValue: places)
-        self._events = State(initialValue: events)
-
         self.onSave = onSave
         self.onCancel = onCancel
     }
@@ -29,10 +18,15 @@ struct TagPickerSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    TagInput("People", state: $people)
-                    TagInput("Places", state: $places)
-                    TagInput("Events", state: $events)
+                    TagInput("People", kind: .person)
+                    TagInput("Places", kind: .place)
+                    TagInput("Events", kind: .event)
                 }
+            }
+            .onAppear() {
+                tagPickerState.tags.removeAll()
+                tagPickerState.searchText.removeAll()
+                tagPickerState.selectedIndex.removeAll()
             }
             .padding(20)
             .frame(minWidth: 360, minHeight: 300)
@@ -43,10 +37,11 @@ struct TagPickerSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", role: .confirm) {
-                        if !tags.isEmpty { onSave(tags) }
+                        guard !tagPickerState.allTags.isEmpty else { return }
+                        onSave(tagPickerState.allTags)
                     }
                     .keyboardShortcut(.defaultAction)
-                    .disabled(tags.isEmpty)
+                    .disabled(tagPickerState.tags.isEmpty)
                 }
             }
         }

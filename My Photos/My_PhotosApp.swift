@@ -4,6 +4,7 @@ import SwiftUI
 @main
 struct My_PhotosApp: App {
     @State private var presentationState = PresentationState()
+    @State private var tagPickerState = TagPickerState()
     
     private var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -94,6 +95,7 @@ struct My_PhotosApp: App {
         }
         .modelContainer(sharedModelContainer)
         .environment(presentationState)
+        .environment(tagPickerState)
         .commands {
             LibraryCommands(presentationState: $presentationState)
         }
