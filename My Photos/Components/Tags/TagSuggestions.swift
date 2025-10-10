@@ -1,36 +1,34 @@
 import SwiftUI
 
 struct TagSuggestions: View {
-    @Binding var highlightedIndex: Int?
+    @Environment(TagPickerState.self) private var tagPickerState
 
-    private var suggestions: [Tag]
+    private var kind: TagKind
     private var onSelect: ((Tag) -> Void)?
 
-    init(
-        suggestions: [Tag],
-        highlightedIndex: Binding<Int?> = .constant(nil),
-        onSelect: ((Tag) -> Void)? = nil
-    ) {
-        self.suggestions = suggestions
-        self._highlightedIndex = highlightedIndex
+    private var suggestions: [Tag] { tagPickerState.suggestions[kind] ?? [] }
+    private var selectedIndex: Int? {
+        tagPickerState.selectedIndex[kind] ?? nil
+    }
+
+    init(_ tagKind: TagKind, onSelect: ((Tag) -> Void)? = nil) {
+        self.kind = tagKind
         self.onSelect = onSelect
     }
 
     var body: some View {
-        let matches = suggestions
-
         return VStack(alignment: .leading, spacing: 8) {
             Text("Suggestions")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-            if matches.isEmpty {
+            if suggestions.isEmpty {
                 Text("No matching tags")
                     .foregroundStyle(.secondary)
             } else {
-                ForEach(matches.indices, id: \.self) { index in
-                    let tag = matches[index]
-                    let isHighlighted = (index == highlightedIndex)
+                ForEach(suggestions.indices, id: \.self) { index in
+                    let tag = suggestions[index]
+                    let isHighlighted = index == selectedIndex
 
                     Button {
                         onSelect?(tag)

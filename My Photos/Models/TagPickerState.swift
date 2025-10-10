@@ -3,9 +3,9 @@ import Observation
 @MainActor
 @Observable
 final class TagPickerState {
-    var searchText: [TagKind: String] = [:]
     var tags: [TagKind: Set<Tag>] = [:]
     var selectedIndex: [TagKind: Int?] = [:]
+    var suggestions: [TagKind: [Tag]] = [:]
 
     var allTags: [Tag] { tags.flatMap(\.value) }
 
@@ -13,7 +13,6 @@ final class TagPickerState {
         if tags[tag.kind] == nil { tags[tag.kind] = [] }
         tags[tag.kind]?.insert(tag)
 
-        searchText[tag.kind] = ""
         selectedIndex[tag.kind] = nil
     }
 
@@ -21,8 +20,8 @@ final class TagPickerState {
         tags[tag.kind]?.remove(tag)
     }
 
-    func selectNext(_ kind: TagKind, _ count: Int) {
-        guard count > 0 else { return }
+    func selectNext(_ kind: TagKind) {
+        guard let count = suggestions[kind]?.count else { return }
 
         let current = selectedIndex[kind]
 
@@ -33,17 +32,17 @@ final class TagPickerState {
         }
     }
 
-    func selectPrevious(_ kind: TagKind, _ count: Int) {
-        guard count > 0 else { return }
+    func selectPrevious(_ kind: TagKind) {
         guard let current = selectedIndex[kind] else { return }
         guard let current else { return }
 
         selectedIndex[kind] = max(current - 1, 0)
     }
 
-    func addSelection(_ kind: TagKind, _ suggestions: [Tag]) {
+    func addSelection(_ kind: TagKind) {
         guard let index = selectedIndex[kind] else { return }
         guard let index else { return }
+        guard let suggestions = suggestions[kind] else { return }
 
         addTag(suggestions[index])
     }

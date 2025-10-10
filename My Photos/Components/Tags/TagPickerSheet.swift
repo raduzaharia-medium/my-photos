@@ -25,7 +25,6 @@ struct TagPickerSheet: View {
             }
             .onAppear() {
                 tagPickerState.tags.removeAll()
-                tagPickerState.searchText.removeAll()
                 tagPickerState.selectedIndex.removeAll()
             }
             .padding(20)

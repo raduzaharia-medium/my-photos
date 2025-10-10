@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 extension View {
     func setupTagLoadingHandlers(
         presentationState: PresentationState,
+        tagPickerState: TagPickerState,
         notifier: NotificationService,
         tagStore: TagStore
     ) -> some View {
@@ -80,6 +81,66 @@ extension View {
                 notifier.show("Tags deleted", .success)
             } catch {
                 notifier.show("Could not delete tags", .error)
+            }
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(for: .loadTagSuggestions)
+        ) { note in
+            guard let tagKind = note.object as? TagKind else { return }
+            let searchText = note.userInfo?["searchText"] as? String ?? ""
+
+            withAnimation {
+                let suggestions = presentationState.getTags(
+                    searchText: searchText,
+                    kind: tagKind
+                )
+                tagPickerState.suggestions[tagKind] = suggestions
+            }
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(for: .selectNextTagSuggestion)
+        ) { note in
+            guard let tagKind = note.object as? TagKind else { return }
+
+            withAnimation {
+                tagPickerState.selectNext(tagKind)
+            }
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: .selectPreviousTagSuggestion
+            )
+        ) { note in
+            guard let tagKind = note.object as? TagKind else { return }
+
+            withAnimation {
+                tagPickerState.selectPrevious(tagKind)
+            }
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(for: .addSelectedTagToEditor)
+        ) { note in
+            guard let tagKind = note.object as? TagKind else { return }
+
+            withAnimation {
+                tagPickerState.addSelection(tagKind)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .addTagToEditor)) {
+            note in
+            guard let tag = note.object as? Tag else { return }
+
+            withAnimation {
+                tagPickerState.addTag(tag)
+            }
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(for: .removeTagFromEditor)
+        ) { note in
+            guard let tag = note.object as? Tag else { return }
+
+            withAnimation {
+                tagPickerState.removeTag(tag)
             }
         }
     }

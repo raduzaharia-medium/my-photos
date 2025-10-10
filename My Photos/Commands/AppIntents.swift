@@ -34,6 +34,19 @@ extension Notification.Name {
     )
     static let navigateToNextPhoto = Notification.Name("navigateToNextPhoto")
 
+    static let loadTagSuggestions = Notification.Name("loadTagSuggestions")
+    static let selectNextTagSuggestion = Notification.Name(
+        "selectNextTagSuggestion"
+    )
+    static let selectPreviousTagSuggestion = Notification.Name(
+        "selectPreviousTagSuggestion"
+    )
+    static let addSelectedTagToEditor = Notification.Name(
+        "addSelectedTagToEditor"
+    )
+    static let addTagToEditor = Notification.Name("addTagToEditor")
+    static let removeTagFromEditor = Notification.Name("removeTagFromEditor")
+
     static let selectPhoto = Notification.Name("selectPhoto")
     static let deselectPhoto = Notification.Name("deselectPhoto")
     static let togglePhotoSelection = Notification.Name("togglePhotoSelection")
@@ -73,10 +86,15 @@ enum AppIntents {
             userInfo: ["name": name, "kind": kind]
         )
     }
-    static func editTag(_ tag: Tag, name: String, kind: TagKind, parent: Tag? = nil) {
+    static func editTag(
+        _ tag: Tag,
+        name: String,
+        kind: TagKind,
+        parent: Tag? = nil
+    ) {
         var userInfo: [String: Any] = ["name": name, "kind": kind]
         if let parent { userInfo["parent"] = parent }
-        
+
         NotificationCenter.default.post(
             name: .editTag,
             object: tag,
@@ -139,6 +157,38 @@ enum AppIntents {
     }
     static func navigateToNextPhoto() {
         NotificationCenter.default.post(name: .navigateToNextPhoto, object: nil)
+    }
+
+    static func loadTagSuggestions(_ kind: TagKind, _ searchText: String) {
+        NotificationCenter.default.post(
+            name: .loadTagSuggestions,
+            object: kind,
+            userInfo: ["searchText": searchText]
+        )
+    }
+    static func selectNextTagSuggestion(_ kind: TagKind) {
+        NotificationCenter.default.post(
+            name: .selectNextTagSuggestion,
+            object: kind
+        )
+    }
+    static func selectPreviousTagSuggestion(_ kind: TagKind) {
+        NotificationCenter.default.post(
+            name: .selectPreviousTagSuggestion,
+            object: kind
+        )
+    }
+    static func addSelectedTagToEditor(_ kind: TagKind) {
+        NotificationCenter.default.post(
+            name: .addSelectedTagToEditor,
+            object: kind
+        )
+    }
+    static func addTagToEditor(_ tag: Tag) {
+        NotificationCenter.default.post(name: .addTagToEditor, object: tag)
+    }
+    static func removeTagFromEditor(_ tag: Tag) {
+        NotificationCenter.default.post(name: .removeTagFromEditor, object: tag)
     }
 
     static func selectPhoto(_ photo: Photo) {
