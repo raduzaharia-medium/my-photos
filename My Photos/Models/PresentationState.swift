@@ -13,6 +13,7 @@ enum PresentationMode: String, CaseIterable, Identifiable {
 final class PresentationState {
     var photos: [Photo] = []
     var tags: [Tag] = []
+    var years: [DateTakenYear] = []
 
     var photoFilter: Set<SidebarItem> = []
     var selectedPhotos: Set<Photo> = []

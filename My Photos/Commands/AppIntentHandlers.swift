@@ -6,6 +6,7 @@ extension View {
     func setupTagLoadingHandlers(
         presentationState: PresentationState,
         tagPickerState: TagPickerState,
+        dateStore: DateStore,
         notifier: NotificationService,
         tagStore: TagStore
     ) -> some View {
@@ -82,6 +83,10 @@ extension View {
             } catch {
                 notifier.show("Could not delete tags", .error)
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .loadDates)) { _ in
+            let years = dateStore.getYears()
+            presentationState.years = years
         }
         .onReceive(
             NotificationCenter.default.publisher(for: .loadTagSuggestions)

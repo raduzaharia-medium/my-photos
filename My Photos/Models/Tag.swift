@@ -5,7 +5,6 @@ enum TagKind: String, Codable, Hashable, CaseIterable, Identifiable {
     case album = "album"
     case person = "person"
     case place = "place"
-    case date = "date"
     case event = "event"
     case custom = "custom"
 
@@ -18,7 +17,6 @@ extension TagKind {
         case .album: "Albums"
         case .person: "People"
         case .place: "Places"
-        case .date: "Dates"
         case .event: "Events"
         case .custom: "Tags"
         }
@@ -29,7 +27,6 @@ extension TagKind {
         case .album: "photo.on.rectangle"
         case .person: "person"
         case .place: "mappin.and.ellipse"
-        case .date: "calendar"
         case .event: "sparkles"
         case .custom: "tag"
         }
@@ -39,7 +36,7 @@ extension TagKind {
 @Model
 final class Tag: Identifiable, Hashable {
     @Attribute(.unique) var id = UUID()
-    var name: String
+    @Attribute(.unique) var name: String
     var kind: TagKind
 
     @Relationship(inverse: \Tag.parent) var children: [Tag] = []

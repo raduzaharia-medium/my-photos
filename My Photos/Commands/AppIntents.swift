@@ -8,11 +8,13 @@ extension Notification.Name {
     static let requestImportPhotos = Notification.Name("requestImportPhotos")
     static let requestTagPhotos = Notification.Name("requestTagPhotos")
 
-    static let createTag = Notification.Name("createTag")
     static let loadTags = Notification.Name("loadTags")
+    static let createTag = Notification.Name("createTag")
     static let editTag = Notification.Name("editTag")
     static let deleteTag = Notification.Name("deleteTag")
     static let deleteTags = Notification.Name("deleteTags")
+    
+    static let loadDates = Notification.Name("loadDates")
 
     static let resetPhotoFilter = Notification.Name("resetPhotoFilter")
     static let updatePhotoFilter = Notification.Name("updatePhotoFilter")
@@ -106,6 +108,10 @@ enum AppIntents {
     }
     static func deleteTags(_ tags: [Tag]) {
         NotificationCenter.default.post(name: .deleteTags, object: tags)
+    }
+    
+    static func loadDates() {
+        NotificationCenter.default.post(name: .loadDates, object: nil)
     }
 
     static func resetPhotoFilter() {

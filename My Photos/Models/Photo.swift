@@ -20,12 +20,18 @@ final class Photo: Identifiable {
     var location: GeoCoordinate?
     
     @Relationship(inverse: \Tag.photos) var tags: [Tag]
+    @Relationship var dateTakenYear: DateTakenYear?
+    @Relationship var dateTakenMonth: DateTakenMonth?
+    @Relationship var dateTakenDay: DateTakenDay?
     
     public init(
         id: UUID = .init(),
         title: String,
         description: String? = nil,
         dateTaken: Date?,
+        dateTakenYear: DateTakenYear? = nil,
+        dateTakenMonth: DateTakenMonth? = nil,
+        dateTakenDay: DateTakenDay? = nil,
         location: GeoCoordinate? = nil,
         tags: [Tag] = [],
     ) {
@@ -33,6 +39,9 @@ final class Photo: Identifiable {
         self.title = title
         self.caption = description
         self.dateTaken = dateTaken
+        self.dateTakenYear = dateTakenYear
+        self.dateTakenMonth = dateTakenMonth
+        self.dateTakenDay = dateTakenDay
         self.location = location
         self.tags = tags
     }

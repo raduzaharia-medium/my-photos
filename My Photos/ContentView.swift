@@ -13,6 +13,7 @@ struct ContentView: View {
 
     private var tagStore: TagStore { TagStore(context: context) }
     private var photoStore: PhotoStore { PhotoStore(context: context) }
+    private var dateStore: DateStore { DateStore(context: context) }
     private var fileStore: FileStore { FileStore() }
 
     var body: some View {
@@ -70,12 +71,14 @@ struct ContentView: View {
         .setupTagLoadingHandlers(
             presentationState: presentationState,
             tagPickerState: tagPickerState,
+            dateStore: dateStore,
             notifier: notifier,
             tagStore: tagStore
         )
         .onAppear {
             AppIntents.loadPhotos()
             AppIntents.loadTags()
+            AppIntents.loadDates()
         }
     }
 }

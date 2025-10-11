@@ -42,6 +42,16 @@ struct My_PhotosApp: App {
         context.insert(tag5)
         context.insert(tag6)
         context.insert(tag7)
+        
+        let year2022 = DateTakenYear(2022)
+        let month202201 = DateTakenMonth(year2022, 1)
+        let day20220109 = DateTakenDay(month202201, 9)
+        let day20220110 = DateTakenDay(month202201, 10)
+        let month202202 = DateTakenMonth(year2022, 2)
+        let day20220215 = DateTakenDay(month202202, 15)
+        let month202203 = DateTakenMonth(year2022, 3)
+        let day20220322 = DateTakenDay(month202203, 22)
+        let day20220325 = DateTakenDay(month202203, 25)
 
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -52,6 +62,9 @@ struct My_PhotosApp: App {
             Photo(
                 title: "On the beach",
                 dateTaken: formatter.date(from: "2022-01-09") ?? Date(),
+                dateTakenYear: year2022,
+                dateTakenMonth: month202201,
+                dateTakenDay: day20220109,
                 location: GeoCoordinate(44.439663, 26.096306),
                 tags: [tag1]
             )
@@ -60,6 +73,9 @@ struct My_PhotosApp: App {
             Photo(
                 title: "On the sea",
                 dateTaken: formatter.date(from: "2022-01-10") ?? Date(),
+                dateTakenYear: year2022,
+                dateTakenMonth: month202201,
+                dateTakenDay: day20220110,
                 location: GeoCoordinate(46.770439, 23.591423),
                 tags: [tag2]
             )
@@ -68,6 +84,9 @@ struct My_PhotosApp: App {
             Photo(
                 title: "On the hill",
                 dateTaken: formatter.date(from: "2022-02-15") ?? Date(),
+                dateTakenYear: year2022,
+                dateTakenMonth: month202202,
+                dateTakenDay: day20220215,
                 location: GeoCoordinate(47.158455, 27.601442),
             )
         )
@@ -75,6 +94,9 @@ struct My_PhotosApp: App {
             Photo(
                 title: "Somewhere else",
                 dateTaken: formatter.date(from: "2022-03-22") ?? Date(),
+                dateTakenYear: year2022,
+                dateTakenMonth: month202203,
+                dateTakenDay: day20220322,
                 location: GeoCoordinate(44.319305, 23.800678),
             )
         )
@@ -82,6 +104,9 @@ struct My_PhotosApp: App {
             Photo(
                 title: "We don't know",
                 dateTaken: formatter.date(from: "2022-03-25") ?? Date(),
+                dateTakenYear: year2022,
+                dateTakenMonth: month202203,
+                dateTakenDay: day20220325,
                 location: GeoCoordinate(45.657974, 25.601198),
             )
         )

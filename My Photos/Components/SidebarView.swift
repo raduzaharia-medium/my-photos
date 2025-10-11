@@ -12,6 +12,14 @@ struct SidebarView: View {
             }
         )
     }
+    
+    private func monthName(_ month: Int) -> String {
+        let formatter = DateFormatter()
+        
+        formatter.locale = Locale.current
+        
+        return formatter.monthSymbols[max(0, min(11, month - 1))]
+    }
 
     var body: some View {
         List(selection: selectionBinding) {
@@ -20,7 +28,31 @@ struct SidebarView: View {
                     SidebarRow(.filter(filter))
                 }
             }
-
+            
+            Section("Dates") {
+                ForEach(state.years.sorted(by: { $0.year < $1.year })) { year in
+                    DisclosureGroup {
+                        ForEach(year.months.sorted(by: { $0.month < $1.month })) { month in
+                            DisclosureGroup {
+                                ForEach(month.days.sorted(by: { $0.day < $1.day })) { day in
+                                    // Day row
+                                    Text("\(day.day)")
+                                        .tag(SidebarItem.dateDay(year.year, month.month, day.day))
+                                }
+                            } label: {
+                                // Month row
+                                Text(monthName(month.month)) // helper to format month name
+                                    .tag(SidebarItem.dateMonth(year.year, month.month))
+                            }
+                        }
+                    } label: {
+                        // Year row
+                        Text("\(year.year)")
+                            .font(.headline)
+                            .tag(SidebarItem.dateYear(year.year))
+                    }
+                }
+            }
             ForEach(TagKind.allCases, id: \.self) { kind in
                 let sectionTags = state.groupedTags[kind] ?? []
                 let roots = sectionTags.filter {
