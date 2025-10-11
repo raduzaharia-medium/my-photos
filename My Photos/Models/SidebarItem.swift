@@ -52,7 +52,22 @@ extension Set where Element == SidebarItem {
             if case .filter(let t) = $0 { t } else { nil }
         }
     }
-
+    var selectedYears: [DateTakenYear] {
+        compactMap {
+            if case .dateYear(let t) = $0 { t } else { nil }
+        }
+    }
+    var selectedMonths: [DateTakenMonth] {
+        compactMap {
+            if case .dateMonth(let t) = $0 { t } else { nil }
+        }
+    }
+    var selectedDays: [DateTakenDay] {
+        compactMap {
+            if case .dateDay(let t) = $0 { t } else { nil }
+        }
+    }
+    
     var canEditOrDeleteSelection: Bool {
         selectedTags.count > 0 && selectedFilters.count == 0
     }
