@@ -33,35 +33,38 @@ final class PhotoStore {
     func getPhotos(_ filters: Set<SidebarItem>) -> [Photo] {
         let photosFromTags = getPhotosBySelectedTags(filters)
         let photosFromDates = getPhotosBySelectedDates(filters)
-        
+
         return photosFromDates.intersection(photosFromTags).sorted {
             ($0.dateTaken ?? .distantPast) > ($1.dateTaken ?? .distantPast)
         }
     }
 
     func getPhotosBySelectedTags(_ filters: Set<SidebarItem>) -> Set<Photo> {
-        var result = Set<Photo>()
+        guard !filters.selectedTags.isEmpty else { return Set(getPhotos()) }
 
-        for tag in filters.selectedTags {
-            result.formUnion(tag.photos)
+        let result = filters.selectedTags.reduce(into: Set<Photo>()) {
+            partialResult,
+            tag in
+            partialResult.formUnion(tag.photos)
         }
 
         return result
     }
 
     func getPhotosBySelectedDates(_ filters: Set<SidebarItem>) -> Set<Photo> {
-        var result: Set<Photo> = []
+        guard !filters.selectedDates.isEmpty else { return Set(getPhotos()) }
 
-        for year in filters.selectedYears {
-            result = result.union(year.photos)
-        }
-
-        for month in filters.selectedMonths {
-            result = result.union(month.photos)
-        }
-
-        for day in filters.selectedDays {
-            result = result.union(day.photos)
+        let result = filters.selectedDates.reduce(into: Set<Photo>()) {
+            partialResult,
+            dateTaken in
+            switch dateTaken {
+            case .year(let y):
+                partialResult.formUnion(y.photos)
+            case .month(let m):
+                partialResult.formUnion(m.photos)
+            case .day(let d):
+                partialResult.formUnion(d.photos)
+            }
         }
 
         return result

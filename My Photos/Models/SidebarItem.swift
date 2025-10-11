@@ -67,6 +67,13 @@ extension Set where Element == SidebarItem {
             if case .dateDay(let t) = $0 { t } else { nil }
         }
     }
+    var selectedDates: [DateTaken] {
+        let years = selectedYears.map(DateTaken.year)
+        let months = selectedMonths.map(DateTaken.month)
+        let days = selectedDays.map(DateTaken.day)
+
+        return years + months + days
+    }
     
     var canEditOrDeleteSelection: Bool {
         selectedTags.count > 0 && selectedFilters.count == 0

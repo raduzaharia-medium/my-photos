@@ -48,3 +48,9 @@ final class DateTakenDay: Identifiable {
         self.month = month
     }
 }
+
+enum DateTaken: Hashable {
+    case year(DateTakenYear)
+    case month(DateTakenMonth)
+    case day(DateTakenDay)
+}
