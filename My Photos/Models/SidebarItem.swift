@@ -3,9 +3,9 @@ import SwiftUI
 enum SidebarItem: Hashable {
     case filter(Filter)
     case tag(Tag)
-    case dateYear(Int)
-    case dateMonth(Int, Int)
-    case dateDay(Int, Int, Int)
+    case dateYear(DateTakenYear)
+    case dateMonth(DateTakenMonth)
+    case dateDay(DateTakenDay)
 
     var name: String {
         switch self {
@@ -13,12 +13,12 @@ enum SidebarItem: Hashable {
             return filter.name
         case .tag(let tag):
             return tag.name
-        case .dateYear(let year):
-            return "\(year)"
-        case .dateMonth(_, let month):
-            return monthName(month)
-        case .dateDay(_, _, let day):
-            return "\(day)"
+        case .dateYear(let date):
+            return "\(date.year)"
+        case .dateMonth(let date):
+            return monthName(date.month)
+        case .dateDay(let date):
+            return "\(date.day)"
         }
     }
 
@@ -27,8 +27,8 @@ enum SidebarItem: Hashable {
         case .filter(let filter): return filter.icon
         case .tag(let tag): return tag.kind.icon
         case .dateYear(_): return "calendar"
-        case .dateMonth(_, _): return "calendar"
-        case .dateDay(_, _, _): return "calendar"
+        case .dateMonth(_): return "calendar"
+        case .dateDay(_): return "calendar"
         }
     }
     
