@@ -6,7 +6,7 @@ final class DateTakenYear: Identifiable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var year: Int
 
-    @Relationship(inverse: \DateTakenMonth.year) var months: [DateTakenMonth] =
+    @Relationship(deleteRule: .cascade, inverse: \DateTakenMonth.year) var months: [DateTakenMonth] =
         []
     @Relationship var photos: [Photo] = []
 
@@ -21,7 +21,7 @@ final class DateTakenMonth: Identifiable {
     var month: Int
 
     @Relationship var year: DateTakenYear
-    @Relationship(inverse: \DateTakenDay.month) var days: [DateTakenDay] = []
+    @Relationship(deleteRule: .cascade, inverse: \DateTakenDay.month) var days: [DateTakenDay] = []
     @Relationship var photos: [Photo] = []
 
     init(_ year: DateTakenYear, _ month: Int) {
