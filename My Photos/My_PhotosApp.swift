@@ -5,10 +5,11 @@ import SwiftUI
 struct My_PhotosApp: App {
     @State private var presentationState = PresentationState()
     @State private var tagPickerState = TagPickerState()
-    
+
     private var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Photo.self, Tag.self,
+            Photo.self, Tag.self, DateTakenYear.self, DateTakenMonth.self,
+            DateTakenDay.self,
         ])
         let modelConfiguration = ModelConfiguration(
             schema: schema,
@@ -42,7 +43,7 @@ struct My_PhotosApp: App {
         context.insert(tag5)
         context.insert(tag6)
         context.insert(tag7)
-        
+
         let year2022 = DateTakenYear(2022)
         let month202201 = DateTakenMonth(year2022, 1)
         let day20220109 = DateTakenDay(month202201, 9)
@@ -126,4 +127,3 @@ struct My_PhotosApp: App {
         }
     }
 }
-

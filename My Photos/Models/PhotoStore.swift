@@ -7,7 +7,7 @@ final class PhotoStore {
     init(context: ModelContext) {
         self.context = context
     }
-    
+
     func insert(_ photo: Photo) throws {
         context.insert(photo)
         try context.save()
@@ -16,7 +16,7 @@ final class PhotoStore {
         for photo in photos {
             context.insert(photo)
         }
-        
+
         try context.save()
     }
 
@@ -31,23 +31,42 @@ final class PhotoStore {
         return []
     }
     func getPhotos(_ filters: Set<SidebarItem>) -> [Photo] {
-        let selectedTags = filters.selectedTags
-        let selectedTagNames = selectedTags.map(\.name)
-        var descriptor = FetchDescriptor<Photo>(
-            sortBy: [SortDescriptor(\Photo.dateTaken, order: .reverse)]
-        )
+        let photosFromTags = getPhotosBySelectedTags(filters)
+        let photosFromDates = getPhotosBySelectedDates(filters)
+        
+        return photosFromDates.intersection(photosFromTags).sorted {
+            ($0.dateTaken ?? .distantPast) > ($1.dateTaken ?? .distantPast)
+        }
+    }
 
-        if !selectedTags.isEmpty {
-            descriptor.predicate = #Predicate<Photo> { photo in
-                photo.tags.contains { tag in
-                    selectedTagNames.contains(tag.name)
-                }
-            }
+    func getPhotosBySelectedTags(_ filters: Set<SidebarItem>) -> Set<Photo> {
+        var result = Set<Photo>()
+
+        for tag in filters.selectedTags {
+            result.formUnion(tag.photos)
         }
 
-        return (try? context.fetch(descriptor)) ?? []
+        return result
     }
-    
+
+    func getPhotosBySelectedDates(_ filters: Set<SidebarItem>) -> Set<Photo> {
+        var result: Set<Photo> = []
+
+        for year in filters.selectedYears {
+            result = result.union(year.photos)
+        }
+
+        for month in filters.selectedMonths {
+            result = result.union(month.photos)
+        }
+
+        for day in filters.selectedDays {
+            result = result.union(day.photos)
+        }
+
+        return result
+    }
+
     func tagPhotos(_ photos: Set<Photo>, _ tags: [Tag]) throws {
         for photo in photos {
             for tag in tags {
@@ -56,7 +75,7 @@ final class PhotoStore {
                 }
             }
         }
-        
+
         try context.save()
     }
 }

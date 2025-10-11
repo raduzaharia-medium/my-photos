@@ -11,18 +11,15 @@ struct DateTree: View {
                     DisclosureGroup {
                         ForEach(month.days.sorted(by: { $0.day < $1.day })) {
                             day in
-                            SidebarRow(.dateDay(day))
-                                .tag(SidebarItem.dateDay(day))
+                            SidebarRow(.dateDay(day)).tag(day)
                         }
                     } label: {
-                        SidebarRow(.dateMonth(month))
-                            .tag(SidebarItem.dateMonth(month))
+                        SidebarRow(.dateMonth(month)).tag(month)
                     }
                 }
 
             } label: {
-                SidebarRow(.dateYear(year))
-                    .tag(SidebarItem.dateYear(year))
+                SidebarRow(.dateYear(year)).tag(year)
             }
         }
     }
