@@ -15,10 +15,10 @@ enum SidebarItem: Hashable {
             return tag.name
         case .dateYear(let year):
             return "\(year)"
-        case .dateMonth(let year, let month):
-            return "\(year)-/\(month)"
-        case .dateDay(let year, let month, let day):
-            return "\(year)-/\(month)-/\(day)"
+        case .dateMonth(_, let month):
+            return monthName(month)
+        case .dateDay(_, _, let day):
+            return "\(day)"
         }
     }
 
@@ -30,6 +30,14 @@ enum SidebarItem: Hashable {
         case .dateMonth(_, _): return "calendar"
         case .dateDay(_, _, _): return "calendar"
         }
+    }
+    
+    private func monthName(_ month: Int) -> String {
+        let formatter = DateFormatter()
+
+        formatter.locale = Locale.current
+
+        return formatter.monthSymbols[max(0, min(11, month - 1))]
     }
 }
 
