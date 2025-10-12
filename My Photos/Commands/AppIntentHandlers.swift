@@ -155,7 +155,8 @@ extension View {
         notifier: NotificationService,
         photoStore: PhotoStore,
         tagStore: TagStore,
-        fileStore: FileStore
+        fileStore: FileStore,
+        dateStore: DateStore
     ) -> some View {
         return self.onReceive(
             NotificationCenter.default.publisher(for: .loadPhotos)
@@ -179,23 +180,24 @@ extension View {
                 if let photos = try? await fileStore.parseImageFiles(in: folder)
                 {
                     for photo in photos {
-                        var resolved: [Tag] = []
-                        resolved.reserveCapacity(photo.tags.count)
+                        let tags = tagStore.ensure(photo.tags)
+                        let year = dateStore.ensure(photo.dateTakenYear)
+                        let month = dateStore.ensure(photo.dateTakenMonth, year)
+                        let day = dateStore.ensure(photo.dateTakenDay, month)
 
-                        for t in photo.tags {
-                            let ensured = tagStore.ensureTagAndChildren(
-                                t,
-                                parent: t.parent
-                            )
-                            resolved.append(ensured)
-                        }
-                        photo.tags = resolved
+                        photo.tags = tags
+                        photo.dateTakenYear = year
+                        photo.dateTakenMonth = month
+                        photo.dateTakenDay = day
 
                         try? photoStore.insert(photo)
                     }
 
                     let tags = tagStore.getTags()
                     presentationState.tags = tags
+                    
+                    let years = dateStore.getYears()
+                    presentationState.years = years
 
                     let refreshedPhotos = photoStore.getPhotos()
                     await MainActor.run {

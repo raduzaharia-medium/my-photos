@@ -26,9 +26,9 @@ enum SidebarItem: Hashable {
         switch self {
         case .filter(let filter): return filter.icon
         case .tag(let tag): return tag.kind.icon
-        case .dateYear(_): return "calendar"
-        case .dateMonth(_): return "calendar"
-        case .dateDay(_): return "calendar"
+        case .dateYear(let year): return year.icon
+        case .dateMonth(let month): return month.icon
+        case .dateDay(let day): return day.icon
         }
     }
     

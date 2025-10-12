@@ -62,10 +62,10 @@ final class TagStore {
     }
 
     @discardableResult
-    func ensureTagAndChildren(_ incoming: Tag, parent: Tag? = nil) -> Tag {
+    func ensure(_ incoming: Tag, parent: Tag? = nil) -> Tag {
         if let existing = getTag(named: incoming.name, kind: incoming.kind) {
             for child in incoming.children {
-                let ensuredChild = ensureTagAndChildren(child, parent: existing)
+                let ensuredChild = ensure(child, parent: existing)
 
                 if !existing.children.contains(where: { $0 === ensuredChild }) {
                     existing.children.append(ensuredChild)
@@ -81,7 +81,7 @@ final class TagStore {
             )
 
             for child in incoming.children {
-                let ensuredChild = ensureTagAndChildren(child, parent: newNode)
+                let ensuredChild = ensure(child, parent: newNode)
 
                 if !newNode.children.contains(where: { $0 === ensuredChild }) {
                     newNode.children.append(ensuredChild)
@@ -91,6 +91,11 @@ final class TagStore {
             context.insert(newNode)
             return newNode
         }
+    }
+
+    func ensure(_ incoming: [Tag]) -> [Tag] {
+        let resolved: [Tag] = incoming.map { t in ensure(t, parent: t.parent) }
+        return resolved
     }
 
     func createIfMissing(name: String, kind: TagKind) throws -> Tag {

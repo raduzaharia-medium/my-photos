@@ -15,13 +15,8 @@ struct FileStore {
             let tags = Metadata.tags(in: imageFile)
             let imageProps = ImageProps(props)
             let acdsee = ACDSeeCategories(tags)
+            let dateTakenParser = DateTakenParser(imageProps.dateTaken)
 
-            let places = acdsee.places
-            let title = imageProps.title ?? imageFile.lastPathComponent
-            let description = imageProps.description
-            let dateTaken = imageProps.dateTaken
-            let location = imageProps.location
-                        
             //            if let location {
             //                if let request = MKReverseGeocodingRequest(
             //                    location: CLLocation(
@@ -41,11 +36,14 @@ struct FileStore {
             //            }
 
             let photo = Photo(
-                title: title,
-                description: description,
-                dateTaken: dateTaken,
-                location: location,
-                tags: places
+                title: imageProps.title ?? imageFile.lastPathComponent,
+                description: imageProps.description,
+                dateTaken: imageProps.dateTaken,
+                dateTakenYear: dateTakenParser.dateTakenYear,
+                dateTakenMonth: dateTakenParser.dateTakenMonth,
+                dateTakenDay: dateTakenParser.dateTakenDay,
+                location: imageProps.location,
+                tags: acdsee.places
             )
             result.append(photo)
         }
