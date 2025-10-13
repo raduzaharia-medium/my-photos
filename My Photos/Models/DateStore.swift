@@ -34,7 +34,7 @@ final class DateStore {
         let ensuredYear = findOrCreateYear(year)
         let ensuredMonth = findOrCreateMonth(in: ensuredYear, monthValue: month)
         let ensuredDay = findOrCreateDay(in: ensuredMonth, dayValue: day)
-        
+
         return ensuredDay
     }
 
@@ -55,6 +55,7 @@ final class DateStore {
         let newNode = DateTakenYear(yearValue)
 
         context.insert(newNode)
+        try? context.save()
         return newNode
     }
 
@@ -65,6 +66,7 @@ final class DateStore {
         let newNode = DateTakenMonth(year, monthValue)
 
         context.insert(newNode)
+        try? context.save()
         return newNode
     }
 
@@ -75,18 +77,33 @@ final class DateStore {
         let newNode = DateTakenDay(month, dayValue)
 
         context.insert(newNode)
+        try? context.save()
         return newNode
     }
 
     func getYear(_ year: Int) -> DateTakenYear? {
-        let years = getYears().filter { $0.year == year }
-        return years.first
+        let key = "\(year)"
+        let descriptor = FetchDescriptor<DateTakenYear>(
+            predicate: #Predicate { $0.key == key }
+        )
+
+        return (try? context.fetch(descriptor))?.first
     }
     func getMonth(_ year: DateTakenYear, _ month: Int) -> DateTakenMonth? {
-        return year.months.first(where: { $0.month == month })
+        let key = "\(year.key)-\(String(format: "%02d", month))"
+        let descriptor = FetchDescriptor<DateTakenMonth>(
+            predicate: #Predicate { $0.key == key }
+        )
+
+        return (try? context.fetch(descriptor))?.first
     }
     func getDay(_ month: DateTakenMonth, _ day: Int) -> DateTakenDay? {
-        return month.days.first(where: { $0.day == day })
+        let key = "\(month.key)-\(String(format: "%02d", day))"
+        let descriptor = FetchDescriptor<DateTakenDay>(
+            predicate: #Predicate { $0.key == key }
+        )
+
+        return (try? context.fetch(descriptor))?.first
     }
 
     func getYears() -> [DateTakenYear] {

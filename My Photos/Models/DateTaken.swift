@@ -39,7 +39,7 @@ final class DateTakenMonth: Identifiable, Equatable {
 
         self.month = month
         self.year = year
-        self.key = "\(year.key)-\(month)"
+        self.key = "\(year.key)-\(String(format: "%02d", month))"
     }
 
     static func == (left: DateTakenMonth, right: DateTakenMonth) -> Bool {
@@ -60,7 +60,7 @@ final class DateTakenDay: Identifiable, Equatable {
     init(_ month: DateTakenMonth, _ day: Int) {
         self.day = day
         self.month = month
-        self.key = "\(month.key)-\(day)"
+        self.key = "\(month.key)-\(String(format: "%02d", day))"
     }
 
     static func == (left: DateTakenDay, right: DateTakenDay) -> Bool {
