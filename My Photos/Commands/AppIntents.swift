@@ -15,6 +15,7 @@ extension Notification.Name {
     static let deleteTags = Notification.Name("deleteTags")
     
     static let loadDates = Notification.Name("loadDates")
+    static let loadPlaces = Notification.Name("loadPlaces")
 
     static let resetPhotoFilter = Notification.Name("resetPhotoFilter")
     static let updatePhotoFilter = Notification.Name("updatePhotoFilter")
@@ -112,6 +113,9 @@ enum AppIntents {
     
     static func loadDates() {
         NotificationCenter.default.post(name: .loadDates, object: nil)
+    }
+    static func loadPlaces() {
+        NotificationCenter.default.post(name: .loadPlaces, object: nil)
     }
 
     static func resetPhotoFilter() {

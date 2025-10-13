@@ -3,6 +3,17 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 extension View {
+    func setupPlaceLoadingHandlers(
+        presentationState: PresentationState,
+        placeStore: PlaceStore,
+    ) -> some View {
+        return self.onReceive(
+            NotificationCenter.default.publisher(for: .loadPlaces)
+        ) { _ in
+            let countries = placeStore.getCountries()
+            presentationState.countries = countries
+        }
+    }
     func setupTagLoadingHandlers(
         presentationState: PresentationState,
         tagPickerState: TagPickerState,
@@ -195,7 +206,7 @@ extension View {
 
                     let tags = tagStore.getTags()
                     presentationState.tags = tags
-                    
+
                     let years = dateStore.getYears()
                     presentationState.years = years
 

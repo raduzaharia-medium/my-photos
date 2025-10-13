@@ -6,6 +6,8 @@ enum SidebarItem: Hashable {
     case dateYear(DateTakenYear)
     case dateMonth(DateTakenMonth)
     case dateDay(DateTakenDay)
+    case placeCountry(PlaceCountry)
+    case placeLocality(PlaceLocality)
 
     var name: String {
         switch self {
@@ -19,6 +21,10 @@ enum SidebarItem: Hashable {
             return monthName(date.month)
         case .dateDay(let date):
             return "\(date.day)"
+        case .placeCountry(let place):
+            return place.country
+        case .placeLocality(let place):
+            return place.locality
         }
     }
 
@@ -29,9 +35,11 @@ enum SidebarItem: Hashable {
         case .dateYear(let year): return year.icon
         case .dateMonth(let month): return month.icon
         case .dateDay(let day): return day.icon
+        case .placeCountry(let country): return country.icon
+        case .placeLocality(let locality): return locality.icon
         }
     }
-    
+
     private func monthName(_ month: Int) -> String {
         let formatter = DateFormatter()
 
@@ -74,7 +82,7 @@ extension Set where Element == SidebarItem {
 
         return years + months + days
     }
-    
+
     var canEditOrDeleteSelection: Bool {
         selectedTags.count > 0 && selectedFilters.count == 0
     }

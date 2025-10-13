@@ -9,7 +9,7 @@ struct My_PhotosApp: App {
     private var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Photo.self, Tag.self, DateTakenYear.self, DateTakenMonth.self,
-            DateTakenDay.self,
+            DateTakenDay.self, PlaceCountry.self, PlaceLocality.self,
         ])
         let modelConfiguration = ModelConfiguration(
             schema: schema,
@@ -29,7 +29,6 @@ struct My_PhotosApp: App {
         let context = ModelContext(container)
 
         let tag1 = Tag(name: "Alice", kind: .person)
-        let tag2 = Tag(name: "Beach", kind: .place)
         let tag3 = Tag(name: "Birthday", kind: .event)
         let tag4 = Tag(name: "Something", kind: .custom)
         let tag5 = Tag(name: "Something else", kind: .custom)
@@ -37,12 +36,14 @@ struct My_PhotosApp: App {
         let tag7 = Tag(name: "Nothing", kind: .custom)
 
         context.insert(tag1)
-        context.insert(tag2)
         context.insert(tag3)
         context.insert(tag4)
         context.insert(tag5)
         context.insert(tag6)
         context.insert(tag7)
+        
+        let countryRomania = PlaceCountry("Romania")
+        let localityBucharest = PlaceLocality(countryRomania, "Bucharest")
 
         let year2022 = DateTakenYear(2022)
         let month202201 = DateTakenMonth(year2022, 1)
@@ -78,7 +79,8 @@ struct My_PhotosApp: App {
                 dateTakenMonth: month202201,
                 dateTakenDay: day20220110,
                 location: GeoCoordinate(46.770439, 23.591423),
-                tags: [tag2]
+                country: countryRomania,
+                locality: localityBucharest,
             )
         )
         context.insert(

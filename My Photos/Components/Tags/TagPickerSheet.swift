@@ -19,7 +19,7 @@ struct TagPickerSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     TagInput("People", kind: .person)
-                    TagInput("Places", kind: .place)
+//                    TagInput("Places", kind: .place)
                     TagInput("Events", kind: .event)
                 }
             }

@@ -14,6 +14,7 @@ struct ContentView: View {
     private var tagStore: TagStore { TagStore(context: context) }
     private var photoStore: PhotoStore { PhotoStore(context: context) }
     private var dateStore: DateStore { DateStore(context: context) }
+    private var placeStore: PlaceStore { PlaceStore(context: context) }
     private var fileStore: FileStore { FileStore() }
 
     var body: some View {
@@ -76,10 +77,15 @@ struct ContentView: View {
             notifier: notifier,
             tagStore: tagStore
         )
+        .setupPlaceLoadingHandlers(
+            presentationState: presentationState,
+            placeStore: placeStore
+        )
         .onAppear {
             AppIntents.loadPhotos()
             AppIntents.loadTags()
             AppIntents.loadDates()
+            AppIntents.loadPlaces()
         }
     }
 }
