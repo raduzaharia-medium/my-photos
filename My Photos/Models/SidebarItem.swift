@@ -83,6 +83,23 @@ extension Set where Element == SidebarItem {
         return years + months + days
     }
 
+    var selectedCountries: [PlaceCountry] {
+        compactMap {
+            if case .placeCountry(let t) = $0 { t } else { nil }
+        }
+    }
+    var selectedLocalities: [PlaceLocality] {
+        compactMap {
+            if case .placeLocality(let t) = $0 { t } else { nil }
+        }
+    }
+    var selectedPlaces: [Place] {
+        let countries = selectedCountries.map(Place.country)
+        let localities = selectedLocalities.map(Place.locality)
+        
+        return countries + localities
+    }
+
     var canEditOrDeleteSelection: Bool {
         selectedTags.count > 0 && selectedFilters.count == 0
     }
