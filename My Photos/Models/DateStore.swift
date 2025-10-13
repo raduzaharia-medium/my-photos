@@ -8,32 +8,32 @@ final class DateStore {
         self.context = context
     }
 
-    func ensureYear(_ dateTaken: Date?) -> DateTakenYear? {
+    func ensureYear(_ dateTaken: Date?) throws -> DateTakenYear? {
         guard let dateTaken else { return nil }
         let year = Calendar.current.component(.year, from: dateTaken)
-        let ensured = findOrCreateYear(year)
+        let ensured = try findOrCreateYear(year)
 
         return ensured
     }
-    func ensureMonth(_ dateTaken: Date?) -> DateTakenMonth? {
+    func ensureMonth(_ dateTaken: Date?) throws -> DateTakenMonth? {
         guard let dateTaken else { return nil }
         let year = Calendar.current.component(.year, from: dateTaken)
         let month = Calendar.current.component(.month, from: dateTaken)
 
-        let ensuredYear = findOrCreateYear(year)
-        let ensuredMonth = findOrCreateMonth(in: ensuredYear, monthValue: month)
+        let ensuredYear = try findOrCreateYear(year)
+        let ensuredMonth = try findOrCreateMonth(in: ensuredYear, monthValue: month)
 
         return ensuredMonth
     }
-    func ensureDay(_ dateTaken: Date?) -> DateTakenDay? {
+    func ensureDay(_ dateTaken: Date?) throws -> DateTakenDay? {
         guard let dateTaken else { return nil }
         let year = Calendar.current.component(.year, from: dateTaken)
         let month = Calendar.current.component(.month, from: dateTaken)
         let day = Calendar.current.component(.day, from: dateTaken)
 
-        let ensuredYear = findOrCreateYear(year)
-        let ensuredMonth = findOrCreateMonth(in: ensuredYear, monthValue: month)
-        let ensuredDay = findOrCreateDay(in: ensuredMonth, dayValue: day)
+        let ensuredYear = try findOrCreateYear(year)
+        let ensuredMonth = try findOrCreateMonth(in: ensuredYear, monthValue: month)
+        let ensuredDay = try findOrCreateDay(in: ensuredMonth, dayValue: day)
 
         return ensuredDay
     }
@@ -50,34 +50,34 @@ final class DateStore {
         try context.save()
     }
 
-    private func findOrCreateYear(_ yearValue: Int) -> DateTakenYear {
+    private func findOrCreateYear(_ yearValue: Int) throws -> DateTakenYear {
         if let existing = getYear(yearValue) { return existing }
         let newNode = DateTakenYear(yearValue)
 
         context.insert(newNode)
-        try? context.save()
+        try context.save()
         return newNode
     }
 
     private func findOrCreateMonth(in year: DateTakenYear, monthValue: Int)
-        -> DateTakenMonth
+        throws -> DateTakenMonth
     {
         if let existing = getMonth(year, monthValue) { return existing }
         let newNode = DateTakenMonth(year, monthValue)
 
         context.insert(newNode)
-        try? context.save()
+        try context.save()
         return newNode
     }
 
     private func findOrCreateDay(in month: DateTakenMonth, dayValue: Int)
-        -> DateTakenDay
+        throws -> DateTakenDay
     {
         if let existing = getDay(month, dayValue) { return existing }
         let newNode = DateTakenDay(month, dayValue)
 
         context.insert(newNode)
-        try? context.save()
+        try context.save()
         return newNode
     }
 

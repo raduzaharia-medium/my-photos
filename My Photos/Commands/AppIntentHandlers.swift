@@ -181,9 +181,9 @@ extension View {
                 {
                     for photo in photos {
                         let tags = tagStore.ensure(photo.tags)
-                        let year = dateStore.ensureYear(photo.dateTaken)
-                        let month = dateStore.ensureMonth(photo.dateTaken)
-                        let day = dateStore.ensureDay(photo.dateTaken)
+                        let year = try? dateStore.ensureYear(photo.dateTaken)
+                        let month = try? dateStore.ensureMonth(photo.dateTaken)
+                        let day = try? dateStore.ensureDay(photo.dateTaken)
 
                         photo.tags = tags
                         photo.dateTakenYear = year
