@@ -8,37 +8,34 @@ final class DateStore {
         self.context = context
     }
 
-    @discardableResult
-    func ensure(_ incoming: DateTakenDay?, _ month: DateTakenMonth?)
-        -> DateTakenDay?
-    {
-        guard let incoming, let month else { return nil }
+    func ensureYear(_ dateTaken: Date?) -> DateTakenYear? {
+        guard let dateTaken else { return nil }
+        let year = Calendar.current.component(.year, from: dateTaken)
+        let ensured = findOrCreateYear(year)
 
-        let ensured = findOrCreateDay(in: month, dayValue: incoming.day)
         return ensured
     }
+    func ensureMonth(_ dateTaken: Date?) -> DateTakenMonth? {
+        guard let dateTaken else { return nil }
+        let year = Calendar.current.component(.year, from: dateTaken)
+        let month = Calendar.current.component(.month, from: dateTaken)
 
-    @discardableResult
-    func ensure(_ incoming: DateTakenMonth?, _ year: DateTakenYear?)
-        -> DateTakenMonth?
-    {
-        guard let incoming, let year else { return nil }
-        let ensuredMonth = findOrCreateMonth(
-            in: year,
-            monthValue: incoming.month
-        )
+        let ensuredYear = findOrCreateYear(year)
+        let ensuredMonth = findOrCreateMonth(in: ensuredYear, monthValue: month)
 
-        for day in incoming.days { ensure(day, ensuredMonth) }
         return ensuredMonth
     }
+    func ensureDay(_ dateTaken: Date?) -> DateTakenDay? {
+        guard let dateTaken else { return nil }
+        let year = Calendar.current.component(.year, from: dateTaken)
+        let month = Calendar.current.component(.month, from: dateTaken)
+        let day = Calendar.current.component(.day, from: dateTaken)
 
-    @discardableResult
-    func ensure(_ incoming: DateTakenYear?) -> DateTakenYear? {
-        guard let incoming else { return nil }
-        let ensuredYear = findOrCreateYear(incoming.year)
-
-        for month in incoming.months { ensure(month, ensuredYear) }
-        return ensuredYear
+        let ensuredYear = findOrCreateYear(year)
+        let ensuredMonth = findOrCreateMonth(in: ensuredYear, monthValue: month)
+        let ensuredDay = findOrCreateDay(in: ensuredMonth, dayValue: day)
+        
+        return ensuredDay
     }
 
     func insert(_ dateTakenYear: DateTakenYear) throws {
