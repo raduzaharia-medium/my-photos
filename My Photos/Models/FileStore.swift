@@ -39,7 +39,7 @@ struct FileStore {
                 description: imageProps.description,
                 dateTaken: imageProps.dateTaken,
                 location: imageProps.location,
-//                tags: acdsee.places
+                tags: acdsee.custom
             )
             result.append(photo)
         }
