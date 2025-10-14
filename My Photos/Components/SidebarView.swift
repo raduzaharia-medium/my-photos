@@ -21,10 +21,8 @@ struct SidebarView: View {
                 }
             }
 
-            Section("Dates") {
-                DateTree(years: state.years)
-            }
-
+            DateSection()
+            
             Section("Places") {
                 PlaceTree(countries: state.countries)
             }
