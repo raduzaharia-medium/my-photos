@@ -14,7 +14,7 @@ final class PresentationState {
     var photos: [Photo] = []
     var tags: [Tag] = []
     var years: [DateTakenYear] = []
-    var countries: [PlaceCountry] = []
+    var countries: [CountryViewModel] = []
 
     var photoFilter: Set<SidebarItem> = []
     var selectedPhotos: Set<Photo> = []

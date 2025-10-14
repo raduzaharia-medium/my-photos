@@ -11,7 +11,7 @@ extension View {
             NotificationCenter.default.publisher(for: .loadPlaces)
         ) { _ in
             let countries = placeStore.getCountries()
-            presentationState.countries = countries
+            presentationState.countries = countries.map { CountryViewModel($0) }
         }
     }
     func setupTagLoadingHandlers(
@@ -167,7 +167,8 @@ extension View {
         photoStore: PhotoStore,
         tagStore: TagStore,
         fileStore: FileStore,
-        dateStore: DateStore
+        dateStore: DateStore,
+        placeStore: PlaceStore
     ) -> some View {
         return self.onReceive(
             NotificationCenter.default.publisher(for: .loadPhotos)
@@ -202,18 +203,26 @@ extension View {
                         let day = try? dateStore.ensureDay(
                             parsedPhoto.dateTaken
                         )
+                        let country = try? placeStore.ensureCountry(
+                            parsedPhoto.country
+                        )
+                        let locality = try? placeStore.ensureLocality(
+                            parsedPhoto.country,
+                            parsedPhoto.locality
+                        )
 
                         let photo = Photo(
                             title: parsedPhoto.title,
                             description: parsedPhoto.description,
                             dateTaken: parsedPhoto.dateTaken,
-                            location: parsedPhoto.location
+                            dateTakenYear: year,
+                            dateTakenMonth: month,
+                            dateTakenDay: day,
+                            location: parsedPhoto.location,
+                            country: country,
+                            locality: locality,
+                            tags: tags
                         )
-
-                        photo.tags = tags
-                        photo.dateTakenYear = year
-                        photo.dateTakenMonth = month
-                        photo.dateTakenDay = day
 
                         try? photoStore.insert(photo)
                     }
@@ -223,6 +232,12 @@ extension View {
 
                     let years = dateStore.getYears()
                     presentationState.years = years
+
+                    let countries = placeStore.getCountries()
+                    let countryViewModels = countries.map {
+                        CountryViewModel($0)
+                    }
+                    presentationState.countries = countryViewModels
 
                     let refreshedPhotos = photoStore.getPhotos()
                     await MainActor.run {

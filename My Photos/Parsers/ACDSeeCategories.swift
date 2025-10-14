@@ -43,6 +43,13 @@ struct ACDSeeCategories {
         guard let placesXml else { return [] }
         return placesXml.buildTags()
     }
+    
+    var country: String? {
+        return places.first?.name
+    }
+    var locality: String? {
+        return places.first?.children.first?.name
+    }
 
     private func tagToString(_ tag: CGImageMetadataTag) -> String? {
         guard let any = CGImageMetadataTagCopyValue(tag) else { return nil }
@@ -59,21 +66,23 @@ struct ACDSeeCategories {
 extension XMLDocument {
     func buildTags() -> [ParsedTag] {
         guard let root = rootElement() else { return [] }
-        var tops: [ParsedTag] = []
 
-        func visit(_ node: XMLElement, parent: ParsedTag?) {
-            guard let name = node.categoryLabel() else { return }
-
-            let tag = ParsedTag(name: name)
-            if parent == nil { tops.append(tag) }
-
+        func build(from node: XMLElement) -> ParsedTag? {
+            guard let name = node.categoryLabel() else { return nil }
+            var tag = ParsedTag(name: name)
             for case let child as XMLElement in node.children ?? [] {
-                visit(child, parent: tag)
+                if let builtChild = build(from: child) {
+                    tag.addChild(builtChild)
+                }
             }
+            return tag
         }
 
+        var tops: [ParsedTag] = []
         for case let child as XMLElement in root.children ?? [] {
-            visit(child, parent: nil)
+            if let top = build(from: child) {
+                tops.append(top)
+            }
         }
         return tops
     }

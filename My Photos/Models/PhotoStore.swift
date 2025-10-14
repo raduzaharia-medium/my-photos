@@ -78,18 +78,34 @@ final class PhotoStore {
     func getPhotosBySelectedPlaces(_ filters: Set<SidebarItem>) -> Set<Photo> {
         guard !filters.selectedPlaces.isEmpty else { return Set(getPhotos()) }
 
-        let result = filters.selectedPlaces.reduce(into: Set<Photo>()) {
-            partialResult,
-            place in
+        return filters.selectedPlaces.reduce(into: Set<Photo>()) { partialResult, place in
             switch place {
             case .country(let c):
-                partialResult.formUnion(c.photos)
+                // Support either PlaceCountry (model) or CountryViewModel (view model)
+                if let model = c as? PlaceCountry {
+                    partialResult.formUnion(model.photos)
+                } else if let vm = c as? CountryViewModel {
+                    partialResult.formUnion(photosForCountry(key: vm.key))
+                } else {
+                    // Fallback: attempt by key via Mirror if available
+                    if let key = (Mirror(reflecting: c).children.first { $0.label == "key" }?.value as? String) {
+                        partialResult.formUnion(photosForCountry(key: key))
+                    }
+                }
             case .locality(let l):
-                partialResult.formUnion(l.photos)
+                // Support either PlaceLocality (model) or LocalityViewModel (view model)
+                if let model = l as? PlaceLocality {
+                    partialResult.formUnion(model.photos)
+                } else if let vm = l as? LocalityViewModel {
+                    partialResult.formUnion(photosForLocality(key: vm.key))
+                } else {
+                    // Fallback: attempt by key via Mirror if available
+                    if let key = (Mirror(reflecting: l).children.first { $0.label == "key" }?.value as? String) {
+                        partialResult.formUnion(photosForLocality(key: key))
+                    }
+                }
             }
         }
-
-        return result
     }
 
     func tagPhotos(_ photos: Set<Photo>, _ tags: [Tag]) throws {
@@ -102,5 +118,21 @@ final class PhotoStore {
         }
 
         try context.save()
+    }
+    
+    private func photosForCountry(key: String) -> Set<Photo> {
+        let descriptor = FetchDescriptor<PlaceCountry>(predicate: #Predicate { $0.key == key })
+        if let model = try? context.fetch(descriptor).first {
+            return Set(model.photos)
+        }
+        return []
+    }
+
+    private func photosForLocality(key: String) -> Set<Photo> {
+        let descriptor = FetchDescriptor<PlaceLocality>(predicate: #Predicate { $0.key == key })
+        if let model = try? context.fetch(descriptor).first {
+            return Set(model.photos)
+        }
+        return []
     }
 }

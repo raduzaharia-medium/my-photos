@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct PlaceTree: View {
-    let countries: [PlaceCountry]
-
+    let countries: [CountryViewModel]
+    
     var body: some View {
         ForEach(countries.sorted(by: { $0.key < $1.key })) { country in
             DisclosureGroup {

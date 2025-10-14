@@ -1,4 +1,8 @@
 struct ParsedTag {
     let name: String
-    let children: [ParsedTag] = []
+    var children: [ParsedTag] = []
+    
+    mutating func addChild(_ child: ParsedTag) {
+        children.append(child)
+    }
 }

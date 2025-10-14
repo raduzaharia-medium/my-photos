@@ -34,23 +34,10 @@ final class PlaceLocality: Identifiable, Equatable {
     init(_ country: PlaceCountry, _ locality: String) {
         self.locality = locality
         self.country = country
-        self.key = "\(country.key)-\(locality))"
+        self.key = "\(country.key)-\(locality)"
     }
 
     static func == (left: PlaceLocality, right: PlaceLocality) -> Bool {
         left.key == right.key
     }
-}
-
-enum Place: Hashable {
-    case country(PlaceCountry)
-    case locality(PlaceLocality)
-}
-
-extension PlaceCountry {
-    var icon: String { return "mappin.and.ellipse" }
-}
-
-extension PlaceLocality {
-    var icon: String { return "mappin.and.ellipse" }
 }
