@@ -1,14 +1,14 @@
 import MapKit
 
 struct FileStore {
-    func parseImageFiles(in url: URL) async throws -> [Photo] {
+    func parseImageFiles(in url: URL) async throws -> [ParsedPhoto] {
         let didAccess = url.startAccessingSecurityScopedResource()
         defer {
             if didAccess { url.stopAccessingSecurityScopedResource() }
         }
 
         let imageFiles = try getImageFiles(in: url)
-        var result: [Photo] = []
+        var result: [ParsedPhoto] = []
 
         for imageFile in imageFiles {
             let props = Metadata.props(in: imageFile)
@@ -34,12 +34,12 @@ struct FileStore {
             //                }
             //            }
 
-            let photo = Photo(
+            let photo = ParsedPhoto(
                 title: imageProps.title ?? imageFile.lastPathComponent,
                 description: imageProps.description,
                 dateTaken: imageProps.dateTaken,
                 location: imageProps.location,
-                tags: acdsee.custom
+                tags: acdsee.places
             )
             result.append(photo)
         }

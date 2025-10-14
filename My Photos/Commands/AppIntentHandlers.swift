@@ -188,13 +188,27 @@ extension View {
             }
 
             Task {
-                if let photos = try? await fileStore.parseImageFiles(in: folder)
-                {
-                    for photo in photos {
-                        let tags = tagStore.ensure(photo.tags)
-                        let year = try? dateStore.ensureYear(photo.dateTaken)
-                        let month = try? dateStore.ensureMonth(photo.dateTaken)
-                        let day = try? dateStore.ensureDay(photo.dateTaken)
+                if let parsedPhotos = try? await fileStore.parseImageFiles(
+                    in: folder
+                ) {
+                    for parsedPhoto in parsedPhotos {
+                        let tags = tagStore.ensure(parsedPhoto.tags)
+                        let year = try? dateStore.ensureYear(
+                            parsedPhoto.dateTaken
+                        )
+                        let month = try? dateStore.ensureMonth(
+                            parsedPhoto.dateTaken
+                        )
+                        let day = try? dateStore.ensureDay(
+                            parsedPhoto.dateTaken
+                        )
+
+                        let photo = Photo(
+                            title: parsedPhoto.title,
+                            description: parsedPhoto.description,
+                            dateTaken: parsedPhoto.dateTaken,
+                            location: parsedPhoto.location
+                        )
 
                         photo.tags = tags
                         photo.dateTakenYear = year

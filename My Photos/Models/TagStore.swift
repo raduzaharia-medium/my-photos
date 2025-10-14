@@ -62,10 +62,10 @@ final class TagStore {
     }
 
     @discardableResult
-    func ensure(_ incoming: Tag, parent: Tag? = nil) -> Tag {
-        if let existing = getTag(named: incoming.name, kind: incoming.kind) {
+    func ensure(_ incoming: ParsedTag) -> Tag {
+        if let existing = getTag(named: incoming.name, kind: .custom) {
             for child in incoming.children {
-                let ensuredChild = ensure(child, parent: existing)
+                let ensuredChild = ensure(child)
 
                 if !existing.children.contains(where: { $0 === ensuredChild }) {
                     existing.children.append(ensuredChild)
@@ -74,14 +74,10 @@ final class TagStore {
 
             return existing
         } else {
-            let newNode = Tag(
-                name: incoming.name,
-                kind: incoming.kind,
-                parent: parent
-            )
+            let newNode = Tag(name: incoming.name, kind: .custom)
 
             for child in incoming.children {
-                let ensuredChild = ensure(child, parent: newNode)
+                let ensuredChild = ensure(child)
 
                 if !newNode.children.contains(where: { $0 === ensuredChild }) {
                     newNode.children.append(ensuredChild)
@@ -93,8 +89,8 @@ final class TagStore {
         }
     }
 
-    func ensure(_ incoming: [Tag]) -> [Tag] {
-        let resolved: [Tag] = incoming.map { t in ensure(t, parent: t.parent) }
+    func ensure(_ incoming: [ParsedTag]) -> [Tag] {
+        let resolved: [Tag] = incoming.map { t in ensure(t) }
         return resolved
     }
 

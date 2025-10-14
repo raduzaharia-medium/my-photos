@@ -39,9 +39,9 @@ struct ACDSeeCategories {
         return XMLDocument(rootElement: node)
     }
 
-    var custom: [Tag] {
+    var places: [ParsedTag] {
         guard let placesXml else { return [] }
-        return placesXml.buildTags(kind: .custom)
+        return placesXml.buildTags()
     }
 
     private func tagToString(_ tag: CGImageMetadataTag) -> String? {
@@ -57,14 +57,14 @@ struct ACDSeeCategories {
 }
 
 extension XMLDocument {
-    func buildTags(kind: TagKind) -> [Tag] {
+    func buildTags() -> [ParsedTag] {
         guard let root = rootElement() else { return [] }
-        var tops: [Tag] = []
+        var tops: [ParsedTag] = []
 
-        func visit(_ node: XMLElement, parent: Tag?) {
+        func visit(_ node: XMLElement, parent: ParsedTag?) {
             guard let name = node.categoryLabel() else { return }
 
-            let tag = Tag(name: name, kind: kind, parent: parent)
+            let tag = ParsedTag(name: name)
             if parent == nil { tops.append(tag) }
 
             for case let child as XMLElement in node.children ?? [] {
