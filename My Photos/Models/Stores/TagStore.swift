@@ -107,14 +107,8 @@ final class TagStore {
     }
 
     @discardableResult
-    func update(
-        _ id: PersistentIdentifier,
-        name: String,
-        parent: Tag? = nil
-    ) throws
-        -> Tag
-    {
-        guard let tag = context.model(for: id) as? Tag else {
+    func update(_ tag: Tag, name: String, parent: Tag? = nil) throws -> Tag {
+        guard let tag = context.model(for: tag.id) as? Tag else {
             throw StoreError.notFound
         }
 
@@ -130,18 +124,16 @@ final class TagStore {
         return tag
     }
 
-    func upsert(_ id: PersistentIdentifier?, name: String) throws
-        -> Tag
-    {
-        if let id {
-            try update(id, name: name)
+    func upsert(_ tag: Tag?, name: String) throws -> Tag {
+        if let tag {
+            try update(tag, name: name)
         } else {
             try create(name: name)
         }
     }
 
-    func delete(_ id: PersistentIdentifier) throws {
-        guard let tag = context.model(for: id) as? Tag else {
+    func delete(_ tag: Tag) throws {
+        guard let tag = context.model(for: tag.id) as? Tag else {
             throw StoreError.notFound
         }
 
@@ -149,11 +141,11 @@ final class TagStore {
         try context.save()
     }
 
-    func delete(_ ids: [PersistentIdentifier]) throws {
-        guard !ids.isEmpty else { return }
+    func delete(_ tags: [Tag]) throws {
+        guard !tags.isEmpty else { return }
 
-        for id in ids {
-            guard let tag = context.model(for: id) as? Tag else {
+        for tag in tags {
+            guard let tag = context.model(for: tag.id) as? Tag else {
                 throw StoreError.notFound
             }
 
