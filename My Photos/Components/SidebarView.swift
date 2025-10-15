@@ -20,6 +20,7 @@ struct SidebarView: View {
             PlacesSection()
             AlbumsSection()
             PeopleSection();
+            EventsSection();
             
             ForEach(TagKind.allCases, id: \.self) { kind in
                 let sectionTags = state.groupedTags[kind] ?? []
