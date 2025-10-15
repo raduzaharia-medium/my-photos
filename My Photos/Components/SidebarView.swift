@@ -31,8 +31,6 @@ struct SidebarView: View {
 
                         AppIntents.editTag(dragged, name: dragged.name)
                     }
-
-                    AppIntents.loadTags()
                 }
         }
         .task {

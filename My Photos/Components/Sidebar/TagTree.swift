@@ -42,19 +42,10 @@ struct TagTree: View {
     }
 
     private func handleTagDrop(_ tagItems: [TagDragItem]) {
-        var didChange = false
         for tagItem in tagItems {
             if let dragged = state.getTag(tagItem.id) {
-                AppIntents.editTag(
-                    dragged,
-                    name: dragged.name,
-                    parent: tag
-                )
-                didChange = true
+                AppIntents.editTag(dragged, name: dragged.name, parent: tag)
             }
-        }
-        if didChange {
-            AppIntents.loadTags()
         }
     }
 

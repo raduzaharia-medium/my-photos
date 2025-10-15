@@ -1,6 +1,6 @@
 import SwiftUI
 
-final class AlbumEditorPresenter: ObservableObject {
+final class TagEditorPresenter: ObservableObject {
     let modalPresenter: ModalService
 
     init(modalPresenter: ModalService) {
@@ -8,17 +8,17 @@ final class AlbumEditorPresenter: ObservableObject {
     }
 
     @MainActor
-    func show(_ album: Album?) {
+    func show(_ tag: Tag?) {
         withAnimation {
             modalPresenter.show(onDismiss: {}) {
-                AlbumEditorSheet(
-                    album,
+                TagEditorSheet(
+                    tag,
                     onSave: { original, name in
                         withAnimation {
                             if let original {
-                                AlbumIntents.edit(original, name: name)
+                                AppIntents.editTag(original, name: name)
                             } else {
-                                AlbumIntents.create(name: name)
+                                AppIntents.createTag(name: name)
                             }
 
                             self.modalPresenter.dismiss()

@@ -19,80 +19,10 @@ extension View {
         tagPickerState: TagPickerState,
         dateStore: DateStore,
         notifier: NotificationService,
-        tagStore: TagStore
     ) -> some View {
         return self.onReceive(
-            NotificationCenter.default.publisher(for: .loadTags)
+            NotificationCenter.default.publisher(for: .loadDates)
         ) { _ in
-            let tags = tagStore.getTags()
-            presentationState.tags = tags
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .editTag)
-        ) { note in
-            guard let tag = note.object as? Tag else { return }
-            guard let name = note.userInfo?["name"] as? String else { return }
-            let parent = note.userInfo?["parent"] as? Tag
-
-            do {
-                try tagStore.update(
-                    tag.persistentModelID,
-                    name: name,
-                    parent: parent
-                )
-
-                let tags = tagStore.getTags()
-                presentationState.tags = tags
-                notifier.show("Tag updated", .success)
-            } catch {
-                notifier.show("Could not update tag", .error)
-            }
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .createTag)
-        ) { note in
-            guard let name = note.userInfo?["name"] as? String else { return }
-
-            do {
-                try tagStore.create(name: name)
-
-                let tags = tagStore.getTags()
-                presentationState.tags = tags
-
-                notifier.show("Tag created", .success)
-            } catch {
-                notifier.show("Could not create tag", .error)
-            }
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .deleteTag)
-        ) { note in
-            guard let tag = note.object as? Tag else { return }
-
-            do {
-                try tagStore.delete(tag.persistentModelID)
-                presentationState.tags.removeAll(where: {
-                    $0.persistentModelID == tag.persistentModelID
-                })
-                notifier.show("Tag deleted", .success)
-            } catch {
-                notifier.show("Could not delete tag", .error)
-            }
-        }
-        .onReceive(
-            NotificationCenter.default.publisher(for: .deleteTags)
-        ) { note in
-            guard let tags = note.object as? [Tag] else { return }
-            let ids = Set(tags.map(\.persistentModelID))
-
-            do {
-                try tagStore.delete(tags.map(\.persistentModelID))
-                presentationState.tags.removeAll {
-                    ids.contains($0.persistentModelID)
-                }
-                notifier.show("Tags deleted", .success)
-            } catch {
-                notifier.show("Could not delete tags", .error)
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .loadDates)) { _ in
             let years = dateStore.getYears()
             presentationState.years = years
         }
@@ -387,14 +317,11 @@ extension View {
         notifier: NotificationService,
         fileImporter: FileImportService,
         alerter: AlertService,
-        tagStore: TagStore
     ) -> some View {
-        let editTagPresenter = TagEditorPresenter(modalPresenter: modalPresenter)
         let importPhotosPresenter = ImportPhotosPresenter(
             fileImporter: fileImporter,
             notifier: notifier
         )
-        let deleteTagPresenter = DeleteTagPresenter(alerter: alerter)
         let pickTagPresenter = PickTagPresenter(modalPresenter: modalPresenter)
 
         return
@@ -403,29 +330,6 @@ extension View {
                 NotificationCenter.default.publisher(for: .requestImportPhotos)
             ) { _ in
                 importPhotosPresenter.show()
-            }
-            .onReceive(
-                NotificationCenter.default.publisher(for: .requestCreateTag)
-            ) { _ in
-                editTagPresenter.show(nil)
-            }
-            .onReceive(
-                NotificationCenter.default.publisher(for: .requestEditTag)
-            ) { note in
-                guard let tag = note.object as? Tag else { return }
-                editTagPresenter.show(tag)
-            }
-            .onReceive(
-                NotificationCenter.default.publisher(for: .requestDeleteTag)
-            ) { note in
-                guard let tag = note.object as? Tag else { return }
-                deleteTagPresenter.show(tag)
-            }
-            .onReceive(
-                NotificationCenter.default.publisher(for: .requestDeleteTags)
-            ) { note in
-                guard let tags = note.object as? [Tag] else { return }
-                deleteTagPresenter.show(tags)
             }
             .onReceive(
                 NotificationCenter.default.publisher(for: .requestTagPhotos)

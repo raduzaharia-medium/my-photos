@@ -60,6 +60,11 @@ struct ContentView: View {
             notifier: notifier,
             fileImporter: fileImporter,
             alerter: alerter,
+        )
+        .setupTagHandlers(
+            modalPresenter: modalPresenter,
+            notifier: notifier,
+            alerter: alerter,
             tagStore: tagStore
         )
         .setupPhotoLoadingHandlers(
@@ -76,7 +81,6 @@ struct ContentView: View {
             tagPickerState: tagPickerState,
             dateStore: dateStore,
             notifier: notifier,
-            tagStore: tagStore
         )
         .setupPlaceLoadingHandlers(
             presentationState: presentationState,
@@ -84,9 +88,6 @@ struct ContentView: View {
         )
         .onAppear {
             AppIntents.loadPhotos()
-            AppIntents.loadTags()
-            AppIntents.loadDates()
-            AppIntents.loadPlaces()
         }
     }
 }

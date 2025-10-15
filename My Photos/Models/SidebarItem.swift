@@ -26,7 +26,7 @@ enum SidebarItem: Hashable {
         case .event(let event): return event.name
         }
     }
-
+    
     var icon: String {
         switch self {
         case .filter(let filter): return filter.icon
@@ -42,11 +42,20 @@ enum SidebarItem: Hashable {
         }
     }
 
+    var editable: Bool {
+        switch self {
+        case .filter: return false
+        case .tag: return true
+        case .dateDay, .dateMonth, .dateYear: return false
+        case .placeCountry, .placeLocality: return true
+        case .album, .person, .event: return true
+        }
+    }
+
     private func monthName(_ month: Int) -> String {
         let formatter = DateFormatter()
 
         formatter.locale = Locale.current
-
         return formatter.monthSymbols[max(0, min(11, month - 1))]
     }
 }
