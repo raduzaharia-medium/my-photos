@@ -3,11 +3,11 @@ import SwiftUI
 struct TagPickerSheet: View {
     @Environment(TagPickerState.self) private var tagPickerState
 
-    var onSave: ([Tag]) -> Void
+    var onSave: (Set<Tag>) -> Void
     var onCancel: () -> Void
 
     init(
-        onSave: @escaping ([Tag]) -> Void,
+        onSave: @escaping (Set<Tag>) -> Void,
         onCancel: @escaping () -> Void
     ) {
         self.onSave = onSave
@@ -25,7 +25,7 @@ struct TagPickerSheet: View {
             }
             .onAppear() {
                 tagPickerState.tags.removeAll()
-                tagPickerState.selectedIndex.removeAll()
+                tagPickerState.selectedIndex = nil
             }
             .padding(20)
             .frame(minWidth: 360, minHeight: 300)
@@ -36,8 +36,8 @@ struct TagPickerSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", role: .confirm) {
-                        guard !tagPickerState.allTags.isEmpty else { return }
-                        onSave(tagPickerState.allTags)
+                        guard !tagPickerState.tags.isEmpty else { return }
+                        onSave(tagPickerState.tags)
                     }
                     .keyboardShortcut(.defaultAction)
                     .disabled(tagPickerState.tags.isEmpty)

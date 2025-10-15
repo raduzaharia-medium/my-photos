@@ -13,7 +13,7 @@ extension Notification.Name {
     static let editTag = Notification.Name("editTag")
     static let deleteTag = Notification.Name("deleteTag")
     static let deleteTags = Notification.Name("deleteTags")
-    
+
     static let loadDates = Notification.Name("loadDates")
     static let loadPlaces = Notification.Name("loadPlaces")
 
@@ -82,20 +82,19 @@ enum AppIntents {
     static func loadTags() {
         NotificationCenter.default.post(name: .loadTags, object: nil)
     }
-    static func createTag(name: String, kind: TagKind) {
+    static func createTag(name: String) {
         NotificationCenter.default.post(
             name: .createTag,
             object: nil,
-            userInfo: ["name": name, "kind": kind]
+            userInfo: ["name": name]
         )
     }
     static func editTag(
         _ tag: Tag,
         name: String,
-        kind: TagKind,
         parent: Tag? = nil
     ) {
-        var userInfo: [String: Any] = ["name": name, "kind": kind]
+        var userInfo: [String: Any] = ["name": name]
         if let parent { userInfo["parent"] = parent }
 
         NotificationCenter.default.post(
@@ -110,7 +109,7 @@ enum AppIntents {
     static func deleteTags(_ tags: [Tag]) {
         NotificationCenter.default.post(name: .deleteTags, object: tags)
     }
-    
+
     static func loadDates() {
         NotificationCenter.default.post(name: .loadDates, object: nil)
     }
@@ -169,29 +168,28 @@ enum AppIntents {
         NotificationCenter.default.post(name: .navigateToNextPhoto, object: nil)
     }
 
-    static func loadTagSuggestions(_ kind: TagKind, _ searchText: String) {
+    static func loadTagSuggestions(_ searchText: String) {
         NotificationCenter.default.post(
             name: .loadTagSuggestions,
-            object: kind,
-            userInfo: ["searchText": searchText]
+            object: searchText,
         )
     }
-    static func selectNextTagSuggestion(_ kind: TagKind) {
+    static func selectNextTagSuggestion() {
         NotificationCenter.default.post(
             name: .selectNextTagSuggestion,
-            object: kind
+            object: nil
         )
     }
-    static func selectPreviousTagSuggestion(_ kind: TagKind) {
+    static func selectPreviousTagSuggestion() {
         NotificationCenter.default.post(
             name: .selectPreviousTagSuggestion,
-            object: kind
+            object: nil
         )
     }
-    static func addSelectedTagToEditor(_ kind: TagKind) {
+    static func addSelectedTagToEditor() {
         NotificationCenter.default.post(
             name: .addSelectedTagToEditor,
-            object: kind
+            object: nil
         )
     }
     static func addTagToEditor(_ tag: Tag) {
@@ -219,7 +217,7 @@ enum AppIntents {
             object: nil
         )
     }
-    static func tagSelectedPhotos(_ tags: [Tag]) {
+    static func tagSelectedPhotos(_ tags: Set<Tag>) {
         NotificationCenter.default.post(name: .tagSelectedPhotos, object: tags)
     }
 }

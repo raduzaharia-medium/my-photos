@@ -5,15 +5,13 @@ struct TagInput: View {
     @FocusState private var isTextFieldFocused: Bool
     @State private var searchText: String = ""
 
-    private var tags: Set<Tag> { tagPickerState.tags[kind] ?? [] }
+    private var tags: Set<Tag> { tagPickerState.tags }
     private var tagArray: [Tag] { Array(tags) }
 
     let title: String
-    let kind: TagKind
 
-    init(_ title: String, kind: TagKind) {
+    init(_ title: String) {
         self.title = title
-        self.kind = kind
     }
 
     var body: some View {
@@ -36,17 +34,17 @@ struct TagInput: View {
                     .textFieldStyle(.plain)
                     .focused($isTextFieldFocused)
                     .onChange(of: searchText, initial: false) {
-                        AppIntents.loadTagSuggestions(kind, searchText)
+                        AppIntents.loadTagSuggestions(searchText)
                     }
                     .onSubmit {
-                        AppIntents.addSelectedTagToEditor(kind)
+                        AppIntents.addSelectedTagToEditor()
                         searchText = ""
                     }
                     .arrowKeyNavigation(
-                        onUp: { AppIntents.selectPreviousTagSuggestion(kind) },
-                        onDown: { AppIntents.selectNextTagSuggestion(kind) },
+                        onUp: { AppIntents.selectPreviousTagSuggestion() },
+                        onDown: { AppIntents.selectNextTagSuggestion() },
                         onReturn: {
-                            AppIntents.addSelectedTagToEditor(kind)
+                            AppIntents.addSelectedTagToEditor()
                             searchText = ""
                         }
                     )
@@ -61,7 +59,7 @@ struct TagInput: View {
             )
 
             if !searchText.isEmpty {
-                TagSuggestions(kind) { tag in
+                TagSuggestions() { tag in
                     AppIntents.addTagToEditor(tag)
                     searchText = ""
                 }

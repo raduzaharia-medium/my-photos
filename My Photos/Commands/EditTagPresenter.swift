@@ -13,16 +13,12 @@ final class EditTagPresenter: ObservableObject {
             modalPresenter.show(onDismiss: {}) {
                 TagEditorSheet(
                     tag,
-                    onSave: { original, name, kind in
+                    onSave: { original, name in
                         withAnimation {
                             if let original {
-                                AppIntents.editTag(
-                                    original,
-                                    name: name,
-                                    kind: kind
-                                )
+                                AppIntents.editTag(original, name: name)
                             } else {
-                                AppIntents.createTag(name: name, kind: kind)
+                                AppIntents.createTag(name: name)
                             }
 
                             self.modalPresenter.dismiss()

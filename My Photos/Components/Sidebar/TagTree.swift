@@ -3,7 +3,6 @@ import UniformTypeIdentifiers
 
 struct TagTree: View {
     let tag: Tag
-    let kind: TagKind
 
     @Environment(PresentationState.self) private var state
 
@@ -21,7 +20,7 @@ struct TagTree: View {
     }
 
     private var children: [Tag] {
-        state.tags.filter { $0.kind == kind && $0.parent?.id == tag.id }
+        state.tags.filter { $0.parent?.id == tag.id }
             .sorted {
                 $0.name.localizedCaseInsensitiveCompare($1.name)
                     == .orderedAscending
@@ -34,7 +33,7 @@ struct TagTree: View {
         } else {
             DisclosureGroup(isExpanded: .constant(true)) {
                 ForEach(children, id: \.persistentModelID) { child in
-                    TagTree(tag: child, kind: kind)
+                    TagTree(tag: child)
                 }
             } label: {
                 row
@@ -49,7 +48,6 @@ struct TagTree: View {
                 AppIntents.editTag(
                     dragged,
                     name: dragged.name,
-                    kind: tag.kind,
                     parent: tag
                 )
                 didChange = true

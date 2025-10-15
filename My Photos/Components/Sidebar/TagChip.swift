@@ -11,7 +11,7 @@ struct TagChip: View {
                     .lineLimit(1)
                     .truncationMode(.tail)
             } icon: {
-                Image(systemName: tag.kind.icon)
+                Image(systemName: tag.icon)
                     .symbolRenderingMode(.hierarchical)
             }
 

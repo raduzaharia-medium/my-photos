@@ -19,23 +19,9 @@ struct SidebarView: View {
             DatesSection()
             PlacesSection()
             AlbumsSection()
-            PeopleSection();
-            EventsSection();
-            
-            ForEach(TagKind.allCases, id: \.self) { kind in
-                let sectionTags = state.groupedTags[kind] ?? []
-                let roots = sectionTags.filter {
-                    $0.parent == nil || $0.parent?.kind != kind
-                }.sorted {
-                    $0.name.localizedCaseInsensitiveCompare($1.name)
-                        == .orderedAscending
-                }
-
-                Section(kind.title) {
-                    ForEach(roots) { root in
-                        TagTree(tag: root, kind: kind)
-                    }
-                }
+            PeopleSection()
+            EventsSection()
+            TagsSection()
                 .dropDestination(for: TagDragItem.self, isEnabled: true) {
                     items,
                     _ in
@@ -43,16 +29,11 @@ struct SidebarView: View {
                         let dragged = state.getTag(incoming.id)
                         guard let dragged else { return }
 
-                        AppIntents.editTag(
-                            dragged,
-                            name: dragged.name,
-                            kind: kind
-                        )
+                        AppIntents.editTag(dragged, name: dragged.name)
                     }
 
                     AppIntents.loadTags()
                 }
-            }
         }
         .task {
             AppIntents.resetPhotoFilter()

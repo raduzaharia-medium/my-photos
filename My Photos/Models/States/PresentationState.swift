@@ -23,7 +23,6 @@ final class PresentationState {
     var isSelecting: Bool = false
     var currentPhoto: Photo? = nil
 
-    var groupedTags: [TagKind: [Tag]] { Dictionary(grouping: tags, by: \.kind) }
     var filteredPhotos: [Photo] {
         guard isSelecting else { return photos }
         guard showOnlySelected else { return photos }
@@ -53,14 +52,11 @@ final class PresentationState {
         return photos.first(where: { $0.id == id })
     }
 
-    func getTags(of kind: TagKind) -> [Tag] {
-        return tags.filter { $0.kind == kind }
-    }
-    func getTags(searchText: String, kind: TagKind) -> [Tag] {
+    func getTags(searchText: String) -> [Tag] {
         let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return [] }
 
-        return getTags(of: kind).filter {
+        return tags.filter {
             $0.name.range(
                 of: trimmed,
                 options: [.caseInsensitive, .diacriticInsensitive]

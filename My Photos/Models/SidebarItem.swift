@@ -30,7 +30,7 @@ enum SidebarItem: Hashable {
     var icon: String {
         switch self {
         case .filter(let filter): return filter.icon
-        case .tag(let tag): return tag.kind.icon
+        case .tag(let tag): return tag.icon
         case .dateYear(let year): return year.icon
         case .dateMonth(let month): return month.icon
         case .dateDay(let day): return day.icon

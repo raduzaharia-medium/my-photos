@@ -24,14 +24,14 @@ final class TagStore {
         return []
     }
 
-    func getTag(named name: String, kind: TagKind) -> Tag? {
-        let tags = getTags().filter { $0.name == name && $0.kind == kind }
+    func getTag(named name: String) -> Tag? {
+        let tags = getTags().filter { $0.name == name }
         return tags.first
     }
 
     @discardableResult
-    func create(name: String, kind: TagKind) throws -> Tag {
-        let tag = Tag(name: name, kind: kind)
+    func create(name: String) throws -> Tag {
+        let tag = Tag(name: name)
 
         context.insert(tag)
         try context.save()
@@ -53,9 +53,7 @@ final class TagStore {
     }
 
     func insertIfMissing(_ tag: Tag) throws {
-        let tags = getTags().filter {
-            $0.name == tag.name && $0.kind == tag.kind
-        }
+        let tags = getTags().filter { $0.name == tag.name }
         if !tags.isEmpty { return }
 
         context.insert(tag)
@@ -63,7 +61,7 @@ final class TagStore {
 
     @discardableResult
     func ensure(_ incoming: ParsedTag) -> Tag {
-        if let existing = getTag(named: incoming.name, kind: .custom) {
+        if let existing = getTag(named: incoming.name) {
             for child in incoming.children {
                 let ensuredChild = ensure(child)
 
@@ -74,7 +72,7 @@ final class TagStore {
 
             return existing
         } else {
-            let newNode = Tag(name: incoming.name, kind: .custom)
+            let newNode = Tag(name: incoming.name)
 
             for child in incoming.children {
                 let ensuredChild = ensure(child)
@@ -94,13 +92,13 @@ final class TagStore {
         return resolved
     }
 
-    func createIfMissing(name: String, kind: TagKind) throws -> Tag {
-        let tags = getTags().filter { $0.name == name && $0.kind == kind }
+    func createIfMissing(name: String) throws -> Tag {
+        let tags = getTags().filter { $0.name == name }
         if !tags.isEmpty {
             return tags.first!
         }
 
-        let tag = Tag(name: name, kind: kind)
+        let tag = Tag(name: name)
 
         context.insert(tag)
         try context.save()
@@ -112,7 +110,6 @@ final class TagStore {
     func update(
         _ id: PersistentIdentifier,
         name: String,
-        kind: TagKind,
         parent: Tag? = nil
     ) throws
         -> Tag
@@ -122,12 +119,10 @@ final class TagStore {
         }
 
         tag.name = name
-        tag.kind = kind
         tag.parent = parent
 
         var stack = tag.children
         while let node = stack.popLast() {
-            node.kind = kind
             stack.append(contentsOf: node.children)
         }
 
@@ -135,13 +130,13 @@ final class TagStore {
         return tag
     }
 
-    func upsert(_ id: PersistentIdentifier?, name: String, kind: TagKind) throws
+    func upsert(_ id: PersistentIdentifier?, name: String) throws
         -> Tag
     {
         if let id {
-            try update(id, name: name, kind: kind)
+            try update(id, name: name)
         } else {
-            try create(name: name, kind: kind)
+            try create(name: name)
         }
     }
 

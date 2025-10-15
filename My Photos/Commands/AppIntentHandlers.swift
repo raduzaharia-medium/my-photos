@@ -31,14 +31,12 @@ extension View {
         ) { note in
             guard let tag = note.object as? Tag else { return }
             guard let name = note.userInfo?["name"] as? String else { return }
-            guard let kind = note.userInfo?["kind"] as? TagKind else { return }
             let parent = note.userInfo?["parent"] as? Tag
 
             do {
                 try tagStore.update(
                     tag.persistentModelID,
                     name: name,
-                    kind: kind,
                     parent: parent
                 )
 
@@ -52,10 +50,9 @@ extension View {
             NotificationCenter.default.publisher(for: .createTag)
         ) { note in
             guard let name = note.userInfo?["name"] as? String else { return }
-            guard let kind = note.userInfo?["kind"] as? TagKind else { return }
 
             do {
-                try tagStore.create(name: name, kind: kind)
+                try tagStore.create(name: name)
 
                 let tags = tagStore.getTags()
                 presentationState.tags = tags
@@ -102,24 +99,20 @@ extension View {
         .onReceive(
             NotificationCenter.default.publisher(for: .loadTagSuggestions)
         ) { note in
-            guard let tagKind = note.object as? TagKind else { return }
-            let searchText = note.userInfo?["searchText"] as? String ?? ""
+            guard let searchText = note.object as? String else { return }
 
             withAnimation {
                 let suggestions = presentationState.getTags(
-                    searchText: searchText,
-                    kind: tagKind
+                    searchText: searchText
                 )
-                tagPickerState.suggestions[tagKind] = suggestions
+                tagPickerState.suggestions = suggestions
             }
         }
         .onReceive(
             NotificationCenter.default.publisher(for: .selectNextTagSuggestion)
         ) { note in
-            guard let tagKind = note.object as? TagKind else { return }
-
             withAnimation {
-                tagPickerState.selectNext(tagKind)
+                tagPickerState.selectNext()
             }
         }
         .onReceive(
@@ -127,19 +120,15 @@ extension View {
                 for: .selectPreviousTagSuggestion
             )
         ) { note in
-            guard let tagKind = note.object as? TagKind else { return }
-
             withAnimation {
-                tagPickerState.selectPrevious(tagKind)
+                tagPickerState.selectPrevious()
             }
         }
         .onReceive(
             NotificationCenter.default.publisher(for: .addSelectedTagToEditor)
         ) { note in
-            guard let tagKind = note.object as? TagKind else { return }
-
             withAnimation {
-                tagPickerState.addSelection(tagKind)
+                tagPickerState.addSelection()
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .addTagToEditor)) {

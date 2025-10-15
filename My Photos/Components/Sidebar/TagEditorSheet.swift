@@ -3,7 +3,6 @@ import SwiftUI
 struct TagEditorSheet: View {
     @FocusState private var nameFocused: Bool
     @State private var name: String
-    @State private var kind: TagKind
 
     let tag: Tag?
 
@@ -13,12 +12,12 @@ struct TagEditorSheet: View {
     }
     var canSave: Bool { !trimmedName.isEmpty }
 
-    var onSave: (Tag?, String, TagKind) -> Void
+    var onSave: (Tag?, String) -> Void
     var onCancel: () -> Void
 
     init(
         _ tag: Tag? = nil,
-        onSave: @escaping (Tag?, String, TagKind) -> Void,
+        onSave: @escaping (Tag?, String) -> Void,
         onCancel: @escaping () -> Void
     ) {
         self.tag = tag
@@ -26,7 +25,6 @@ struct TagEditorSheet: View {
         self.onCancel = onCancel
 
         _name = State(initialValue: tag?.name ?? "")
-        _kind = State(initialValue: tag?.kind ?? .custom)
     }
 
     var body: some View {
@@ -39,19 +37,19 @@ struct TagEditorSheet: View {
                         .focused($nameFocused)
                         .submitLabel(.done)
                         .onSubmit {
-                            onSave(tag, trimmedName, kind)
+                            onSave(tag, trimmedName)
                         }
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Type").font(.caption).foregroundStyle(.secondary)
-                    Picker("Type", selection: $kind) {
-                        ForEach(TagKind.allCases) { k in
-                            Text(k.title).tag(k)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
+//                    Picker("Type", selection: $kind) {
+//                        ForEach(TagKind.allCases) { k in
+//                            Text(k.title).tag(k)
+//                        }
+//                    }
+//                    .pickerStyle(.menu)
+//                    .labelsHidden()
                 }
             }.padding(20)
                 .task { nameFocused = true }
@@ -63,7 +61,7 @@ struct TagEditorSheet: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save", role: .confirm) {
-                            onSave(tag, trimmedName, kind)
+                            onSave(tag, trimmedName)
                         }.keyboardShortcut(.defaultAction)
                             .disabled(!canSave)
                     }

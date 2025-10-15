@@ -32,10 +32,10 @@ struct My_PhotosApp: App {
         let alice = Person("Alice")
         let birthday = Event("Birthday")
         
-        let tag4 = Tag(name: "Something", kind: .custom)
-        let tag5 = Tag(name: "Something else", kind: .custom)
-        let tag6 = Tag(name: "With-Dash", kind: .custom)
-        let tag7 = Tag(name: "Nothing", kind: .custom)
+        let tag4 = Tag(name: "Something")
+        let tag5 = Tag(name: "Something else")
+        let tag6 = Tag(name: "With-Dash")
+        let tag7 = Tag(name: "Nothing")
 
         context.insert(tag4)
         context.insert(tag5)
