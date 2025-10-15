@@ -6,8 +6,8 @@ enum SidebarItem: Hashable {
     case dateYear(DateTakenYear)
     case dateMonth(DateTakenMonth)
     case dateDay(DateTakenDay)
-    case placeCountry(CountryViewModel)
-    case placeLocality(LocalityViewModel)
+    case placeCountry(PlaceCountry)
+    case placeLocality(PlaceLocality)
 
     var name: String {
         switch self {
@@ -21,10 +21,10 @@ enum SidebarItem: Hashable {
             return monthName(date.month)
         case .dateDay(let date):
             return "\(date.day)"
-        case .placeCountry(let country):
-            return country.name
-        case .placeLocality(let locality):
-            return locality.name
+        case .placeCountry(let place):
+            return place.country
+        case .placeLocality(let place):
+            return place.locality
         }
     }
 
@@ -83,12 +83,12 @@ extension Set where Element == SidebarItem {
         return years + months + days
     }
 
-    var selectedCountries: [CountryViewModel] {
+    var selectedCountries: [PlaceCountry] {
         compactMap {
             if case .placeCountry(let t) = $0 { t } else { nil }
         }
     }
-    var selectedLocalities: [LocalityViewModel] {
+    var selectedLocalities: [PlaceLocality] {
         compactMap {
             if case .placeLocality(let t) = $0 { t } else { nil }
         }
@@ -96,7 +96,7 @@ extension Set where Element == SidebarItem {
     var selectedPlaces: [Place] {
         let countries = selectedCountries.map(Place.country)
         let localities = selectedLocalities.map(Place.locality)
-        
+
         return countries + localities
     }
 

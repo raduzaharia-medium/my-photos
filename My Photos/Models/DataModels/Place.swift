@@ -41,3 +41,16 @@ final class PlaceLocality: Identifiable, Equatable {
         left.key == right.key
     }
 }
+
+enum Place: Hashable {
+    case country(PlaceCountry)
+    case locality(PlaceLocality)
+}
+
+extension PlaceCountry {
+    var icon: String { return "mappin.and.ellipse" }
+}
+
+extension PlaceLocality {
+    var icon: String { return "mappin.and.ellipse" }
+}

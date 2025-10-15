@@ -81,22 +81,19 @@ final class PhotoStore {
         return filters.selectedPlaces.reduce(into: Set<Photo>()) { partialResult, place in
             switch place {
             case .country(let c):
-                // Support either PlaceCountry (model) or CountryViewModel (view model)
                 if let model = c as? PlaceCountry {
                     partialResult.formUnion(model.photos)
-                } else if let vm = c as? CountryViewModel {
+                } else if let vm = c as? PlaceCountry {
                     partialResult.formUnion(photosForCountry(key: vm.key))
                 } else {
-                    // Fallback: attempt by key via Mirror if available
                     if let key = (Mirror(reflecting: c).children.first { $0.label == "key" }?.value as? String) {
                         partialResult.formUnion(photosForCountry(key: key))
                     }
                 }
             case .locality(let l):
-                // Support either PlaceLocality (model) or LocalityViewModel (view model)
                 if let model = l as? PlaceLocality {
                     partialResult.formUnion(model.photos)
-                } else if let vm = l as? LocalityViewModel {
+                } else if let vm = l as? PlaceLocality {
                     partialResult.formUnion(photosForLocality(key: vm.key))
                 } else {
                     // Fallback: attempt by key via Mirror if available

@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-struct DateSection: View {
+struct DatesSection: View {
     @Query(sort: \DateTakenYear.key) private var years: [DateTakenYear]
 
     var body: some View {
@@ -17,22 +17,13 @@ struct DateSection: View {
     }
 }
 
-struct DateSectionMonths: View {
+private struct DateSectionMonths: View {
     @Query private var months: [DateTakenMonth]
     let year: DateTakenYear
 
     init(year: DateTakenYear) {
         self.year = year
-
-        let yearKey = year.key
-        let predicate = #Predicate<DateTakenMonth> { month in
-            month.year.key == yearKey
-        }
-
-        self._months = Query(
-            filter: predicate,
-            sort: [SortDescriptor(\DateTakenMonth.key)]
-        )
+        self._months = Query(yearKey: year.key)
     }
 
     var body: some View {
@@ -46,22 +37,13 @@ struct DateSectionMonths: View {
     }
 }
 
-struct DateSectionDays: View {
+private struct DateSectionDays: View {
     @Query private var days: [DateTakenDay]
     let month: DateTakenMonth
 
     init(month: DateTakenMonth) {
         self.month = month
-
-        let monthKey = month.key
-        let predicate = #Predicate<DateTakenDay> { day in
-            day.month.key == monthKey
-        }
-
-        self._days = Query(
-            filter: predicate,
-            sort: [SortDescriptor(\DateTakenDay.key)]
-        )
+        self._days = Query(monthKey: month.key)
     }
 
     var body: some View {
@@ -69,5 +51,23 @@ struct DateSectionDays: View {
             day in
             SidebarRow(.dateDay(day)).tag(day)
         }
+    }
+}
+
+extension Query where Element == DateTakenMonth, Result == [DateTakenMonth] {
+    fileprivate init(yearKey: String) {
+        let filter = #Predicate<DateTakenMonth> { $0.year.key == yearKey }
+        let sort = [SortDescriptor(\DateTakenMonth.key)]
+
+        self.init(filter: filter, sort: sort)
+    }
+}
+
+extension Query where Element == DateTakenDay, Result == [DateTakenDay] {
+    init(monthKey: String) {
+        let filter = #Predicate<DateTakenDay> { $0.month.key == monthKey }
+        let sort = [SortDescriptor(\DateTakenDay.key)]
+
+        self.init(filter: filter, sort: sort)
     }
 }

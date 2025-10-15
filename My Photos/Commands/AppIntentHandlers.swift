@@ -11,7 +11,7 @@ extension View {
             NotificationCenter.default.publisher(for: .loadPlaces)
         ) { _ in
             let countries = placeStore.getCountries()
-            presentationState.countries = countries.map { CountryViewModel($0) }
+            presentationState.countries = countries
         }
     }
     func setupTagLoadingHandlers(
@@ -234,10 +234,7 @@ extension View {
                     presentationState.years = years
 
                     let countries = placeStore.getCountries()
-                    let countryViewModels = countries.map {
-                        CountryViewModel($0)
-                    }
-                    presentationState.countries = countryViewModels
+                    presentationState.countries = countries
 
                     let refreshedPhotos = photoStore.getPhotos()
                     await MainActor.run {

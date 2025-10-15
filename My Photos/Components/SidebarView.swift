@@ -21,12 +21,9 @@ struct SidebarView: View {
                 }
             }
 
-            DateSection()
+            DatesSection()
+            PlacesSection()
             
-            Section("Places") {
-                PlaceTree(countries: state.countries)
-            }
-
             ForEach(TagKind.allCases, id: \.self) { kind in
                 let sectionTags = state.groupedTags[kind] ?? []
                 let roots = sectionTags.filter {
