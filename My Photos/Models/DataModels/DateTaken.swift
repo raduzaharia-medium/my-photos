@@ -75,13 +75,13 @@ enum DateTaken: Hashable {
 }
 
 extension DateTakenYear {
-    var icon: String { return "calendar" }
+    static let icon: String = "calendar"
 }
 
 extension DateTakenMonth {
-    var icon: String { return "calendar" }
+    static let icon: String = "calendar"
 }
 
 extension DateTakenDay {
-    var icon: String { return "calendar" }
+    static let icon: String = "calendar"
 }

@@ -20,5 +20,5 @@ final class Person: Identifiable, Equatable {
 }
 
 extension Person {
-    var icon: String { return "person" }
+    static let icon: String = "person"
 }

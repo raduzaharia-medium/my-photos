@@ -20,5 +20,5 @@ final class Event: Identifiable, Equatable {
 }
 
 extension Event {
-    var icon: String { return "sparkles" }
+    static let icon: String = "sparkles"
 }

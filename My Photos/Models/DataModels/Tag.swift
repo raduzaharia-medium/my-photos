@@ -19,7 +19,5 @@ final class Tag: Identifiable, Hashable {
 }
 
 extension Tag {
-    var icon: String { return "tag" }
+    static let icon: String = "tag"
 }
-
-

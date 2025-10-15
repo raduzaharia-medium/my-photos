@@ -7,16 +7,34 @@ struct TagToolbar: ToolbarContent {
                 Button {
                     AppIntents.requestCreateTag()
                 } label: {
-                    Label("New Tag", systemImage: "plus")
+                    Label("New Place", systemImage: Place.icon)
                 }
 
                 Button {
                     AlbumIntents.requestCreate()
                 } label: {
-                    Label("Album", systemImage: "plus")
+                    Label("New Album", systemImage: Album.icon)
+                }
+
+                Button {
+                    AppIntents.requestCreateTag()
+                } label: {
+                    Label("New Person", systemImage: Person.icon)
+                }
+
+                Button {
+                    AppIntents.requestCreateTag()
+                } label: {
+                    Label("New Event", systemImage: Event.icon)
+                }
+
+                Button {
+                    AppIntents.requestCreateTag()
+                } label: {
+                    Label("New Tag", systemImage: Tag.icon)
                 }
             } label: {
-                Label("New Tag", systemImage: "plus")
+                Label("New", systemImage: "plus")
             }
         }
     }

@@ -20,5 +20,5 @@ final class Album: Identifiable, Equatable {
 }
 
 extension Album {
-    var icon: String { return "photo.on.rectangle" }
+    static let icon: String = "photo.on.rectangle"
 }
