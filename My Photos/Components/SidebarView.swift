@@ -15,12 +15,7 @@ struct SidebarView: View {
 
     var body: some View {
         List(selection: selectionBinding) {
-            Section("Filters") {
-                ForEach(Filter.allCases, id: \.self) { filter in
-                    SidebarRow(.filter(filter))
-                }
-            }
-
+            FiltersSection()
             DatesSection()
             PlacesSection()
             
