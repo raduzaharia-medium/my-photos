@@ -26,6 +26,7 @@ final class Photo: Identifiable {
     @Relationship var country: PlaceCountry?
     @Relationship var locality: PlaceLocality?
     @Relationship var album: Album?
+    @Relationship var people: [Person]?
     
     public init(
         id: UUID = .init(),
@@ -39,6 +40,7 @@ final class Photo: Identifiable {
         country: PlaceCountry? = nil,
         locality: PlaceLocality? = nil,
         album: Album? = nil,
+        people: [Person]? = nil,
         tags: [Tag] = [],
     ) {
         self.id = id
@@ -52,6 +54,7 @@ final class Photo: Identifiable {
         self.country = country
         self.locality = locality
         self.album = album
+        self.people = people
         self.tags = tags
     }
     

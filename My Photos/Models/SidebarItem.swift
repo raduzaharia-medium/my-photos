@@ -9,6 +9,7 @@ enum SidebarItem: Hashable {
     case placeCountry(PlaceCountry)
     case placeLocality(PlaceLocality)
     case album(Album)
+    case person(Person)
 
     var name: String {
         switch self {
@@ -20,6 +21,7 @@ enum SidebarItem: Hashable {
         case .placeCountry(let place): return place.country
         case .placeLocality(let place): return place.locality
         case .album(let album): return album.name
+        case .person(let person): return person.name
         }
     }
 
@@ -33,6 +35,7 @@ enum SidebarItem: Hashable {
         case .placeCountry(let country): return country.icon
         case .placeLocality(let locality): return locality.icon
         case .album(let album): return album.icon
+        case .person(let person): return person.icon
         }
     }
 
@@ -82,6 +85,12 @@ extension Set where Element == SidebarItem {
     var selectedAlbums: [Album] {
         compactMap {
             if case .album(let a) = $0 { a } else { nil }
+        }
+    }
+    
+    var selectedPeople: [Person] {
+        compactMap {
+            if case .person(let a) = $0 { a } else { nil }
         }
     }
 

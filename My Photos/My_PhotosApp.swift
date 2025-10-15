@@ -28,15 +28,15 @@ struct My_PhotosApp: App {
         }
 
         let context = ModelContext(container)
+        
+        let alice = Person("Alice")
 
-        let tag1 = Tag(name: "Alice", kind: .person)
         let tag3 = Tag(name: "Birthday", kind: .event)
         let tag4 = Tag(name: "Something", kind: .custom)
         let tag5 = Tag(name: "Something else", kind: .custom)
         let tag6 = Tag(name: "With-Dash", kind: .custom)
         let tag7 = Tag(name: "Nothing", kind: .custom)
 
-        context.insert(tag1)
         context.insert(tag3)
         context.insert(tag4)
         context.insert(tag5)
@@ -72,7 +72,7 @@ struct My_PhotosApp: App {
                 dateTakenDay: day20220109,
                 location: GeoCoordinate(44.439663, 26.096306),
                 album: album,
-                tags: [tag1]
+                people: [alice],
             )
         )
         context.insert(

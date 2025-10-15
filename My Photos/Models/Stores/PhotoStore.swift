@@ -35,12 +35,14 @@ final class PhotoStore {
         let photosFromDates = getPhotosBySelectedDates(filters)
         let photosFromPlaces = getPhotosBySelectedPlaces(filters)
         let photosFromAlbums = getPhotosBySelectedAlbums(filters)
+        let photosFromPeople = getPhotosBySelectedPeople(filters)
 
         return
             photosFromDates
             .intersection(photosFromTags)
             .intersection(photosFromPlaces)
             .intersection(photosFromAlbums)
+            .intersection(photosFromPeople)
             .sorted {
                 ($0.dateTaken ?? .distantPast) > ($1.dateTaken ?? .distantPast)
             }
@@ -56,6 +58,16 @@ final class PhotoStore {
         }
 
         return result
+    }
+    
+    func getPhotosBySelectedPeople(_ filters: Set<SidebarItem>) -> Set<Photo> {
+        guard !filters.selectedPeople.isEmpty else { return Set(getPhotos()) }
+        
+        return filters.selectedPeople.reduce(into: Set<Photo>()) {
+            partialResult,
+            person in
+            partialResult.formUnion(person.photos)
+        }
     }
 
     func getPhotosBySelectedAlbums(_ filters: Set<SidebarItem>) -> Set<Photo> {
