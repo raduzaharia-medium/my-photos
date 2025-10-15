@@ -50,51 +50,11 @@ extension Notification.Name {
 }
 
 enum AppIntents {
-    static func requestCreateTag() {
-        NotificationCenter.default.post(name: .requestCreateTag, object: nil)
-    }
-    static func requestEditTag(_ tag: Tag) {
-        NotificationCenter.default.post(name: .requestEditTag, object: tag)
-    }
-    static func requestDeleteTag(_ tag: Tag) {
-        NotificationCenter.default.post(name: .requestDeleteTag, object: tag)
-    }
-    static func requestDeleteTags(_ tags: [Tag]) {
-        NotificationCenter.default.post(name: .requestDeleteTags, object: tags)
-    }
     static func requestImportPhotos() {
         NotificationCenter.default.post(name: .requestImportPhotos, object: nil)
     }
     static func requestTagPhotos() {
         NotificationCenter.default.post(name: .requestTagPhotos, object: nil)
-    }
-
-    static func createTag(name: String) {
-        NotificationCenter.default.post(
-            name: .createTag,
-            object: nil,
-            userInfo: ["name": name]
-        )
-    }
-    static func editTag(
-        _ tag: Tag,
-        name: String,
-        parent: Tag? = nil
-    ) {
-        var userInfo: [String: Any] = ["name": name]
-        if let parent { userInfo["parent"] = parent }
-
-        NotificationCenter.default.post(
-            name: .editTag,
-            object: tag,
-            userInfo: userInfo
-        )
-    }
-    static func deleteTag(_ tag: Tag) {
-        NotificationCenter.default.post(name: .deleteTag, object: tag)
-    }
-    static func deleteTags(_ tags: [Tag]) {
-        NotificationCenter.default.post(name: .deleteTags, object: tags)
     }
 
     static func loadDates() {

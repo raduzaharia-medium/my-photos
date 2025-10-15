@@ -5,7 +5,7 @@ struct TagToolbar: ToolbarContent {
         ToolbarItem {
             Menu {
                 Button {
-                    AppIntents.requestCreateTag()
+                    TagIntents.requestCreate()
                 } label: {
                     Label("New Place", systemImage: Place.icon)
                 }
@@ -17,19 +17,19 @@ struct TagToolbar: ToolbarContent {
                 }
 
                 Button {
-                    AppIntents.requestCreateTag()
+                    TagIntents.requestCreate()
                 } label: {
                     Label("New Person", systemImage: Person.icon)
                 }
 
                 Button {
-                    AppIntents.requestCreateTag()
+                    TagIntents.requestCreate()
                 } label: {
                     Label("New Event", systemImage: Event.icon)
                 }
 
                 Button {
-                    AppIntents.requestCreateTag()
+                    TagIntents.requestCreate()
                 } label: {
                     Label("New Tag", systemImage: Tag.icon)
                 }

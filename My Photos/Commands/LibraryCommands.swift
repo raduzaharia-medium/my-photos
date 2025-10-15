@@ -11,7 +11,7 @@ struct LibraryCommands: Commands {
 
             Divider()
 
-            Button("Create Tag…") { AppIntents.requestCreateTag() }
+            Button("Create Tag…") { TagIntents.requestCreate() }
                 .keyboardShortcut("T", modifiers: [.command, .shift])
 
             Button("Edit Tag…") {
@@ -21,14 +21,14 @@ struct LibraryCommands: Commands {
                     return
                 }
 
-                AppIntents.requestEditTag(tag)
+                TagIntents.requestEdit(tag)
             }
             .keyboardShortcut("E", modifiers: [.command, .shift])
             .disabled(!presentationState.canEditSelection)
 
             if presentationState.canDeleteSelection {
                 Button("Delete Tag", role: .destructive) {
-                    AppIntents.requestDeleteTag(presentationState.selectedTags.first!)
+                    TagIntents.requestDelete(presentationState.selectedTags.first!)
                 }
                 .keyboardShortcut("D", modifiers: [.command, .shift])
             }
@@ -38,7 +38,7 @@ struct LibraryCommands: Commands {
                     "Delete \(presentationState.selectedTags.count) Tags",
                     role: .destructive
                 ) {
-                    AppIntents.requestDeleteTags(presentationState.selectedTags)
+                    TagIntents.requestDelete(presentationState.selectedTags)
                 }
                 .keyboardShortcut("D", modifiers: [.command, .shift])
             }

@@ -16,9 +16,9 @@ final class TagEditorPresenter: ObservableObject {
                     onSave: { original, name in
                         withAnimation {
                             if let original {
-                                AppIntents.editTag(original, name: name)
+                                TagIntents.edit(original, name: name)
                             } else {
-                                AppIntents.createTag(name: name)
+                                TagIntents.create(name: name)
                             }
 
                             self.modalPresenter.dismiss()

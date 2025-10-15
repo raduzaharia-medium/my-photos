@@ -12,6 +12,7 @@ struct ContentView: View {
     @StateObject private var notifier = NotificationService()
 
     private var tagStore: TagStore { TagStore(context: context) }
+    private var albumStore: AlbumStore { AlbumStore(context: context) }
     private var photoStore: PhotoStore { PhotoStore(context: context) }
     private var dateStore: DateStore { DateStore(context: context) }
     private var placeStore: PlaceStore { PlaceStore(context: context) }
@@ -66,6 +67,12 @@ struct ContentView: View {
             notifier: notifier,
             alerter: alerter,
             tagStore: tagStore
+        )
+        .setupAlbumHandlers(
+            modalPresenter: modalPresenter,
+            notifier: notifier,
+            alerter: alerter,
+            albumStore: albumStore
         )
         .setupPhotoLoadingHandlers(
             presentationState: presentationState,

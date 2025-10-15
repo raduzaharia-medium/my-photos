@@ -1,8 +1,8 @@
 import SwiftData
 import SwiftUI
 
-enum TagStoreError: Error {
-    case tagNotFound
+enum StoreError: Error {
+    case notFound
     case saveFailed(underlying: Error)
 }
 
@@ -115,7 +115,7 @@ final class TagStore {
         -> Tag
     {
         guard let tag = context.model(for: id) as? Tag else {
-            throw TagStoreError.tagNotFound
+            throw StoreError.notFound
         }
 
         tag.name = name
@@ -142,7 +142,7 @@ final class TagStore {
 
     func delete(_ id: PersistentIdentifier) throws {
         guard let tag = context.model(for: id) as? Tag else {
-            throw TagStoreError.tagNotFound
+            throw StoreError.notFound
         }
 
         context.delete(tag)
@@ -154,7 +154,7 @@ final class TagStore {
 
         for id in ids {
             guard let tag = context.model(for: id) as? Tag else {
-                throw TagStoreError.tagNotFound
+                throw StoreError.notFound
             }
 
             context.delete(tag)

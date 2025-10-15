@@ -29,7 +29,7 @@ struct SidebarView: View {
                         let dragged = state.getTag(incoming.id)
                         guard let dragged else { return }
 
-                        AppIntents.editTag(dragged, name: dragged.name)
+                        TagIntents.edit(dragged, name: dragged.name)
                     }
                 }
         }

@@ -29,7 +29,7 @@ enum TagIntents {
     static func create(name: String) {
         NotificationCenter.default.post(name: .createTag, object: name)
     }
-    static func edit(_ tag: Tag, name: String) {
+    static func edit(_ tag: Tag, name: String, parent: Tag? = nil) {
         NotificationCenter.default.post(
             name: .editTag,
             object: tag,

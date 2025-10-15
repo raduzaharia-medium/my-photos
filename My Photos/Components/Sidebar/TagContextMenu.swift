@@ -13,7 +13,7 @@ struct TagContextMenu: View {
         } else {
             if selection.canEditSelection {
                 Button {
-                    AppIntents.requestEditTag(selection.selectedTags.first!)
+                    TagIntents.requestEdit(selection.selectedTags.first!)
                 } label: {
                     Label("Edit", systemImage: "pencil")
                 }
@@ -21,13 +21,13 @@ struct TagContextMenu: View {
 
             if selection.canDeleteSelection {
                 Button(role: .destructive) {
-                    AppIntents.requestDeleteTag(selection.selectedTags.first!)
+                    TagIntents.requestDelete(selection.selectedTags.first!)
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
             } else if selection.canDeleteManySelection {
                 Button(role: .destructive) {
-                    AppIntents.requestDeleteTags(selection.selectedTags)
+                    TagIntents.requestDelete(selection.selectedTags)
                 } label: {
                     Label(
                         "Delete \(selection.selectedTags.count) Tags",
