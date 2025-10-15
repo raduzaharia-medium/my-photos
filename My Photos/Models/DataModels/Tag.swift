@@ -2,7 +2,6 @@ import Foundation
 import SwiftData
 
 enum TagKind: String, Codable, Hashable, CaseIterable, Identifiable {
-    case album = "album"
     case person = "person"
     case event = "event"
     case custom = "custom"
@@ -13,7 +12,6 @@ enum TagKind: String, Codable, Hashable, CaseIterable, Identifiable {
 extension TagKind {
     var title: String {
         switch self {
-        case .album: "Albums"
         case .person: "People"
         case .event: "Events"
         case .custom: "Tags"
@@ -22,7 +20,6 @@ extension TagKind {
 
     var icon: String {
         switch self {
-        case .album: "photo.on.rectangle"
         case .person: "person"
         case .event: "sparkles"
         case .custom: "tag"

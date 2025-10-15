@@ -10,6 +10,7 @@ struct My_PhotosApp: App {
         let schema = Schema([
             Photo.self, Tag.self, DateTakenYear.self, DateTakenMonth.self,
             DateTakenDay.self, PlaceCountry.self, PlaceLocality.self,
+            Album.self,
         ])
         let modelConfiguration = ModelConfiguration(
             schema: schema,
@@ -41,7 +42,7 @@ struct My_PhotosApp: App {
         context.insert(tag5)
         context.insert(tag6)
         context.insert(tag7)
-        
+
         let countryRomania = PlaceCountry("Romania")
         let localityBucharest = PlaceLocality(countryRomania, "Bucharest")
 
@@ -60,6 +61,8 @@ struct My_PhotosApp: App {
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
 
+        let album = Album("My album")
+
         context.insert(
             Photo(
                 title: "On the beach",
@@ -68,6 +71,7 @@ struct My_PhotosApp: App {
                 dateTakenMonth: month202201,
                 dateTakenDay: day20220109,
                 location: GeoCoordinate(44.439663, 26.096306),
+                album: album,
                 tags: [tag1]
             )
         )

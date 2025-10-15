@@ -34,11 +34,13 @@ final class PhotoStore {
         let photosFromTags = getPhotosBySelectedTags(filters)
         let photosFromDates = getPhotosBySelectedDates(filters)
         let photosFromPlaces = getPhotosBySelectedPlaces(filters)
+        let photosFromAlbums = getPhotosBySelectedAlbums(filters)
 
         return
             photosFromDates
             .intersection(photosFromTags)
             .intersection(photosFromPlaces)
+            .intersection(photosFromAlbums)
             .sorted {
                 ($0.dateTaken ?? .distantPast) > ($1.dateTaken ?? .distantPast)
             }
@@ -54,6 +56,16 @@ final class PhotoStore {
         }
 
         return result
+    }
+
+    func getPhotosBySelectedAlbums(_ filters: Set<SidebarItem>) -> Set<Photo> {
+        guard !filters.selectedAlbums.isEmpty else { return Set(getPhotos()) }
+
+        return filters.selectedAlbums.reduce(into: Set<Photo>()) {
+            partialResult,
+            album in
+            partialResult.formUnion(album.photos)
+        }
     }
 
     func getPhotosBySelectedDates(_ filters: Set<SidebarItem>) -> Set<Photo> {
@@ -78,7 +90,9 @@ final class PhotoStore {
     func getPhotosBySelectedPlaces(_ filters: Set<SidebarItem>) -> Set<Photo> {
         guard !filters.selectedPlaces.isEmpty else { return Set(getPhotos()) }
 
-        return filters.selectedPlaces.reduce(into: Set<Photo>()) { partialResult, place in
+        return filters.selectedPlaces.reduce(into: Set<Photo>()) {
+            partialResult,
+            place in
             switch place {
             case .country(let c):
                 if let model = c as? PlaceCountry {
@@ -86,7 +100,11 @@ final class PhotoStore {
                 } else if let vm = c as? PlaceCountry {
                     partialResult.formUnion(photosForCountry(key: vm.key))
                 } else {
-                    if let key = (Mirror(reflecting: c).children.first { $0.label == "key" }?.value as? String) {
+                    if let key =
+                        (Mirror(reflecting: c).children.first {
+                            $0.label == "key"
+                        }?.value as? String)
+                    {
                         partialResult.formUnion(photosForCountry(key: key))
                     }
                 }
@@ -97,7 +115,11 @@ final class PhotoStore {
                     partialResult.formUnion(photosForLocality(key: vm.key))
                 } else {
                     // Fallback: attempt by key via Mirror if available
-                    if let key = (Mirror(reflecting: l).children.first { $0.label == "key" }?.value as? String) {
+                    if let key =
+                        (Mirror(reflecting: l).children.first {
+                            $0.label == "key"
+                        }?.value as? String)
+                    {
                         partialResult.formUnion(photosForLocality(key: key))
                     }
                 }
@@ -116,9 +138,11 @@ final class PhotoStore {
 
         try context.save()
     }
-    
+
     private func photosForCountry(key: String) -> Set<Photo> {
-        let descriptor = FetchDescriptor<PlaceCountry>(predicate: #Predicate { $0.key == key })
+        let descriptor = FetchDescriptor<PlaceCountry>(
+            predicate: #Predicate { $0.key == key }
+        )
         if let model = try? context.fetch(descriptor).first {
             return Set(model.photos)
         }
@@ -126,7 +150,9 @@ final class PhotoStore {
     }
 
     private func photosForLocality(key: String) -> Set<Photo> {
-        let descriptor = FetchDescriptor<PlaceLocality>(predicate: #Predicate { $0.key == key })
+        let descriptor = FetchDescriptor<PlaceLocality>(
+            predicate: #Predicate { $0.key == key }
+        )
         if let model = try? context.fetch(descriptor).first {
             return Set(model.photos)
         }
