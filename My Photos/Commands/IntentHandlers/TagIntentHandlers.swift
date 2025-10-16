@@ -20,11 +20,7 @@ extension View {
             let parent = note.userInfo?["parent"] as? Tag
 
             do {
-                try tagStore.update(
-                    tag.persistentModelID,
-                    name: name,
-                    parent: parent
-                )
+                try tagStore.update(tag, name: name, parent: parent)
                 notifier.show("Tag updated", .success)
             } catch {
                 notifier.show("Could not update tag", .error)
@@ -44,7 +40,7 @@ extension View {
             guard let tag = note.object as? Tag else { return }
 
             do {
-                try tagStore.delete(tag.persistentModelID)
+                try tagStore.delete(tag)
                 notifier.show("Tag deleted", .success)
             } catch {
                 notifier.show("Could not delete tag", .error)
@@ -55,7 +51,7 @@ extension View {
             guard let tags = note.object as? [Tag] else { return }
 
             do {
-                try tagStore.delete(tags.map(\.persistentModelID))
+                try tagStore.delete(tags)
                 notifier.show("Tags deleted", .success)
             } catch {
                 notifier.show("Could not delete tags", .error)

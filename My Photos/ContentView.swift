@@ -13,6 +13,7 @@ struct ContentView: View {
 
     private var tagStore: TagStore { TagStore(context: context) }
     private var albumStore: AlbumStore { AlbumStore(context: context) }
+    private var personStore: PersonStore { PersonStore(context: context) }
     private var photoStore: PhotoStore { PhotoStore(context: context) }
     private var dateStore: DateStore { DateStore(context: context) }
     private var placeStore: PlaceStore { PlaceStore(context: context) }
@@ -92,6 +93,12 @@ struct ContentView: View {
         .setupPlaceLoadingHandlers(
             presentationState: presentationState,
             placeStore: placeStore
+        )
+        .setupPersonHandlers(
+            modalPresenter: modalPresenter,
+            notifier: notifier,
+            alerter: alerter,
+            personStore: personStore
         )
         .onAppear {
             AppIntents.loadPhotos()

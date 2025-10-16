@@ -16,16 +16,16 @@ enum AlbumIntents {
     static func requestCreate() {
         NotificationCenter.default.post(name: .requestCreateAlbum, object: nil)
     }
-    static func requestEdit(_ tag: Tag) {
-        NotificationCenter.default.post(name: .requestEditAlbum, object: tag)
+    static func requestEdit(_ album: Album) {
+        NotificationCenter.default.post(name: .requestEditAlbum, object: album)
     }
-    static func requestDelete(_ tag: Tag) {
-        NotificationCenter.default.post(name: .requestDeleteAlbum, object: tag)
+    static func requestDelete(_ album: Album) {
+        NotificationCenter.default.post(name: .requestDeleteAlbum, object: album)
     }
-    static func requestDelete(_ tags: [Tag]) {
+    static func requestDelete(_ albums: [Album]) {
         NotificationCenter.default.post(
             name: .requestDeleteAlbums,
-            object: tags
+            object: albums
         )
     }
 
@@ -34,7 +34,7 @@ enum AlbumIntents {
     }
     static func edit(_ album: Album, name: String) {
         NotificationCenter.default.post(
-            name: .editTag,
+            name: .editAlbum,
             object: album,
             userInfo: ["name": name]
         )
