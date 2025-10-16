@@ -120,7 +120,7 @@ final class TagStore {
     }
 
     @discardableResult
-    func updateByID(_ tagID: UUID, name: String, parent: Tag? = nil) throws
+    func updateByID(_ tagID: UUID, name: String?, parent: Tag? = nil) throws
         -> Tag
     {
         let predicate = #Predicate<Tag> { $0.id == tagID }
@@ -129,7 +129,7 @@ final class TagStore {
             throw StoreError.notFound
         }
 
-        tag.name = name
+        tag.name = name ?? tag.name
         tag.parent = parent
 
         try context.save()

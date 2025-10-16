@@ -9,16 +9,12 @@ struct TagsSection: View {
         Section("Tags") {
             ForEach(tags) { tag in
                 if tag.children.isEmpty {
-                    SidebarRow(.tag(tag)).tag(tag).draggable(
-                        TagDragItem(tag.id)
-                    )
+                    TagRow(tag: tag)
                 } else {
                     DisclosureGroup {
                         TagSectionChildren(parent: tag)
                     } label: {
-                        SidebarRow(.tag(tag)).tag(tag).draggable(
-                            TagDragItem(tag.id)
-                        )
+                        TagRow(tag: tag)
                     }
                 }
             }
@@ -38,17 +34,39 @@ private struct TagSectionChildren: View {
     var body: some View {
         ForEach(tags) { tag in
             if tag.children.isEmpty {
-                SidebarRow(.tag(tag)).tag(tag)
+                TagRow(tag: tag)
             } else {
                 DisclosureGroup {
                     TagSectionChildren(parent: tag)
                 } label: {
-                    SidebarRow(.tag(tag)).tag(tag).draggable(
-                        TagDragItem(tag.id)
-                    )
-
+                    TagRow(tag: tag)
                 }
             }
+        }
+    }
+}
+
+private struct TagRow: View {
+    let tag: Tag
+
+    var body: some View {
+        SidebarRow(.tag(tag)).tag(tag).draggable(
+            TagDragItem(tag.id)
+        ).dropDestination(for: TagDragItem.self) { items, _ in
+            var performedAny = false
+
+            for incoming in items {
+                var current: Tag? = tag
+                while let node = current {
+                    if node.id == incoming.id { return false }
+                    current = node.parent
+                }
+
+                TagIntents.edit(incoming.id, parent: tag)
+                performedAny = true
+            }
+
+            return performedAny
         }
     }
 }

@@ -28,7 +28,7 @@ extension View {
         }
         let editByID: (NotificationCenter.Publisher.Output) -> Void = { note in
             guard let tagID = note.object as? UUID else { return }
-            guard let name = note.userInfo?["name"] as? String else { return }
+            let name = note.userInfo?["name"] as? String
             let parent = note.userInfo?["parent"] as? Tag
 
             do {
@@ -41,7 +41,7 @@ extension View {
         let create: (NotificationCenter.Publisher.Output) -> Void = { note in
             guard let name = note.object as? String else { return }
             let parent = note.userInfo?["parent"] as? Tag
-           
+
             do {
                 try tagStore.create(name: name, parent: parent)
                 notifier.show("Tag created", .success)

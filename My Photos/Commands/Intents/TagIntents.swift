@@ -47,8 +47,9 @@ enum TagIntents {
             userInfo: userInfo
         )
     }
-    static func edit(_ tagID: UUID, name: String, parent: Tag? = nil) {
-        var userInfo: [AnyHashable: Any] = ["name": name]
+    static func edit(_ tagID: UUID, name: String? = nil, parent: Tag? = nil) {
+        var userInfo: [AnyHashable: Any] = [:]
+        if let name = name { userInfo["name"] = name }
         if let parent = parent { userInfo["parent"] = parent }
 
         NotificationCenter.default.post(
