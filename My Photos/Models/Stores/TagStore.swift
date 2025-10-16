@@ -115,10 +115,22 @@ final class TagStore {
         tag.name = name
         tag.parent = parent
 
-        var stack = tag.children
-        while let node = stack.popLast() {
-            stack.append(contentsOf: node.children)
+        try context.save()
+        return tag
+    }
+
+    @discardableResult
+    func updateByID(_ tagID: UUID, name: String, parent: Tag? = nil) throws
+        -> Tag
+    {
+        let predicate = #Predicate<Tag> { $0.id == tagID }
+        let descriptor = FetchDescriptor<Tag>(predicate: predicate)
+        guard let tag = try? context.fetch(descriptor).first else {
+            throw StoreError.notFound
         }
+
+        tag.name = name
+        tag.parent = parent
 
         try context.save()
         return tag

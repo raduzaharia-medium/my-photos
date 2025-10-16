@@ -26,6 +26,18 @@ extension View {
                 notifier.show("Could not update tag", .error)
             }
         }
+        let editByID: (NotificationCenter.Publisher.Output) -> Void = { note in
+            guard let tagID = note.object as? UUID else { return }
+            guard let name = note.userInfo?["name"] as? String else { return }
+            let parent = note.userInfo?["parent"] as? Tag
+
+            do {
+                try tagStore.updateByID(tagID, name: name, parent: parent)
+                notifier.show("Tag updated", .success)
+            } catch {
+                notifier.show("Could not update tag", .error)
+            }
+        }
         let create: (NotificationCenter.Publisher.Output) -> Void = { note in
             guard let name = note.object as? String else { return }
             let parent = note.userInfo?["parent"] as? Tag
@@ -83,6 +95,10 @@ extension View {
             .onReceive(
                 NotificationCenter.default.publisher(for: .editTag),
                 perform: edit
+            )
+            .onReceive(
+                NotificationCenter.default.publisher(for: .editTagByID),
+                perform: editByID
             )
             .onReceive(
                 NotificationCenter.default.publisher(for: .createTag),

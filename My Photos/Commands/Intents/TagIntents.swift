@@ -8,6 +8,7 @@ extension Notification.Name {
 
     static let createTag = Notification.Name("createTag")
     static let editTag = Notification.Name("editTag")
+    static let editTagByID = Notification.Name("editTagByID")
     static let deleteTag = Notification.Name("deleteTag")
     static let deleteTags = Notification.Name("deleteTags")
 }
@@ -43,6 +44,16 @@ enum TagIntents {
         NotificationCenter.default.post(
             name: .editTag,
             object: tag,
+            userInfo: userInfo
+        )
+    }
+    static func edit(_ tagID: UUID, name: String, parent: Tag? = nil) {
+        var userInfo: [AnyHashable: Any] = ["name": name]
+        if let parent = parent { userInfo["parent"] = parent }
+
+        NotificationCenter.default.post(
+            name: .editTagByID,
+            object: tagID,
             userInfo: userInfo
         )
     }

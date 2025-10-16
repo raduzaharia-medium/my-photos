@@ -2,18 +2,23 @@ import SwiftData
 import SwiftUI
 
 struct TagsSection: View {
-    @Query(filter: #Predicate<Tag> { $0.parent == nil }, sort: \Tag.key) private var tags: [Tag]
+    @Query(filter: #Predicate<Tag> { $0.parent == nil }, sort: \Tag.key) private
+        var tags: [Tag]
 
     var body: some View {
         Section("Tags") {
             ForEach(tags) { tag in
                 if tag.children.isEmpty {
-                    SidebarRow(.tag(tag)).tag(tag)
+                    SidebarRow(.tag(tag)).tag(tag).draggable(
+                        TagDragItem(tag.id)
+                    )
                 } else {
                     DisclosureGroup {
                         TagSectionChildren(parent: tag)
                     } label: {
-                        SidebarRow(.tag(tag)).tag(tag)
+                        SidebarRow(.tag(tag)).tag(tag).draggable(
+                            TagDragItem(tag.id)
+                        )
                     }
                 }
             }
@@ -38,7 +43,10 @@ private struct TagSectionChildren: View {
                 DisclosureGroup {
                     TagSectionChildren(parent: tag)
                 } label: {
-                    SidebarRow(.tag(tag)).tag(tag)
+                    SidebarRow(.tag(tag)).tag(tag).draggable(
+                        TagDragItem(tag.id)
+                    )
+
                 }
             }
         }

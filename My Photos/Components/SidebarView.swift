@@ -22,16 +22,6 @@ struct SidebarView: View {
             PeopleSection()
             EventsSection()
             TagsSection()
-                .dropDestination(for: TagDragItem.self, isEnabled: true) {
-                    items,
-                    _ in
-                    for incoming in items {
-                        let dragged = state.getTag(incoming.id)
-                        guard let dragged else { return }
-
-                        TagIntents.edit(dragged, name: dragged.name)
-                    }
-                }
         }
         .task {
             AppIntents.resetPhotoFilter()
