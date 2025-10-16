@@ -1,8 +1,12 @@
+import SwiftData
 import SwiftUI
 
 struct TagEditorSheet: View {
+    @Query(sort: \Tag.key) private var tags: [Tag]
+
     @FocusState private var nameFocused: Bool
     @State private var name: String
+    @State private var parent: Tag?
 
     let tag: Tag?
 
@@ -10,12 +14,12 @@ struct TagEditorSheet: View {
     var trim: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
     var canSave: Bool { !trim.isEmpty }
 
-    var onSave: (Tag?, String) -> Void
+    var onSave: (Tag?, String, Tag?) -> Void
     var onCancel: () -> Void
 
     init(
         _ tag: Tag? = nil,
-        onSave: @escaping (Tag?, String) -> Void,
+        onSave: @escaping (Tag?, String, Tag?) -> Void,
         onCancel: @escaping () -> Void
     ) {
         self.tag = tag
@@ -28,12 +32,29 @@ struct TagEditorSheet: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Name").font(.caption).foregroundStyle(.secondary)
-                TextField("e.g. Will Delete, For March Photobook", text: $name)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Name").font(.caption).foregroundStyle(.secondary)
+                    TextField(
+                        "e.g. Will Delete, For March Photobook",
+                        text: $name
+                    )
                     .textFieldStyle(.roundedBorder)
                     .focused($nameFocused)
                     .submitLabel(.done)
-                    .onSubmit { onSave(tag, trim) }
+                    .onSubmit { onSave(tag, trim, parent) }
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Parent").font(.caption).foregroundStyle(.secondary)
+                    Picker("", selection: $parent) {
+                        Text("None").tag(Optional<Tag>.none)
+                        ForEach(tags) { t in
+                            Text(t.name).tag(t)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                }
             }.padding(20)
                 .task { nameFocused = true }
                 .navigationTitle(title)
@@ -43,7 +64,7 @@ struct TagEditorSheet: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save", role: .confirm) {
-                            onSave(tag, trim)
+                            onSave(tag, trim, parent)
                         }.keyboardShortcut(.defaultAction)
                             .disabled(!canSave)
                     }

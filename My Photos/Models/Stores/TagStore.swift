@@ -30,8 +30,8 @@ final class TagStore {
     }
 
     @discardableResult
-    func create(name: String) throws -> Tag {
-        let tag = Tag(name: name)
+    func create(name: String, parent: Tag? = nil) throws -> Tag {
+        let tag = Tag(name: name, parent: parent)
 
         context.insert(tag)
         try context.save()

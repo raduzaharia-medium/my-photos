@@ -27,10 +27,11 @@ extension View {
             }
         }
         let create: (NotificationCenter.Publisher.Output) -> Void = { note in
-            guard let name = note.userInfo?["name"] as? String else { return }
-
+            guard let name = note.object as? String else { return }
+            let parent = note.userInfo?["parent"] as? Tag
+           
             do {
-                try tagStore.create(name: name)
+                try tagStore.create(name: name, parent: parent)
                 notifier.show("Tag created", .success)
             } catch {
                 notifier.show("Could not create tag", .error)

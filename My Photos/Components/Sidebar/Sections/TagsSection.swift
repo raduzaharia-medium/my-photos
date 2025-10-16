@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct TagsSection: View {
-    @Query(sort: \Tag.key) private var tags: [Tag]
+    @Query(filter: #Predicate<Tag> { $0.parent == nil }, sort: \Tag.key) private var tags: [Tag]
 
     var body: some View {
         Section("Tags") {

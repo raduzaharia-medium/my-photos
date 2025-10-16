@@ -26,14 +26,24 @@ enum TagIntents {
         NotificationCenter.default.post(name: .requestDeleteTags, object: tags)
     }
 
-    static func create(name: String) {
-        NotificationCenter.default.post(name: .createTag, object: name)
+    static func create(name: String, parent: Tag? = nil) {
+        var userInfo: [AnyHashable: Any] = [:]
+        if let parent = parent { userInfo["parent"] = parent }
+
+        NotificationCenter.default.post(
+            name: .createTag,
+            object: name,
+            userInfo: userInfo
+        )
     }
     static func edit(_ tag: Tag, name: String, parent: Tag? = nil) {
+        var userInfo: [AnyHashable: Any] = ["name": name]
+        if let parent = parent { userInfo["parent"] = parent }
+
         NotificationCenter.default.post(
             name: .editTag,
             object: tag,
-            userInfo: ["name": name]
+            userInfo: userInfo
         )
     }
     static func delete(_ tag: Tag) {
