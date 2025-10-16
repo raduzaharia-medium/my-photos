@@ -17,6 +17,7 @@ struct ContentView: View {
     private var photoStore: PhotoStore { PhotoStore(context: context) }
     private var dateStore: DateStore { DateStore(context: context) }
     private var placeStore: PlaceStore { PlaceStore(context: context) }
+    private var eventStore: EventStore { EventStore(context: context) }
     private var fileStore: FileStore { FileStore() }
 
     var body: some View {
@@ -99,6 +100,12 @@ struct ContentView: View {
             notifier: notifier,
             alerter: alerter,
             personStore: personStore
+        )
+        .setupEventHandlers(
+            modalPresenter: modalPresenter,
+            notifier: notifier,
+            alerter: alerter,
+            eventStore: eventStore
         )
         .onAppear {
             AppIntents.loadPhotos()

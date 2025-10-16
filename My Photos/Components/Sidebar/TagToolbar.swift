@@ -17,7 +17,7 @@ struct TagToolbar: ToolbarContent {
                 }
 
                 Button {
-                    TagIntents.requestCreate()
+                    EventIntents.requestCreate()
                 } label: {
                     Label("New Event", systemImage: Event.icon)
                 }
