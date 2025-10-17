@@ -16,7 +16,7 @@ final class TagEditorPresenter: ObservableObject {
                     onSave: { original, name, parent in
                         withAnimation {
                             if let original {
-                                TagIntents.edit(original, name: name)
+                                TagIntents.edit(original, name: name, parent: parent)
                             } else {
                                 TagIntents.create(name: name, parent: parent)
                             }

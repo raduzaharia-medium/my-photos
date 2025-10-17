@@ -114,6 +114,7 @@ final class TagStore {
 
         tag.name = name
         tag.parent = parent
+        tag.key = "\(parent?.name ?? "root")-\(tag.name)"
 
         try context.save()
         return tag
@@ -131,6 +132,7 @@ final class TagStore {
 
         tag.name = name ?? tag.name
         tag.parent = parent
+        tag.key = "\(parent?.name ?? "root")-\(tag.name)"
 
         try context.save()
         return tag

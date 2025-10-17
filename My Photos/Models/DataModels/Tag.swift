@@ -16,6 +16,10 @@ final class Tag: Identifiable, Hashable {
         self.key = "\(parent?.name ?? "root")-\(name)"
         self.parent = parent
     }
+
+    func descendant(of root: Tag) -> Bool {
+        parent == root || parent?.descendant(of: root) == true
+    }
 }
 
 extension Tag {

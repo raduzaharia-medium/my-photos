@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct EventEditorSheet: View {
-    @FocusState private var nameFocused: Bool
     @State private var name: String
 
     let event: Event?
@@ -28,14 +27,9 @@ struct EventEditorSheet: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                Text("Name").font(.caption).foregroundStyle(.secondary)
-                TextField("e.g. My Birthday, Yearly Marathon", text: $name)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($nameFocused)
-                    .submitLabel(.done)
+                NameInput(name: $name)
                     .onSubmit { onSave(event, trim) }
             }.padding(20)
-                .task { nameFocused = true }
                 .navigationTitle(title)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
@@ -49,6 +43,25 @@ struct EventEditorSheet: View {
                     }
                 }
                 .interactiveDismissDisabled(!canSave)
+        }
+    }
+}
+
+private struct NameInput: View {
+    @FocusState private var nameFocused: Bool
+    @Binding var name: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Name").font(.caption).foregroundStyle(.secondary)
+            TextField(
+                "e.g. My Birthday, Yearly Marathon",
+                text: $name
+            )
+            .textFieldStyle(.roundedBorder)
+            .focused($nameFocused)
+            .task { nameFocused = true }
+            .submitLabel(.done)
         }
     }
 }

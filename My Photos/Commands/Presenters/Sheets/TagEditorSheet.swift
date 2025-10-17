@@ -2,9 +2,6 @@ import SwiftData
 import SwiftUI
 
 struct TagEditorSheet: View {
-    @Query(sort: \Tag.key) private var tags: [Tag]
-
-    @FocusState private var nameFocused: Bool
     @State private var name: String
     @State private var parent: Tag?
 
@@ -32,31 +29,10 @@ struct TagEditorSheet: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Name").font(.caption).foregroundStyle(.secondary)
-                    TextField(
-                        "e.g. Will Delete, For March Photobook",
-                        text: $name
-                    )
-                    .textFieldStyle(.roundedBorder)
-                    .focused($nameFocused)
-                    .submitLabel(.done)
+                NameInput(name: $name)
                     .onSubmit { onSave(tag, trim, parent) }
-                }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Parent").font(.caption).foregroundStyle(.secondary)
-                    Picker("", selection: $parent) {
-                        Text("None").tag(Optional<Tag>.none)
-                        ForEach(tags) { t in
-                            Text(t.name).tag(t)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
-                }
+                ParentPicker(parent: $parent, tag: tag)
             }.padding(20)
-                .task { nameFocused = true }
                 .navigationTitle(title)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
@@ -70,6 +46,48 @@ struct TagEditorSheet: View {
                     }
                 }
                 .interactiveDismissDisabled(!canSave)
+        }
+    }
+}
+
+private struct NameInput: View {
+    @FocusState private var nameFocused: Bool
+    @Binding var name: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Name").font(.caption).foregroundStyle(.secondary)
+            TextField(
+                "e.g. Will Delete, For March Photobook",
+                text: $name
+            )
+            .textFieldStyle(.roundedBorder)
+            .focused($nameFocused)
+            .task { nameFocused = true }
+            .submitLabel(.done)
+        }
+    }
+}
+
+private struct ParentPicker: View {
+    @Query(sort: \Tag.key) private var tags: [Tag]
+    @Binding var parent: Tag?
+
+    let tag: Tag?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Parent").font(.caption).foregroundStyle(.secondary)
+            Picker("", selection: $parent) {
+                Text("None").tag(Optional<Tag>.none)
+                ForEach(tags) { t in
+                    if tag.map({ !t.descendant(of: $0) && t !== $0 }) ?? true {
+                        Text(t.name).tag(t)
+                    }
+                }
+            }
+            .pickerStyle(.menu)
+            .labelsHidden()
         }
     }
 }
