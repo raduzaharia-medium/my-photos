@@ -4,27 +4,29 @@ private enum SelectionMode: Equatable {
     case none
     case singleTag(Tag)
     case singleAlbum(Album)
+    case singlePerson(Person)
+    case singleEvent(Event)
     case multipleTags([Tag])
     case multipleAlbums([Album])
+    case multiplePersons([Person])
+    case multipleEvents([Event])
 }
 
 extension Set where Element == SidebarItem {
     fileprivate var selectionMode: SelectionMode {
         guard selectedFilters.isEmpty else { return .none }
 
-        let nonTagOrAlbumItems = self.filter { item in
+        let nonTagAlbumPersonEventItems = self.filter { item in
             switch item {
-            case .tag:
-                return false
-            case .album:
+            case .tag, .album, .person, .event:
                 return false
             default:
                 return true
             }
         }
-        guard nonTagOrAlbumItems.isEmpty else { return .none }
+        guard nonTagAlbumPersonEventItems.isEmpty else { return .none }
 
-        if !selectedTags.isEmpty && selectedAlbums.isEmpty {
+        if !selectedTags.isEmpty && selectedAlbums.isEmpty && selectedPeople.isEmpty && selectedEvents.isEmpty {
             switch selectedTags.count {
             case 0:
                 return .none
@@ -35,7 +37,7 @@ extension Set where Element == SidebarItem {
             }
         }
 
-        if selectedTags.isEmpty && !selectedAlbums.isEmpty {
+        if selectedTags.isEmpty && !selectedAlbums.isEmpty && selectedPeople.isEmpty && selectedEvents.isEmpty {
             switch selectedAlbums.count {
             case 0:
                 return .none
@@ -43,6 +45,28 @@ extension Set where Element == SidebarItem {
                 return .singleAlbum(selectedAlbums[0])
             default:
                 return .multipleAlbums(selectedAlbums)
+            }
+        }
+
+        if selectedTags.isEmpty && selectedAlbums.isEmpty && !selectedPeople.isEmpty && selectedEvents.isEmpty {
+            switch selectedPeople.count {
+            case 0:
+                return .none
+            case 1:
+                return .singlePerson(selectedPeople[0])
+            default:
+                return .multiplePersons(selectedPeople)
+            }
+        }
+
+        if selectedTags.isEmpty && selectedAlbums.isEmpty && selectedPeople.isEmpty && !selectedEvents.isEmpty {
+            switch selectedEvents.count {
+            case 0:
+                return .none
+            case 1:
+                return .singleEvent(selectedEvents[0])
+            default:
+                return .multipleEvents(selectedEvents)
             }
         }
 
@@ -76,6 +100,14 @@ private func menu(for mode: SelectionMode) -> some View {
         multipleTagsMenu(tags)
     case .multipleAlbums(let albums):
         multipleAlbumsMenu(albums)
+    case .singlePerson(let person):
+        personMenu(person)
+    case .singleEvent(let event):
+        eventMenu(event)
+    case .multiplePersons(let persons):
+        multiplePersonsMenu(persons)
+    case .multipleEvents(let events):
+        multipleEventsMenu(events)
     }
 }
 
@@ -111,6 +143,36 @@ private func albumMenu(_ album: Album) -> some View {
 
 @MainActor
 @ViewBuilder
+private func personMenu(_ person: Person) -> some View {
+    Button {
+        PersonIntents.requestEdit(person)
+    } label: {
+        Label("Edit", systemImage: "pencil")
+    }
+    Button(role: .destructive) {
+        PersonIntents.requestDelete(person)
+    } label: {
+        Label("Delete", systemImage: "trash")
+    }
+}
+
+@MainActor
+@ViewBuilder
+private func eventMenu(_ event: Event) -> some View {
+    Button {
+        EventIntents.requestEdit(event)
+    } label: {
+        Label("Edit", systemImage: "pencil")
+    }
+    Button(role: .destructive) {
+        EventIntents.requestDelete(event)
+    } label: {
+        Label("Delete", systemImage: "trash")
+    }
+}
+
+@MainActor
+@ViewBuilder
 private func multipleTagsMenu(_ tags: [Tag]) -> some View {
     Button(role: .destructive) {
         TagIntents.requestDelete(tags)
@@ -126,5 +188,25 @@ private func multipleAlbumsMenu(_ albums: [Album]) -> some View {
         AlbumIntents.requestDelete(albums)
     } label: {
         Label("Delete \(albums.count) Albums", systemImage: "trash")
+    }
+}
+
+@MainActor
+@ViewBuilder
+private func multiplePersonsMenu(_ persons: [Person]) -> some View {
+    Button(role: .destructive) {
+        PersonIntents.requestDelete(persons)
+    } label: {
+        Label("Delete \(persons.count) People", systemImage: "trash")
+    }
+}
+
+@MainActor
+@ViewBuilder
+private func multipleEventsMenu(_ events: [Event]) -> some View {
+    Button(role: .destructive) {
+        EventIntents.requestDelete(events)
+    } label: {
+        Label("Delete \(events.count) Events", systemImage: "trash")
     }
 }
