@@ -10,7 +10,7 @@ struct PhotosGrid: View {
     ]
 
     init() {
-        self._photos = Query(filters: presentationState.photoFilter)
+        self._photos = Query(filters: [] /*presentationState.photoFilter*/)
     }
     
     var body: some View {
@@ -62,7 +62,7 @@ struct PhotosGrid: View {
 
 extension Query where Element == Photo, Result == [Photo] {
     fileprivate init(filters: Set<SidebarItem>) {
-        let filter = #Predicate<Photo> { $0.isDeleted == false }
+        let filter = #Predicate<Photo> { $0.title != "" }
         let sort = [SortDescriptor(\Photo.dateTaken)]
 
         self.init(filter: filter, sort: sort)
