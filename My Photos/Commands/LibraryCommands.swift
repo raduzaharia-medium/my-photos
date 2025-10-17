@@ -14,34 +14,34 @@ struct LibraryCommands: Commands {
             Button("Create Tag…") { TagIntents.requestCreate() }
                 .keyboardShortcut("T", modifiers: [.command, .shift])
 
-            Button("Edit Tag…") {
-                guard presentationState.photoFilter.count == 1,
-                    case .tag(let tag) = presentationState.photoFilter.first
-                else {
-                    return
-                }
-
-                TagIntents.requestEdit(tag)
-            }
-            .keyboardShortcut("E", modifiers: [.command, .shift])
-            .disabled(!presentationState.canEditSelection)
-
-            if presentationState.canDeleteSelection {
-                Button("Delete Tag", role: .destructive) {
-                    TagIntents.requestDelete(presentationState.selectedTags.first!)
-                }
-                .keyboardShortcut("D", modifiers: [.command, .shift])
-            }
-
-            if presentationState.canDeleteManySelection {
-                Button(
-                    "Delete \(presentationState.selectedTags.count) Tags",
-                    role: .destructive
-                ) {
-                    TagIntents.requestDelete(presentationState.selectedTags)
-                }
-                .keyboardShortcut("D", modifiers: [.command, .shift])
-            }
+//            Button("Edit Tag…") {
+//                guard presentationState.photoFilter.count == 1,
+//                    case .tag(let tag) = presentationState.photoFilter.first
+//                else {
+//                    return
+//                }
+//
+//                TagIntents.requestEdit(tag)
+//            }
+//            .keyboardShortcut("E", modifiers: [.command, .shift])
+//            .disabled(!presentationState.canEditSelection)
+//
+//            if presentationState.canDeleteSelection {
+//                Button("Delete Tag", role: .destructive) {
+//                    TagIntents.requestDelete(presentationState.selectedTags.first!)
+//                }
+//                .keyboardShortcut("D", modifiers: [.command, .shift])
+//            }
+//
+//            if presentationState.canDeleteManySelection {
+//                Button(
+//                    "Delete \(presentationState.selectedTags.count) Tags",
+//                    role: .destructive
+//                ) {
+//                    TagIntents.requestDelete(presentationState.selectedTags)
+//                }
+//                .keyboardShortcut("D", modifiers: [.command, .shift])
+//            }
 
             Divider()
 

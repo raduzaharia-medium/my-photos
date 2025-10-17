@@ -26,7 +26,7 @@ enum SidebarItem: Hashable {
         case .event(let event): return event.name
         }
     }
-    
+
     var icon: String {
         switch self {
         case .filter(let filter): return filter.icon
@@ -129,16 +129,29 @@ extension Set where Element == SidebarItem {
         return countries + localities
     }
 
-    var canEditOrDeleteSelection: Bool {
-        selectedTags.count > 0 && selectedFilters.count == 0
+    var canEditOrDeleteTagSelection: Bool {
+        canEditTagSelection || canDeleteTagSelection || canDeleteTagsSelection
     }
-    var canEditSelection: Bool {
+    var canEditTagSelection: Bool {
         selectedTags.count == 1 && selectedFilters.count == 0
     }
-    var canDeleteSelection: Bool {
+    var canDeleteTagSelection: Bool {
         selectedTags.count == 1 && selectedFilters.count == 0
     }
-    var canDeleteManySelection: Bool {
+    var canDeleteTagsSelection: Bool {
+        selectedTags.count > 1 && selectedFilters.count == 0
+    }
+    
+    var canEditOrDeleteAlbumSelection: Bool {
+        canEditAlbumSelection || canDeleteAlbumSelection || canDeleteAlbumsSelection
+    }
+    var canEditAlbumSelection: Bool {
+        selectedTags.count == 1 && selectedFilters.count == 0
+    }
+    var canDeleteAlbumSelection: Bool {
+        selectedTags.count == 1 && selectedFilters.count == 0
+    }
+    var canDeleteAlbumsSelection: Bool {
         selectedTags.count > 1 && selectedFilters.count == 0
     }
 }
