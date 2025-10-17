@@ -3,18 +3,10 @@ import UniformTypeIdentifiers
 
 struct SidebarView: View {
     @Environment(PresentationState.self) private var state
-
-    private var selectionBinding: Binding<Set<SidebarItem>> {
-        Binding(
-            get: { state.photoFilter },
-            set: { newValue in
-                AppIntents.updatePhotoFilter(newValue)
-            }
-        )
-    }
+    @State private var selection: Set<SidebarItem> = []
 
     var body: some View {
-        List(selection: selectionBinding) {
+        List(selection: $selection) {
             FiltersSection()
             DatesSection()
             PlacesSection()
@@ -31,6 +23,9 @@ struct SidebarView: View {
         #endif
         .contextMenu(forSelectionType: SidebarItem.self) { items in
             SidebarContextMenu(items)
+        }
+        .onChange(of: selection) {
+            AppIntents.updatePhotoFilter(selection)
         }
         .toolbar {
             TagToolbar()

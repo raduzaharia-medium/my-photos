@@ -107,6 +107,9 @@ struct ContentView: View {
             alerter: alerter,
             eventStore: eventStore
         )
+        .setupPresentationModeHandlers(presentationState: presentationState)
+        .setupPhotoNavigationHandlers(presentationState: presentationState)
+        .setupPhotoSelectionHandlers(presentationState: presentationState)
         .onAppear {
             AppIntents.loadPhotos()
         }

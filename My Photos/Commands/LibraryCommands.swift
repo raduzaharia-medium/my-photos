@@ -11,8 +11,8 @@ struct LibraryCommands: Commands {
 
             Divider()
 
-            Button("Create Tag…") { TagIntents.requestCreate() }
-                .keyboardShortcut("T", modifiers: [.command, .shift])
+//            Button("Create Tag…") { TagIntents.requestCreate() }
+//                .keyboardShortcut("T", modifiers: [.command, .shift])
 
 //            Button("Edit Tag…") {
 //                guard presentationState.photoFilter.count == 1,

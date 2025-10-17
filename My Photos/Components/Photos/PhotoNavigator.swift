@@ -24,6 +24,5 @@ struct PhotoNavigator: View {
         .navigationTitle(
             Text(presentationState.currentPhoto?.title ?? "No photo")
         )
-        .setupPhotoNavigationHandlers(presentationState: presentationState)
     }
 }
