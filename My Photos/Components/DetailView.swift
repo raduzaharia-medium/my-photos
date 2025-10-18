@@ -7,7 +7,7 @@ struct DetailView: View {
     var body: some View {        
         Group {
             switch presentationState.presentationMode {
-            case .grid: PhotosGrid()
+            case .grid: PhotosGrid(filters: presentationState.photoFilter)
             case .map: PhotosMap()
             }
         }

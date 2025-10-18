@@ -9,10 +9,10 @@ struct PhotosGrid: View {
         GridItem(.adaptive(minimum: 110, maximum: 200), spacing: 8)
     ]
 
-    init() {
-        self._photos = Query(filters: [] /*presentationState.photoFilter*/)
+    init(filters: Set<SidebarItem>) {
+        self._photos = Query(filters: filters)
     }
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -62,7 +62,23 @@ struct PhotosGrid: View {
 
 extension Query where Element == Photo, Result == [Photo] {
     fileprivate init(filters: Set<SidebarItem>) {
-        let filter = #Predicate<Photo> { $0.title != "" }
+        let dates = filters.selectedDates
+        let firstDate = dates.first
+        var year = 0
+
+        switch firstDate {
+        case .year(let date): year = date.year
+        case .month(let date): year = date.year.year
+        case .day(let date): year = date.month.year.year
+        case .none: year = 0
+        }
+
+        let firstFilter = filters.first
+        let firstAlbum = firstFilter?.name ?? ""
+
+        let filter = #Predicate<Photo> {
+            $0.dateTakenYear?.year ?? 2022 == year
+        }
         let sort = [SortDescriptor(\Photo.dateTaken)]
 
         self.init(filter: filter, sort: sort)
