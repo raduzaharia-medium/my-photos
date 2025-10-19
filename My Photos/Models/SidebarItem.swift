@@ -42,6 +42,21 @@ enum SidebarItem: Hashable {
         }
     }
 
+    var photos: [Photo] {
+        switch self {
+        case .filter(let filter): return []
+        case .tag(let tag): return tag.photos
+        case .dateYear(let date): return date.photos
+        case .dateMonth(let date): return date.photos
+        case .dateDay(let date): return date.photos
+        case .placeCountry(let place): return place.photos
+        case .placeLocality(let place): return place.photos
+        case .album(let album): return album.photos
+        case .person(let person): return person.photos
+        case .event(let event): return event.photos
+        }
+    }
+
     var editable: Bool {
         switch self {
         case .filter: return false
@@ -141,9 +156,10 @@ extension Set where Element == SidebarItem {
     var canDeleteTagsSelection: Bool {
         selectedTags.count > 1 && selectedFilters.count == 0
     }
-    
+
     var canEditOrDeleteAlbumSelection: Bool {
-        canEditAlbumSelection || canDeleteAlbumSelection || canDeleteAlbumsSelection
+        canEditAlbumSelection || canDeleteAlbumSelection
+            || canDeleteAlbumsSelection
     }
     var canEditAlbumSelection: Bool {
         selectedTags.count == 1 && selectedFilters.count == 0

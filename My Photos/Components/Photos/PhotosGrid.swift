@@ -5,20 +5,25 @@ struct PhotosGrid: View {
     @Environment(PresentationState.self) private var presentationState
 
     let filters: Set<SidebarItem>
-    
+
+    private var photos: [Photo] {
+        var set = Set<Photo>()
+
+        for filter in filters { set.formUnion(filter.photos) }
+        return Array(set).sorted {
+            $0.dateTaken ?? .distantFuture < $1.dateTaken ?? .distantFuture
+        }
+    }
+
     private static let columns = [
         GridItem(.adaptive(minimum: 110, maximum: 200), spacing: 8)
     ]
-
-    init(filters: Set<SidebarItem>) {
-        self.filters = filters
-    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 LazyVGrid(columns: Self.columns, spacing: 8) {
-                    ForEach(presentationState.photos) { photo in
+                    ForEach(photos) { photo in
                         if presentationState.isSelecting {
                             PhotoCard(
                                 photo,
