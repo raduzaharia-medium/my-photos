@@ -64,23 +64,28 @@ extension Query where Element == Photo, Result == [Photo] {
     fileprivate init(filters: Set<SidebarItem>) {
         let dates = filters.selectedDates
         let firstDate = dates.first
-        var year = 0
 
-        switch firstDate {
-        case .year(let date): year = date.year
-        case .month(let date): year = date.year.year
-        case .day(let date): year = date.month.year.year
-        case .none: year = 0
-        }
+        var year: Int? = nil
+        var month: Int? = nil
+        var day: Int? = nil
 
-        let firstFilter = filters.first
-        let firstAlbum = firstFilter?.name ?? ""
+        if case .year(let date) = firstDate { year = date.year }
+        if case .month(let date) = firstDate { month = date.month }
+        if case .day(let date) = firstDate { day = date.day }
 
-        let filter = #Predicate<Photo> {
-            $0.dateTakenYear?.year ?? 2022 == year
-        }
+        let hasAnyFilter = (day != nil) || (month != nil) || (year != nil)
         let sort = [SortDescriptor(\Photo.dateTaken)]
 
-        self.init(filter: filter, sort: sort)
+        if hasAnyFilter {
+            let filter = #Predicate<Photo> {
+                (day != nil && $0.dateTakenDay?.day == day)
+                    || (month != nil && $0.dateTakenMonth?.month == month)
+                    || (year != nil && $0.dateTakenYear?.year == year)
+            }
+
+            self.init(filter: filter, sort: sort)
+        } else {
+            self.init(sort: sort)
+        }
     }
 }
