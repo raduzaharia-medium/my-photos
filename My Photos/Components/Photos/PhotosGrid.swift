@@ -3,21 +3,22 @@ import SwiftUI
 
 struct PhotosGrid: View {
     @Environment(PresentationState.self) private var presentationState
-    @Query private var photos: [Photo]
 
+    let filters: Set<SidebarItem>
+    
     private static let columns = [
         GridItem(.adaptive(minimum: 110, maximum: 200), spacing: 8)
     ]
 
     init(filters: Set<SidebarItem>) {
-        self._photos = Query(filters: filters)
+        self.filters = filters
     }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 LazyVGrid(columns: Self.columns, spacing: 8) {
-                    ForEach(photos) { photo in
+                    ForEach(presentationState.photos) { photo in
                         if presentationState.isSelecting {
                             PhotoCard(
                                 photo,
@@ -56,43 +57,6 @@ struct PhotosGrid: View {
             .toolbar {
                 PhotosGridToolbar()
             }
-        }
-    }
-}
-
-extension Query where Element == Photo, Result == [Photo] {
-    fileprivate init(filters: Set<SidebarItem>) {
-        let dates = filters.selectedDates
-        let firstDate = dates.first
-
-        var year: Int? = nil
-        var month: Int? = nil
-        var day: Int? = nil
-
-        if case .year(let date) = firstDate { year = date.year }
-        if case .month(let date) = firstDate {
-            month = date.month
-            year = date.year.year
-        }
-        if case .day(let date) = firstDate {
-            day = date.day
-            month = date.month.month
-            year = date.month.year.year
-        }
-
-        let hasAnyFilter = (day != nil) || (month != nil) || (year != nil)
-        let sort = [SortDescriptor(\Photo.dateTaken)]
-
-        if hasAnyFilter {
-            let filter = #Predicate<Photo> {
-                (day == nil || $0.dateTakenDay?.day == day)
-                    && (month == nil || $0.dateTakenMonth?.month == month)
-                    && (year == nil || $0.dateTakenYear?.year == year)
-            }
-
-            self.init(filter: filter, sort: sort)
-        } else {
-            self.init(sort: sort)
         }
     }
 }
