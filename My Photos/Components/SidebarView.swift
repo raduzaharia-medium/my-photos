@@ -3,6 +3,7 @@ import UniformTypeIdentifiers
 
 struct SidebarView: View {
     @Environment(PresentationState.self) private var state
+    @State private var mainSelection: Filter = Filter.all
     @State private var selection: Set<SidebarItem> = []
 
     var body: some View {
