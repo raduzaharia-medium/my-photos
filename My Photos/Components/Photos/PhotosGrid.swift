@@ -3,30 +3,9 @@ import SwiftUI
 
 struct PhotosGrid: View {
     @Environment(PresentationState.self) private var presentationState
-    @Query private var allPhotos: [Photo]
 
-    let filters: Set<SidebarItem>
-
-    private var photos: [Photo] {
-        var set = Set<Photo>()
-
-        if filters.selectedFilters.count == filters.count {
-            set = Set(allPhotos)
-        } else {
-            for filter in filters { set.formUnion(filter.photos) }
-        }
-
-        if presentationState.showOnlySelected {
-            set = set.filter {
-                photo in presentationState.isPhotoSelected(photo)
-            }
-        }
-
-        return Array(set).sorted {
-            $0.dateTaken ?? .distantFuture > $1.dateTaken ?? .distantFuture
-        }
-    }
-
+    let photos: [Photo]
+    
     var body: some View {
         NavigationStack {
             ScrollView {

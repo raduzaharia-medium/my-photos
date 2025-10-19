@@ -3,7 +3,6 @@ import UniformTypeIdentifiers
 
 struct SidebarView: View {
     @Environment(PresentationState.self) private var state
-    @State private var mainSelection: Filter = Filter.all
     @State private var selection: Set<SidebarItem> = []
 
     var body: some View {
@@ -21,11 +20,14 @@ struct SidebarView: View {
         #endif
         .contextMenu(forSelectionType: SidebarItem.self) { items in
             SidebarContextMenu(items)
-        }
-        .toolbar {
+        }.toolbar {
             TagToolbar()
         }.onAppear {
             selection = [SidebarItem.filter(.all)]
+        }.onChange(of: selection) {
+            withAnimation {
+                state.photoFilter = selection
+            }
         }
     }
 }
