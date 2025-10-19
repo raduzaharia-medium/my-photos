@@ -17,7 +17,7 @@ final class DeletePersonPresenter: ObservableObject {
                 onAction: {
                     withAnimation {
                         PersonIntents.delete(person)
-                        AppIntents.resetPhotoFilter()
+//                        AppIntents.resetPhotoFilter()
                     }
                 }
             )
@@ -35,7 +35,7 @@ final class DeletePersonPresenter: ObservableObject {
                 onAction: {
                     withAnimation {
                         PersonIntents.delete(people)
-                        AppIntents.resetPhotoFilter()
+//                        AppIntents.resetPhotoFilter()
                     }
                 }
             )

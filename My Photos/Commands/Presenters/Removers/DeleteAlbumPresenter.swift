@@ -17,7 +17,7 @@ final class DeleteAlbumPresenter: ObservableObject {
                 onAction: {
                     withAnimation {
                         AlbumIntents.delete(album)
-                        AppIntents.resetPhotoFilter()
+//                        AppIntents.resetPhotoFilter()
                     }
                 }
             )
@@ -35,7 +35,7 @@ final class DeleteAlbumPresenter: ObservableObject {
                 onAction: {
                     withAnimation {
                         AlbumIntents.delete(albums)
-                        AppIntents.resetPhotoFilter()
+//                        AppIntents.resetPhotoFilter()
                     }
                 }
             )

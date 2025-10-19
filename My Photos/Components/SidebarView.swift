@@ -15,20 +15,16 @@ struct SidebarView: View {
             EventsSection()
             TagsSection()
         }
-        .task {
-            AppIntents.resetPhotoFilter()
-        }
         #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
         #endif
         .contextMenu(forSelectionType: SidebarItem.self) { items in
             SidebarContextMenu(items)
         }
-        .onChange(of: selection) {
-            AppIntents.updatePhotoFilter(selection)
-        }
         .toolbar {
             TagToolbar()
+        }.onAppear {
+            selection = [SidebarItem.filter(.all)]
         }
     }
 }

@@ -90,13 +90,6 @@ extension View {
         placeStore: PlaceStore
     ) -> some View {
         return self.onReceive(
-            NotificationCenter.default.publisher(for: .loadPhotos)
-        ) { _ in
-            withAnimation {
-                let photos = photoStore.getPhotos()
-                presentationState.photos = photos
-            }
-        }.onReceive(
             NotificationCenter.default.publisher(for: .importPhotos)
         ) { note in
             guard let folder = note.object as? URL else {
@@ -155,16 +148,10 @@ extension View {
                     let countries = placeStore.getCountries()
                     presentationState.countries = countries
 
-                    let refreshedPhotos = photoStore.getPhotos()
-                    await MainActor.run {
-                        withAnimation {
-                            presentationState.photos = refreshedPhotos
-                        }
-                        notifier.show(
-                            "Imported \(folder.lastPathComponent)",
-                            .success
-                        )
-                    }
+                    notifier.show(
+                        "Imported \(folder.lastPathComponent)",
+                        .success
+                    )
                 } else {
                     await MainActor.run {
                         notifier.show(
@@ -173,30 +160,6 @@ extension View {
                         )
                     }
                 }
-            }
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .resetPhotoFilter)
-        ) { _ in
-            withAnimation {
-                presentationState.photoFilter.removeAll()
-                presentationState.photoFilter.insert(SidebarItem.filter(.all))
-
-                let photos = photoStore.getPhotos()
-                presentationState.photos = photos
-            }
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .updatePhotoFilter)
-        ) { note in
-            guard let photoFilters = note.object as? Set<SidebarItem> else {
-                return
-            }
-
-            withAnimation {
-                presentationState.photoFilter.removeAll()
-                presentationState.photoFilter.formUnion(photoFilters)
-
-                let photos = photoStore.getPhotos(photoFilters)
-                presentationState.photos = photos
             }
         }.onReceive(
             NotificationCenter.default.publisher(for: .tagSelectedPhotos)

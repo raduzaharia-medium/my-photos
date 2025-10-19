@@ -17,7 +17,7 @@ final class DeleteTagPresenter: ObservableObject {
                 onAction: {
                     withAnimation {
                         TagIntents.delete(tag)
-                        AppIntents.resetPhotoFilter()
+//                        AppIntents.resetPhotoFilter()
                     }
                 }
             )
@@ -35,7 +35,7 @@ final class DeleteTagPresenter: ObservableObject {
                 onAction: {
                     withAnimation {
                         TagIntents.delete(tags)
-                        AppIntents.resetPhotoFilter()
+//                        AppIntents.resetPhotoFilter()
                     }
                 }
             )

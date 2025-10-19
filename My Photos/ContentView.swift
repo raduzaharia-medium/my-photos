@@ -110,8 +110,5 @@ struct ContentView: View {
         .setupPresentationModeHandlers(presentationState: presentationState)
         .setupPhotoNavigationHandlers(presentationState: presentationState)
         .setupPhotoSelectionHandlers(presentationState: presentationState)
-        .onAppear {
-            AppIntents.loadPhotos()
-        }
     }
 }

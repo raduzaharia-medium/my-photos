@@ -7,9 +7,6 @@ extension Notification.Name {
     static let loadDates = Notification.Name("loadDates")
     static let loadPlaces = Notification.Name("loadPlaces")
 
-    static let resetPhotoFilter = Notification.Name("resetPhotoFilter")
-    static let updatePhotoFilter = Notification.Name("updatePhotoFilter")
-
     static let togglePresentationMode = Notification.Name(
         "togglePresentationMode"
     )
@@ -18,7 +15,6 @@ extension Notification.Name {
         "toggleSelectionFilter"
     )
 
-    static let loadPhotos = Notification.Name("loadPhotos")
     static let importPhotos = Notification.Name("importPhotos")
     static let resetPhotoNavigation = Notification.Name("resetPhotoNavigation")
     static let navigateToPhoto = Notification.Name("navigateToPhoto")
@@ -64,16 +60,6 @@ enum AppIntents {
         NotificationCenter.default.post(name: .loadPlaces, object: nil)
     }
 
-    static func resetPhotoFilter() {
-        NotificationCenter.default.post(name: .resetPhotoFilter, object: nil)
-    }
-    static func updatePhotoFilter(_ photoFilters: Set<SidebarItem>) {
-        NotificationCenter.default.post(
-            name: .updatePhotoFilter,
-            object: photoFilters
-        )
-    }
-
     static func togglePresentationMode() {
         NotificationCenter.default.post(
             name: .togglePresentationMode,
@@ -90,9 +76,6 @@ enum AppIntents {
         )
     }
 
-    static func loadPhotos() {
-        NotificationCenter.default.post(name: .loadPhotos, object: nil)
-    }
     static func importPhotos(_ folder: URL) {
         NotificationCenter.default.post(name: .importPhotos, object: folder)
     }
