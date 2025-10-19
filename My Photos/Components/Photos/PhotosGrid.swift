@@ -3,15 +3,19 @@ import SwiftUI
 
 struct PhotosGrid: View {
     @Environment(PresentationState.self) private var presentationState
+    @Query(sort: [SortDescriptor(\Photo.dateTaken, order: .reverse)]) private
+        var allPhotos: [Photo]
 
     let filters: Set<SidebarItem>
 
     private var photos: [Photo] {
         var set = Set<Photo>()
 
+        if filters.selectedFilters.count == filters.count { return allPhotos }
+
         for filter in filters { set.formUnion(filter.photos) }
         return Array(set).sorted {
-            $0.dateTaken ?? .distantFuture < $1.dateTaken ?? .distantFuture
+            $0.dateTaken ?? .distantFuture > $1.dateTaken ?? .distantFuture
         }
     }
 
