@@ -70,17 +70,24 @@ extension Query where Element == Photo, Result == [Photo] {
         var day: Int? = nil
 
         if case .year(let date) = firstDate { year = date.year }
-        if case .month(let date) = firstDate { month = date.month }
-        if case .day(let date) = firstDate { day = date.day }
+        if case .month(let date) = firstDate {
+            month = date.month
+            year = date.year.year
+        }
+        if case .day(let date) = firstDate {
+            day = date.day
+            month = date.month.month
+            year = date.month.year.year
+        }
 
         let hasAnyFilter = (day != nil) || (month != nil) || (year != nil)
         let sort = [SortDescriptor(\Photo.dateTaken)]
 
         if hasAnyFilter {
             let filter = #Predicate<Photo> {
-                (day != nil && $0.dateTakenDay?.day == day)
-                    || (month != nil && $0.dateTakenMonth?.month == month)
-                    || (year != nil && $0.dateTakenYear?.year == year)
+                (day == nil || $0.dateTakenDay?.day == day)
+                    && (month == nil || $0.dateTakenMonth?.month == month)
+                    && (year == nil || $0.dateTakenYear?.year == year)
             }
 
             self.init(filter: filter, sort: sort)
