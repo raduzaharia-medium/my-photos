@@ -30,5 +30,7 @@ struct FiltersSection: View {
             .environment(\.controlSize, .large)
             .tint(.accentColor)
             .padding(.bottom, 12)
+            .labelsHidden()
+            .frame(maxWidth: .infinity)
     }
 }

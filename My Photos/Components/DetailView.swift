@@ -36,10 +36,10 @@ struct DetailView: View {
         .toolbar {
             DetailViewToolbar()
         }
-        .navigationTitle(
-            (presentationState.selectedTags.count > 1)
-                ? "Multiple Collections"
-                : (presentationState.selectedTags.first?.name ?? "All Photos")
+        .navigationTitle(""
+//            (presentationState.selectedTags.count > 1)
+//                ? "Multiple Collections"
+//                : (presentationState.selectedTags.first?.name ?? "All Photos")
         )
     }
 }

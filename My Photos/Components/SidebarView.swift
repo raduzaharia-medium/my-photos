@@ -7,7 +7,6 @@ struct SidebarView: View {
 
     var body: some View {
         List(selection: $selection) {
-            FiltersSection()
             DatesSection()
             PlacesSection()
             AlbumsSection()
