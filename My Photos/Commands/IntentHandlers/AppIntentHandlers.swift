@@ -204,16 +204,7 @@ extension View {
                     for: .toggleSelectAllPhotos
                 )
             ) { note in
-                if presentationState.selectedPhotos.count
-                    != presentationState.photos.count
-                {
-                    presentationState.selectedPhotos.removeAll()
-                    presentationState.selectedPhotos.formUnion(
-                        presentationState.photos
-                    )
-                } else {
-                    presentationState.selectedPhotos.removeAll()
-                }
+                presentationState.allPhotosSelected.toggle()
             }
     }
 
@@ -233,6 +224,7 @@ extension View {
         ) { _ in
             presentationState.isSelecting.toggle()
             presentationState.showOnlySelected = false
+            presentationState.allPhotosSelected = false
             presentationState.selectedPhotos.removeAll()
         }.onReceive(
             NotificationCenter.default.publisher(for: .toggleSelectionFilter)

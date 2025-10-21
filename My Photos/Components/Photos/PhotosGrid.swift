@@ -5,7 +5,7 @@ struct PhotosGrid: View {
     @Environment(PresentationState.self) private var presentationState
 
     let photos: [Photo]
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {

@@ -23,6 +23,7 @@ final class PresentationState {
     var showOnlySelected: Bool = false
     var isSelecting: Bool = false
     var currentPhoto: Photo? = nil
+    var allPhotosSelected: Bool = false
 
     var filteredPhotos: [Photo] {
         guard isSelecting else { return photos }
@@ -33,9 +34,6 @@ final class PresentationState {
     var currentPhotoIndex: Int? {
         guard let currentPhoto else { return nil }
         return filteredPhotos.firstIndex(of: currentPhoto)
-    }
-    var allPhotosSelected: Bool {
-        return Set(filteredPhotos).isSubset(of: selectedPhotos)
     }
 
     var selectedTags: [Tag] { photoFilter.selectedTags }
