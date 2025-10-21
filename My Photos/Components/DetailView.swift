@@ -27,19 +27,18 @@ struct DetailView: View {
     }
 
     var body: some View {
-        Group {
-            switch presentationState.presentationMode {
-            case .grid: PhotosGrid(photos: photos)
-            case .map: PhotosMap(photos: photos)
+        TabView {
+            Tab("Grid", systemImage: "rectangle.grid.2x2") {
+                PhotosGrid(photos: photos)
             }
-        }
-        .toolbar {
+            Tab("Map", systemImage: "map") { PhotosMap(photos: photos) }
+        }.toolbar {
             DetailViewToolbar()
         }
-        .navigationTitle(""
-//            (presentationState.selectedTags.count > 1)
-//                ? "Multiple Collections"
-//                : (presentationState.selectedTags.first?.name ?? "All Photos")
+        .navigationTitle(
+            (presentationState.selectedTags.count > 1)
+                ? "Multiple Collections"
+                : (presentationState.selectedTags.first?.name ?? "All Photos")
         )
     }
 }
