@@ -32,13 +32,6 @@ struct DetailView: View {
                 PhotosGrid(photos: photos)
             }
             Tab("Map", systemImage: "map") { PhotosMap(photos: photos) }
-        }.toolbar {
-            DetailViewToolbar()
         }
-        .navigationTitle(
-            (presentationState.selectedTags.count > 1)
-                ? "Multiple Collections"
-                : (presentationState.selectedTags.first?.name ?? "All Photos")
-        )
     }
 }

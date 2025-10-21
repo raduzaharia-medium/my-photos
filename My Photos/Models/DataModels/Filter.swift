@@ -3,6 +3,7 @@ enum Filter: String, Codable, Hashable, CaseIterable, Identifiable {
     case favorites = "favorites"
     case recent = "recent"
     case edited = "edited"
+    case selected = "selected"
 
     var id: String { rawValue }
 }
@@ -14,6 +15,7 @@ extension Filter {
         case .favorites: "Favorites"
         case .recent: "Recent"
         case .edited: "Edited"
+        case .selected: "Selected Photos"
         }
     }
 
@@ -23,6 +25,7 @@ extension Filter {
         case .favorites: "star.fill"
         case .recent: "clock"
         case .edited: "wand.and.stars"
+        case .selected: "checkmark.circle.fill"
         }
     }
 }

@@ -16,6 +16,7 @@ final class PresentationState {
     var years: [DateTakenYear] = []
     var countries: [PlaceCountry] = []
 
+    var photoSource: Filter = .all
     var photoFilter: Set<SidebarItem> = []
     var selectedPhotos: Set<Photo> = []
     var presentationMode: PresentationMode = .grid

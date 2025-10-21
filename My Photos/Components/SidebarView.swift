@@ -22,8 +22,6 @@ struct SidebarView: View {
             SidebarContextMenu(items)
         }.toolbar {
             TagToolbar()
-        }.onAppear {
-            selection = [SidebarItem.filter(.all)]
         }.onChange(of: selection) {
             withAnimation {
                 state.photoFilter = selection
@@ -49,9 +47,22 @@ struct SidebarView: View {
                     .accessibilityLabel(Text(Filter.edited.name))
                     .tag(Filter.edited)
                     .help(Text("Show only edited photos"))
+
+                if state.isSelecting == true {
+                    Image(systemName: Filter.selected.icon)
+                        .accessibilityLabel(Text(Filter.selected.name))
+                        .tag(Filter.selected)
+                        .help(Text("Show only selected photos"))
+                }
             }
             .pickerStyle(.segmented)
             .labelsHidden()
+            .onChange(of: photoSource) {
+                withAnimation {
+                    selection = []
+                    state.photoSource = photoSource
+                }
+            }
         }.padding(12)
     }
 }
