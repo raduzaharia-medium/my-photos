@@ -26,6 +26,7 @@ struct ContentView: View {
         } detail: {
             DetailView()
         }
+        .navigationSplitViewStyle(.balanced)
         .notification(
             isPresented: $notifier.isVisible,
             message: notifier.message,

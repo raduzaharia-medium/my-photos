@@ -7,6 +7,14 @@ struct SidebarView: View {
     @State private var photoSource: Filter = Filter.all
 
     var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text("Photos").font(.title)
+                Text("My app's tagline that's cool").font(.subheadline)
+            }
+            Spacer()
+        }.padding()
+
         List(selection: $selection) {
             DatesSection()
             PlacesSection()
@@ -27,40 +35,48 @@ struct SidebarView: View {
                 state.photoFilter = selection
             }
         }.safeAreaBar(edge: .bottom) {
-            Picker("", selection: $photoSource) {
-                Image(systemName: Filter.all.icon)
-                    .accessibilityLabel(Text(Filter.all.name))
-                    .tag(Filter.all)
-                    .help(Text("Show all photos"))
-
-                Image(systemName: Filter.favorites.icon)
-                    .accessibilityLabel(Text(Filter.favorites.name))
-                    .tag(Filter.favorites)
-                    .help(Text("Show only favorite photos"))
-
-                Image(systemName: Filter.recent.icon)
-                    .accessibilityLabel(Text(Filter.recent.name))
-                    .tag(Filter.recent)
-                    .help(Text("Show only recently taken photos"))
-
-                Image(systemName: Filter.edited.icon)
-                    .accessibilityLabel(Text(Filter.edited.name))
-                    .tag(Filter.edited)
-                    .help(Text("Show only edited photos"))
-
-                if state.isSelecting == true {
-                    Image(systemName: Filter.selected.icon)
-                        .accessibilityLabel(Text(Filter.selected.name))
-                        .tag(Filter.selected)
-                        .help(Text("Show only selected photos"))
-                }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .onChange(of: photoSource) {
-                withAnimation {
+            HStack {
+                Button {
+                    photoSource = .all
                     selection = []
-                    state.photoSource = photoSource
+                } label: {
+                    Image(systemName: "arrow.counterclockwise.circle")
+                }.buttonStyle(.borderless).help("Reset filters")
+                
+                Picker("", selection: $photoSource) {
+                    Image(systemName: Filter.all.icon)
+                        .accessibilityLabel(Text(Filter.all.name))
+                        .tag(Filter.all)
+                        .help(Text("Show all photos"))
+
+                    Image(systemName: Filter.favorites.icon)
+                        .accessibilityLabel(Text(Filter.favorites.name))
+                        .tag(Filter.favorites)
+                        .help(Text("Show only favorite photos"))
+
+                    Image(systemName: Filter.recent.icon)
+                        .accessibilityLabel(Text(Filter.recent.name))
+                        .tag(Filter.recent)
+                        .help(Text("Show only recently taken photos"))
+
+                    Image(systemName: Filter.edited.icon)
+                        .accessibilityLabel(Text(Filter.edited.name))
+                        .tag(Filter.edited)
+                        .help(Text("Show only edited photos"))
+
+                    if state.isSelecting == true {
+                        Image(systemName: Filter.selected.icon)
+                            .accessibilityLabel(Text(Filter.selected.name))
+                            .tag(Filter.selected)
+                            .help(Text("Show only selected photos"))
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .onChange(of: photoSource) {
+                    withAnimation {
+                        state.photoSource = photoSource
+                    }
                 }
             }
         }.padding(12)
