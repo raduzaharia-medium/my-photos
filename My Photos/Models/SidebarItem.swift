@@ -1,7 +1,6 @@
 import SwiftUI
 
 enum SidebarItem: Hashable {
-    case filter(Filter)
     case tag(Tag)
     case dateYear(DateTakenYear)
     case dateMonth(DateTakenMonth)
@@ -14,7 +13,6 @@ enum SidebarItem: Hashable {
 
     var name: String {
         switch self {
-        case .filter(let filter): return filter.name
         case .tag(let tag): return tag.name
         case .dateYear(let date): return "\(date.year)"
         case .dateMonth(let date): return monthName(date.month)
@@ -29,7 +27,6 @@ enum SidebarItem: Hashable {
 
     var icon: String {
         switch self {
-        case .filter(let filter): return filter.icon
         case .tag: return Tag.icon
         case .dateYear: return DateTakenYear.icon
         case .dateMonth: return DateTakenMonth.icon
@@ -44,7 +41,6 @@ enum SidebarItem: Hashable {
 
     var photos: [Photo] {
         switch self {
-        case .filter(let filter): return []
         case .tag(let tag): return tag.photos
         case .dateYear(let date): return date.photos
         case .dateMonth(let date): return date.photos
@@ -59,7 +55,6 @@ enum SidebarItem: Hashable {
 
     var editable: Bool {
         switch self {
-        case .filter: return false
         case .tag: return true
         case .dateDay, .dateMonth, .dateYear: return false
         case .placeCountry, .placeLocality: return true
@@ -79,11 +74,6 @@ extension Set where Element == SidebarItem {
     var selectedTags: [Tag] {
         compactMap {
             if case .tag(let t) = $0 { t } else { nil }
-        }
-    }
-    var selectedFilters: [Filter] {
-        compactMap {
-            if case .filter(let t) = $0 { t } else { nil }
         }
     }
     var selectedYears: [DateTakenYear] {
@@ -125,49 +115,5 @@ extension Set where Element == SidebarItem {
         compactMap {
             if case .person(let a) = $0 { a } else { nil }
         }
-    }
-
-    var selectedCountries: [PlaceCountry] {
-        compactMap {
-            if case .placeCountry(let t) = $0 { t } else { nil }
-        }
-    }
-    var selectedLocalities: [PlaceLocality] {
-        compactMap {
-            if case .placeLocality(let t) = $0 { t } else { nil }
-        }
-    }
-    var selectedPlaces: [Place] {
-        let countries = selectedCountries.map(Place.country)
-        let localities = selectedLocalities.map(Place.locality)
-
-        return countries + localities
-    }
-
-    var canEditOrDeleteTagSelection: Bool {
-        canEditTagSelection || canDeleteTagSelection || canDeleteTagsSelection
-    }
-    var canEditTagSelection: Bool {
-        selectedTags.count == 1 && selectedFilters.count == 0
-    }
-    var canDeleteTagSelection: Bool {
-        selectedTags.count == 1 && selectedFilters.count == 0
-    }
-    var canDeleteTagsSelection: Bool {
-        selectedTags.count > 1 && selectedFilters.count == 0
-    }
-
-    var canEditOrDeleteAlbumSelection: Bool {
-        canEditAlbumSelection || canDeleteAlbumSelection
-            || canDeleteAlbumsSelection
-    }
-    var canEditAlbumSelection: Bool {
-        selectedTags.count == 1 && selectedFilters.count == 0
-    }
-    var canDeleteAlbumSelection: Bool {
-        selectedTags.count == 1 && selectedFilters.count == 0
-    }
-    var canDeleteAlbumsSelection: Bool {
-        selectedTags.count > 1 && selectedFilters.count == 0
     }
 }

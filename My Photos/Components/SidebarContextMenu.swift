@@ -14,8 +14,6 @@ private enum SelectionMode: Equatable {
 
 extension Set where Element == SidebarItem {
     fileprivate var selectionMode: SelectionMode {
-        guard selectedFilters.isEmpty else { return .none }
-
         let nonTagAlbumPersonEventItems = self.filter { item in
             switch item {
             case .tag, .album, .person, .event:

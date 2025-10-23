@@ -20,13 +20,14 @@ final class Photo: Identifiable {
     var location: GeoCoordinate?
 
     @Relationship(inverse: \Tag.photos) var tags: [Tag]
+    
     @Relationship var dateTakenYear: DateTakenYear?
     @Relationship var dateTakenMonth: DateTakenMonth?
     @Relationship var dateTakenDay: DateTakenDay?
     @Relationship var country: PlaceCountry?
     @Relationship var locality: PlaceLocality?
     @Relationship var album: Album?
-    @Relationship var people: [Person]?
+    @Relationship var people: [Person]
     @Relationship var event: Event?
 
     var isRecent: Bool {
@@ -48,7 +49,7 @@ final class Photo: Identifiable {
         country: PlaceCountry? = nil,
         locality: PlaceLocality? = nil,
         album: Album? = nil,
-        people: [Person]? = nil,
+        people: [Person] = [],
         event: Event? = nil,
         tags: [Tag] = [],
     ) {
@@ -66,17 +67,5 @@ final class Photo: Identifiable {
         self.people = people
         self.event = event
         self.tags = tags
-    }
-
-    func addTag(_ tag: Tag) {
-        if !tags.contains { $0.persistentModelID == tag.persistentModelID } {
-            tags.append(tag)
-        }
-    }
-
-    func removeTag(_ tag: Tag) {
-        tags.removeAll {
-            $0.persistentModelID == tag.persistentModelID
-        }
     }
 }

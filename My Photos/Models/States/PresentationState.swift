@@ -30,7 +30,6 @@ final class PresentationState {
     }
 
     var selectedTags: [Tag] { photoFilter.selectedTags }
-    var selectedFilters: [Filter] { photoFilter.selectedFilters }
 
     func getTag(_ id: UUID) -> Tag? {
         return tags.first(where: { $0.id == id })
