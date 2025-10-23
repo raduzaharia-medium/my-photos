@@ -13,8 +13,8 @@ extension Filter {
         switch self {
         case .all: "All Photos"
         case .favorites: "Favorites"
-        case .recent: "Recent"
-        case .edited: "Edited"
+        case .recent: "Recent Photos"
+        case .edited: "Edited Photos"
         case .selected: "Selected Photos"
         }
     }

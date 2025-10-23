@@ -3,19 +3,19 @@ import UniformTypeIdentifiers
 
 struct SidebarView: View {
     @Environment(PresentationState.self) private var state
-    @State private var selection: Set<SidebarItem> = []
     @State private var photoSource: Filter = Filter.all
 
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 Text("Photos").font(.title)
-                Text("My app's tagline that's cool").font(.subheadline)
+                Text("Showing \(photoSource.name.lowercased())")
+                    .font(.subheadline)
             }
             Spacer()
         }.padding()
 
-        List(selection: $selection) {
+        List {
             DatesSection()
             PlacesSection()
             AlbumsSection()
@@ -30,19 +30,19 @@ struct SidebarView: View {
             SidebarContextMenu(items)
         }.toolbar {
             TagToolbar()
-        }.onChange(of: selection) {
-            withAnimation {
-                state.photoFilter = selection
-            }
         }.safeAreaBar(edge: .bottom) {
             HStack {
-                Button {
-                    photoSource = .all
-                    selection = []
-                } label: {
-                    Image(systemName: "arrow.counterclockwise.circle")
-                }.buttonStyle(.borderless).help("Reset filters")
-                
+                if !state.photoFilter.isEmpty {
+                    Button {
+                        withAnimation {
+                            photoSource = .all
+                            state.photoFilter = []
+                        }
+                    } label: {
+                        Image(systemName: "arrow.counterclockwise.circle")
+                    }.buttonStyle(.borderless).help("Reset filters")
+                }
+
                 Picker("", selection: $photoSource) {
                     Image(systemName: Filter.all.icon)
                         .accessibilityLabel(Text(Filter.all.name))
