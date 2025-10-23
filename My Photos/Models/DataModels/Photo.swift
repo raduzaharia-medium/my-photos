@@ -1,10 +1,10 @@
-import SwiftData
 import Foundation
+import SwiftData
 
 struct GeoCoordinate: Codable, Hashable {
     let latitude: Double
     let longitude: Double
-    
+
     init(_ latitude: Double, _ longitude: Double) {
         self.latitude = latitude
         self.longitude = longitude
@@ -18,7 +18,7 @@ final class Photo: Identifiable {
     var caption: String?
     var dateTaken: Date?
     var location: GeoCoordinate?
-    
+
     @Relationship(inverse: \Tag.photos) var tags: [Tag]
     @Relationship var dateTakenYear: DateTakenYear?
     @Relationship var dateTakenMonth: DateTakenMonth?
@@ -28,7 +28,14 @@ final class Photo: Identifiable {
     @Relationship var album: Album?
     @Relationship var people: [Person]?
     @Relationship var event: Event?
-    
+
+    var isRecent: Bool {
+        guard let dateTaken else { return false }
+        let pastThreeMonths = Date().addingTimeInterval(-60 * 60 * 24 * 90)
+
+        return dateTaken >= pastThreeMonths
+    }
+
     public init(
         id: UUID = .init(),
         title: String,
@@ -60,17 +67,16 @@ final class Photo: Identifiable {
         self.event = event
         self.tags = tags
     }
-    
+
     func addTag(_ tag: Tag) {
-        if (!tags.contains {$0.persistentModelID == tag.persistentModelID} ) {
+        if !tags.contains { $0.persistentModelID == tag.persistentModelID } {
             tags.append(tag)
         }
     }
-    
+
     func removeTag(_ tag: Tag) {
         tags.removeAll {
             $0.persistentModelID == tag.persistentModelID
         }
     }
 }
-

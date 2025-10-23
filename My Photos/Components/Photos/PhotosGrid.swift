@@ -63,7 +63,7 @@ private struct SelectablePhotoCard: View {
     let photo: Photo
 
     var allPhotosSelected: Bool { presentationState.allPhotosSelected }
-    var isPhotoSelected: Bool { presentationState.isPhotoSelected(photo) }
+    var isPhotoSelected: Bool { presentationState.isSelected(photo) }
     var isSelected: Bool { allPhotosSelected || isPhotoSelected }
 
     var body: some View {

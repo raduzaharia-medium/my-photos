@@ -1,13 +1,6 @@
 import Observation
 import SwiftUI
 
-enum PresentationMode: String, CaseIterable, Identifiable {
-    case grid = "Grid"
-    case map = "Map"
-
-    var id: String { rawValue }
-}
-
 @MainActor
 @Observable
 final class PresentationState {
@@ -18,8 +11,8 @@ final class PresentationState {
 
     var photoSource: Filter = .all
     var photoFilter: Set<SidebarItem> = []
+    
     var selectedPhotos: Set<Photo> = []
-    var presentationMode: PresentationMode = .grid
     var showOnlySelected: Bool = false
     var isSelecting: Bool = false
     var currentPhoto: Photo? = nil
@@ -58,7 +51,7 @@ final class PresentationState {
         }
     }
 
-    func isPhotoSelected(_ photo: Photo) -> Bool {
+    func isSelected(_ photo: Photo) -> Bool {
         return selectedPhotos.contains(photo)
     }
 

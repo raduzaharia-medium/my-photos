@@ -212,14 +212,6 @@ extension View {
         -> some View
     {
         return self.onReceive(
-            NotificationCenter.default.publisher(for: .togglePresentationMode)
-        ) { _ in
-            if presentationState.presentationMode == .grid {
-                presentationState.presentationMode = .map
-            } else {
-                presentationState.presentationMode = .grid
-            }
-        }.onReceive(
             NotificationCenter.default.publisher(for: .toggleSelectionMode)
         ) { _ in
             presentationState.isSelecting.toggle()

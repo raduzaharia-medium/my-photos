@@ -7,9 +7,6 @@ extension Notification.Name {
     static let loadDates = Notification.Name("loadDates")
     static let loadPlaces = Notification.Name("loadPlaces")
 
-    static let togglePresentationMode = Notification.Name(
-        "togglePresentationMode"
-    )
     static let toggleSelectionMode = Notification.Name("toggleSelectionMode")
     static let toggleSelectionFilter = Notification.Name(
         "toggleSelectionFilter"
@@ -60,12 +57,6 @@ enum AppIntents {
         NotificationCenter.default.post(name: .loadPlaces, object: nil)
     }
 
-    static func togglePresentationMode() {
-        NotificationCenter.default.post(
-            name: .togglePresentationMode,
-            object: nil
-        )
-    }
     static func toggleSelectionMode() {
         NotificationCenter.default.post(name: .toggleSelectionMode, object: nil)
     }

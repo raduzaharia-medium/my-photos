@@ -52,18 +52,6 @@ struct LibraryCommands: Commands {
                 .keyboardShortcut(">", modifiers: [])
 
             Divider()
-
-            if presentationState.presentationMode == .grid {
-                Button("Switch to map view") {
-                    AppIntents.togglePresentationMode()
-                }
-                .keyboardShortcut("M", modifiers: [.command])
-            } else if presentationState.presentationMode == .map {
-                Button("Switch to grid view") {
-                    AppIntents.togglePresentationMode()
-                }
-                .keyboardShortcut("G", modifiers: [.command])
-            }
             
             Button("Switch selection mode") {
                 AppIntents.toggleSelectionMode()

@@ -2,23 +2,26 @@ import SwiftData
 import SwiftUI
 
 struct DetailView: View {
-    @Environment(PresentationState.self) private var presentationState
+    @Environment(PresentationState.self) private var state
     @Query private var allPhotos: [Photo]
 
-    private var filters: Set<SidebarItem> { presentationState.photoFilter }
+    private var filters: Set<SidebarItem> { state.photoFilter }
+    private var source: Filter { state.photoSource }
     private var photos: [Photo] {
         var set = Set<Photo>()
 
-        if filters.selectedFilters.count == filters.count {
+        if filters.isEmpty {
             set = Set(allPhotos)
         } else {
             for filter in filters { set.formUnion(filter.photos) }
         }
 
-        if presentationState.showOnlySelected {
-            set = set.filter {
-                photo in presentationState.isPhotoSelected(photo)
-            }
+        switch source {
+        case .all: break
+        case .edited: break
+        case .favorites: break
+        case .recent: set = set.filter { photo in photo.isRecent }
+        case .selected: set = set.filter { photo in state.isSelected(photo) }
         }
 
         return Array(set).sorted {
