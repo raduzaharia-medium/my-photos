@@ -25,9 +25,7 @@ struct SidebarView: View {
         #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
         #endif
-        .contextMenu(forSelectionType: SidebarItem.self) { items in
-            SidebarContextMenu(items)
-        }.toolbar {
+        .toolbar {
             TagToolbar()
         }.safeAreaBar(edge: .bottom) {
             SidebarFooter()

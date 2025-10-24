@@ -15,7 +15,7 @@ struct SidebarRow: View {
         HStack {
             Label(item.name, systemImage: item.icon)
             Spacer(minLength: 8)
-            
+
             Image(
                 systemName: isSelected ? "checkmark.circle.fill" : "circle"
             )
@@ -36,6 +36,6 @@ struct SidebarRow: View {
                     state.photoFilter.insert(item)
                 }
             }
-        }
+        }.contextMenu { SidebarContextMenu(current: item) }
     }
 }
