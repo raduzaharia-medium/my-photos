@@ -51,23 +51,4 @@ final class PresentationState {
     func isSelected(_ photo: Photo) -> Bool {
         return selectedPhotos.contains(photo)
     }
-
-    func goToPreviousPhoto() {
-        guard let current = currentPhoto else { return }
-        guard let currentIndex = filteredPhotos.firstIndex(of: current) else {
-            return
-        }
-        guard currentIndex > 0 else { return }
-
-        currentPhoto = filteredPhotos[currentIndex - 1]
-    }
-    func goToNextPhoto() {
-        guard let current = currentPhoto else { return }
-        guard let currentIndex = filteredPhotos.firstIndex(of: current) else {
-            return
-        }
-        guard currentIndex + 1 < filteredPhotos.count else { return }
-
-        currentPhoto = filteredPhotos[currentIndex + 1]
-    }
 }

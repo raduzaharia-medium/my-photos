@@ -245,18 +245,6 @@ extension View {
                 }
                 presentationState.currentPhoto = photo
             }
-            .onReceive(
-                NotificationCenter.default.publisher(
-                    for: .navigateToPreviousPhoto
-                )
-            ) { _ in
-                presentationState.goToPreviousPhoto()
-            }
-            .onReceive(
-                NotificationCenter.default.publisher(for: .navigateToNextPhoto)
-            ) { _ in
-                presentationState.goToNextPhoto()
-            }
     }
 
     func setupHandlers(

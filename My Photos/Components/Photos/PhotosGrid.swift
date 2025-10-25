@@ -12,7 +12,7 @@ struct PhotosGrid: View {
                 MainPhotoGrid(photos: photos)
             }
             .navigationDestination(for: Photo.self) { photo in
-                PhotoNavigator()
+                PhotoNavigator(photos, index: photos.firstIndex(of: photo) ?? 0)
                     .onAppear { AppIntents.navigateToPhoto(photo) }
                     .onDisappear { AppIntents.resetPhotoNavigation() }
             }

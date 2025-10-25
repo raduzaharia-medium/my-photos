@@ -1,28 +1,28 @@
 import SwiftUI
 
 struct PhotoNavigator: View {
-    @Environment(PresentationState.self) private var presentationState
+    @State private var index: Int
+    
+    let photos: [Photo]
+
+    private var currentPhoto: Photo { photos[index] }
+    
+    init(_ photos: [Photo], index: Int) {
+        self.photos = photos
+        self.index = index
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
-                if let currentPhoto = presentationState.currentPhoto {
-                    PhotoCard(currentPhoto, variant: .detail)
-                        .padding(16)
-                        .animation(.default, value: currentPhoto.id)
-                } else {
-                    Text("No photo")
-                        .padding(32)
-                }
+                PhotoCard(currentPhoto, variant: .detail)
+                    .padding(16)
+                    .animation(.default, value: currentPhoto.id)
             }
         }
         .focusable()
-        .toolbar {
-            PhotoNavigatorToolbar()
-        }
+        .toolbar { PhotoNavigatorToolbar(photos, index: $index) }
         .toolbarBackground(.hidden, for: .automatic)
-        .navigationTitle(
-            Text(presentationState.currentPhoto?.title ?? "No photo")
-        )
+        .navigationTitle(Text(currentPhoto.title))
     }
 }

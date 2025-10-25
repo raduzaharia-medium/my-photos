@@ -1,29 +1,35 @@
 import SwiftUI
 
 struct PhotoNavigatorToolbar: ToolbarContent {
-    @Environment(PresentationState.self) private var presentationState
+    @Binding private var index: Int
+    
+    let photos: [Photo]
+    
+    init(_ photos: [Photo], index: Binding<Int>) {
+        self.photos = photos
+        self._index = index
+    }
 
     var body: some ToolbarContent {
         ToolbarItemGroup(placement: .automatic) {
             Button(action: {
-                AppIntents.navigateToPreviousPhoto()
+                guard index > 0 else { return }
+                index -= 1
             }) {
                 Image(systemName: "chevron.left")
             }
             .help("Previous photo")
-            .disabled(presentationState.currentPhotoIndex ?? 0 <= 0)
+            .disabled(index <= 0)
             .keyboardShortcut(.leftArrow, modifiers: [])
 
             Button(action: {
-                AppIntents.navigateToNextPhoto()
+                guard index < photos.count - 1 else { return }
+                index += 1
             }) {
                 Image(systemName: "chevron.right")
             }
             .help("Next photo")
-            .disabled(
-                presentationState.currentPhotoIndex ?? 0
-                    >= presentationState.filteredPhotos.count - 1
-            )
+            .disabled(index >= photos.count - 1)
             .keyboardShortcut(.rightArrow, modifiers: [])
         }
     }
