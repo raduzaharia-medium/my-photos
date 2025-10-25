@@ -11,8 +11,6 @@ struct PhotosGrid: View {
             }
             .navigationDestination(for: Photo.self) { photo in
                 PhotoNavigator(photos, index: photos.firstIndex(of: photo) ?? 0)
-                    .onAppear { AppIntents.navigateToPhoto(photo) }
-                    .onDisappear { AppIntents.resetPhotoNavigation() }
             }
             .toolbar { PhotosGridToolbar() }
         }
