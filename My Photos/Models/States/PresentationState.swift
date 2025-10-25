@@ -29,8 +29,6 @@ final class PresentationState {
         return filteredPhotos.firstIndex(of: currentPhoto)
     }
 
-    var selectedTags: [Tag] { photoFilter.selectedTags }
-
     func getTag(_ id: UUID) -> Tag? {
         return tags.first(where: { $0.id == id })
     }

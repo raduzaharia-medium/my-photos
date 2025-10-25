@@ -8,12 +8,15 @@ struct DragPreviewStack: View {
     var body: some View {
         ZStack {
             ZStack {
-                ForEach(Array(Array(state.selectedPhotos.prefix(4)).enumerated()), id: \.offset) { pair in
+                ForEach(
+                    Array(Array(state.selectedPhotos.prefix(4)).enumerated()),
+                    id: \.offset
+                ) { pair in
                     let idx = pair.offset
                     let photo = pair.element
                     let angle = Angle(degrees: Double(idx) * 4 - 6)
                     let offset = CGFloat(idx) * 6
-                    
+
                     thumbnail(for: photo)
                         .rotationEffect(angle)
                         .offset(x: offset, y: -offset)
@@ -36,7 +39,6 @@ struct DragPreviewStack: View {
 
     @ViewBuilder
     private func thumbnail(for photo: Photo) -> some View {
-        // Replace with your real thumbnail view
         PhotoCard(photo, variant: .grid)
             .frame(width: 110, height: 80)
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))

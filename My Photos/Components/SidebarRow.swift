@@ -22,7 +22,7 @@ struct SidebarRow: View {
                 Image(systemName: "line.3.horizontal")
                     .foregroundStyle(.secondary)
                     .accessibilityHidden(true)
-                    .draggable(TagDragItem(item.id))
+                    .draggable(SidebarDragItem(item.id))
             }
 
             Image(

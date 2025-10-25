@@ -51,7 +51,7 @@ private struct TagRow: View {
 
     var body: some View {
         SidebarRow(.tag(tag), isDraggable: true).tag(tag)
-            .dropDestination(for: TagDragItem.self) { items, _ in
+            .dropDestination(for: SidebarDragItem.self) { items, _ in
                 var performedAny = false
 
                 for incoming in items {

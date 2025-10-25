@@ -24,11 +24,11 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Tag drag item</string>
+			<string>Sidebar drag item</string>
 			<key>UTTypeIcons</key>
 			<dict/>
 			<key>UTTypeIdentifier</key>
-			<string>studio.zar.my-photos.tag-drag-item</string>
+			<string>studio.zar.my-photos.sidebar-drag-item</string>
 			<key>UTTypeTagSpecification</key>
 			<dict/>
 		</dict>
