@@ -2,8 +2,6 @@ import SwiftData
 import SwiftUI
 
 struct PhotosGrid: View {
-    @Environment(PresentationState.self) private var presentationState
-
     let photos: [Photo]
 
     var body: some View {
@@ -22,8 +20,6 @@ struct PhotosGrid: View {
 }
 
 private struct MainPhotoGrid: View {
-    @Environment(PresentationState.self) private var presentationState
-
     private static let columns = [
         GridItem(.adaptive(minimum: 110, maximum: 200), spacing: 8)
     ]

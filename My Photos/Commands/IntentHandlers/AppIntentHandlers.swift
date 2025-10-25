@@ -204,26 +204,6 @@ extension View {
         }
     }
 
-    func setupPhotoNavigationHandlers(presentationState: PresentationState)
-        -> some View
-    {
-        return
-            self
-            .onReceive(
-                NotificationCenter.default.publisher(for: .resetPhotoNavigation)
-            ) { note in
-                presentationState.currentPhoto = nil
-            }
-            .onReceive(
-                NotificationCenter.default.publisher(for: .navigateToPhoto)
-            ) { note in
-                guard let photo = note.object as? Photo else {
-                    return
-                }
-                presentationState.currentPhoto = photo
-            }
-    }
-
     func setupHandlers(
         modalPresenter: ModalService,
         notifier: NotificationService,

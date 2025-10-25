@@ -12,7 +12,6 @@ final class PresentationState {
     var selectedPhotos: Set<Photo> = []
     var showOnlySelected: Bool = false
     var isSelecting: Bool = false
-    var currentPhoto: Photo? = nil
     var allPhotosSelected: Bool = false
 
     func getTag(_ id: UUID) -> Tag? {
