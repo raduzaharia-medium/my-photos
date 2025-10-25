@@ -15,7 +15,6 @@ extension Notification.Name {
     )
     static let navigateToNextPhoto = Notification.Name("navigateToNextPhoto")
 
-    static let loadTagSuggestions = Notification.Name("loadTagSuggestions")
     static let selectNextTagSuggestion = Notification.Name(
         "selectNextTagSuggestion"
     )
@@ -68,12 +67,6 @@ enum AppIntents {
         NotificationCenter.default.post(name: .navigateToNextPhoto, object: nil)
     }
 
-    static func loadTagSuggestions(_ searchText: String) {
-        NotificationCenter.default.post(
-            name: .loadTagSuggestions,
-            object: searchText,
-        )
-    }
     static func selectNextTagSuggestion() {
         NotificationCenter.default.post(
             name: .selectNextTagSuggestion,

@@ -10,18 +10,6 @@ extension View {
         notifier: NotificationService,
     ) -> some View {
         return self.onReceive(
-            NotificationCenter.default.publisher(for: .loadTagSuggestions)
-        ) { note in
-            guard let searchText = note.object as? String else { return }
-
-            withAnimation {
-                let suggestions = presentationState.getTags(
-                    searchText: searchText
-                )
-                tagPickerState.suggestions = suggestions
-            }
-        }
-        .onReceive(
             NotificationCenter.default.publisher(for: .selectNextTagSuggestion)
         ) { note in
             withAnimation {
@@ -121,9 +109,6 @@ extension View {
 
                         try? photoStore.insert(photo)
                     }
-
-                    let tags = tagStore.getTags()
-                    presentationState.tags = tags
 
                     notifier.show(
                         "Imported \(folder.lastPathComponent)",

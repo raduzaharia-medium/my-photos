@@ -34,7 +34,6 @@ struct TagInput: View {
                     .textFieldStyle(.plain)
                     .focused($isTextFieldFocused)
                     .onChange(of: searchText, initial: false) {
-                        AppIntents.loadTagSuggestions(searchText)
                     }
                     .onSubmit {
                         AppIntents.addSelectedTagToEditor()
