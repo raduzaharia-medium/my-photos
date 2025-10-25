@@ -2,17 +2,28 @@ import SwiftData
 import SwiftUI
 
 struct PhotosGrid: View {
+    @State private var path = NavigationPath()
+
     let photos: [Photo]
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ScrollView {
                 MainPhotoGrid(photos: photos)
             }
             .navigationDestination(for: Photo.self) { photo in
-                PhotoNavigator(photos, index: photos.firstIndex(of: photo) ?? 0)
+                if let index = photos.firstIndex(of: photo), !photos.isEmpty {
+                    PhotoNavigator(photos, index: index)
+                } else {
+                    ContentUnavailableView(
+                        "Photo unavailable",
+                        systemImage: "exclamationmark.triangle",
+                        description: Text("This photo can’t be opened.")
+                    )
+                }
             }
             .toolbar { PhotosGridToolbar() }
+            .onChange(of: photos) { path.removeLast(path.count) }
         }
     }
 }
