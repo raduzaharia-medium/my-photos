@@ -3,17 +3,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 extension View {
-    func setupPlaceLoadingHandlers(
-        presentationState: PresentationState,
-        placeStore: PlaceStore,
-    ) -> some View {
-        return self.onReceive(
-            NotificationCenter.default.publisher(for: .loadPlaces)
-        ) { _ in
-            let countries = placeStore.getCountries()
-            presentationState.countries = countries
-        }
-    }
     func setupTagLoadingHandlers(
         presentationState: PresentationState,
         tagPickerState: TagPickerState,
@@ -21,12 +10,6 @@ extension View {
         notifier: NotificationService,
     ) -> some View {
         return self.onReceive(
-            NotificationCenter.default.publisher(for: .loadDates)
-        ) { _ in
-            let years = dateStore.getYears()
-            presentationState.years = years
-        }
-        .onReceive(
             NotificationCenter.default.publisher(for: .loadTagSuggestions)
         ) { note in
             guard let searchText = note.object as? String else { return }
@@ -141,12 +124,6 @@ extension View {
 
                     let tags = tagStore.getTags()
                     presentationState.tags = tags
-
-                    let years = dateStore.getYears()
-                    presentationState.years = years
-
-                    let countries = placeStore.getCountries()
-                    presentationState.countries = countries
 
                     notifier.show(
                         "Imported \(folder.lastPathComponent)",

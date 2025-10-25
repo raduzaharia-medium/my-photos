@@ -4,10 +4,7 @@ import SwiftUI
 @MainActor
 @Observable
 final class PresentationState {
-    var photos: [Photo] = []
     var tags: [Tag] = []
-    var years: [DateTakenYear] = []
-    var countries: [PlaceCountry] = []
 
     var photoSource: Filter = .all
     var photoFilter: Set<SidebarItem> = []
@@ -18,22 +15,8 @@ final class PresentationState {
     var currentPhoto: Photo? = nil
     var allPhotosSelected: Bool = false
 
-    var filteredPhotos: [Photo] {
-        guard isSelecting else { return photos }
-        guard showOnlySelected else { return photos }
-
-        return photos.filter { selectedPhotos.contains($0) }
-    }
-    var currentPhotoIndex: Int? {
-        guard let currentPhoto else { return nil }
-        return filteredPhotos.firstIndex(of: currentPhoto)
-    }
-
     func getTag(_ id: UUID) -> Tag? {
         return tags.first(where: { $0.id == id })
-    }
-    func getPhoto(_ id: UUID) -> Photo? {
-        return photos.first(where: { $0.id == id })
     }
 
     func getTags(searchText: String) -> [Tag] {

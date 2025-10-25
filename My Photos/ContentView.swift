@@ -92,10 +92,6 @@ struct ContentView: View {
             dateStore: dateStore,
             notifier: notifier,
         )
-        .setupPlaceLoadingHandlers(
-            presentationState: presentationState,
-            placeStore: placeStore
-        )
         .setupPersonHandlers(
             modalPresenter: modalPresenter,
             notifier: notifier,

@@ -4,9 +4,6 @@ extension Notification.Name {
     static let requestImportPhotos = Notification.Name("requestImportPhotos")
     static let requestTagPhotos = Notification.Name("requestTagPhotos")
 
-    static let loadDates = Notification.Name("loadDates")
-    static let loadPlaces = Notification.Name("loadPlaces")
-
     static let toggleSelectionMode = Notification.Name("toggleSelectionMode")
     static let toggleSelectionFilter = Notification.Name(
         "toggleSelectionFilter"
@@ -48,13 +45,6 @@ enum AppIntents {
     }
     static func requestTagPhotos() {
         NotificationCenter.default.post(name: .requestTagPhotos, object: nil)
-    }
-
-    static func loadDates() {
-        NotificationCenter.default.post(name: .loadDates, object: nil)
-    }
-    static func loadPlaces() {
-        NotificationCenter.default.post(name: .loadPlaces, object: nil)
     }
 
     static func toggleSelectionMode() {
