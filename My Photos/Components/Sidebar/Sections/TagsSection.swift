@@ -50,34 +50,23 @@ private struct TagRow: View {
     let tag: Tag
 
     var body: some View {
-        HStack(spacing: 8) {
-            // Drag handle only for tags
-            Image(systemName: "line.3.horizontal")
-                .foregroundStyle(.secondary)
-                .accessibilityHidden(true)
-                .draggable(TagDragItem(tag.id))
+        SidebarRow(.tag(tag), isDraggable: true).tag(tag)
+            .dropDestination(for: TagDragItem.self) { items, _ in
+                var performedAny = false
 
-            // The rest of the row remains interactive for taps/selection, not drag
-            SidebarRow(.tag(tag))
-                .tag(tag)
-        }
-        // Keep drop destination on the whole row so dropping onto the row works
-        .dropDestination(for: TagDragItem.self) { items, _ in
-            var performedAny = false
+                for incoming in items {
+                    var current: Tag? = tag
+                    while let node = current {
+                        if node.id == incoming.id { return false }
+                        current = node.parent
+                    }
 
-            for incoming in items {
-                var current: Tag? = tag
-                while let node = current {
-                    if node.id == incoming.id { return false }
-                    current = node.parent
+                    TagIntents.edit(incoming.id, parent: tag)
+                    performedAny = true
                 }
 
-                TagIntents.edit(incoming.id, parent: tag)
-                performedAny = true
+                return performedAny
             }
-
-            return performedAny
-        }
     }
 }
 

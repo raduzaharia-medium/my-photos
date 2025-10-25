@@ -61,6 +61,21 @@ enum SidebarItem: Hashable {
         case .album, .person, .event: return true
         }
     }
+    
+    var id: UUID {
+        switch self {
+        case .tag(let tag): return tag.id
+        case .dateYear(let date): return date.id
+        case .dateMonth(let date): return date.id
+        case .dateDay(let date): return date.id
+        case .placeCountry(let place): return place.id
+        case .placeLocality(let place): return place.id
+        case .album(let album): return album.id
+        case .person(let person): return person.id
+        case .event(let event): return event.id
+        }
+    }
+
 
     private func monthName(_ month: Int) -> String {
         let formatter = DateFormatter()
