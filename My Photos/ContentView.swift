@@ -89,12 +89,6 @@ struct ContentView: View {
                 dateStore: dateStore,
                 placeStore: placeStore
             )
-            .setupTagLoadingHandlers(
-                presentationState: presentationState,
-                tagPickerState: tagPickerState,
-                dateStore: dateStore,
-                notifier: notifier,
-            )
             .setupPersonHandlers(
                 modalPresenter: modalPresenter,
                 notifier: notifier,

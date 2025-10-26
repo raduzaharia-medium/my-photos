@@ -3,54 +3,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 extension View {
-    func setupTagLoadingHandlers(
-        presentationState: PresentationState,
-        tagPickerState: TagPickerState,
-        dateStore: DateStore,
-        notifier: NotificationService,
-    ) -> some View {
-        return self.onReceive(
-            NotificationCenter.default.publisher(for: .selectNextTagSuggestion)
-        ) { note in
-            withAnimation {
-                tagPickerState.selectNext()
-            }
-        }
-        .onReceive(
-            NotificationCenter.default.publisher(
-                for: .selectPreviousTagSuggestion
-            )
-        ) { note in
-            withAnimation {
-                tagPickerState.selectPrevious()
-            }
-        }
-        .onReceive(
-            NotificationCenter.default.publisher(for: .addSelectedTagToEditor)
-        ) { note in
-            withAnimation {
-                tagPickerState.addSelection()
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .addTagToEditor)) {
-            note in
-            guard let tag = note.object as? Tag else { return }
-
-            withAnimation {
-                tagPickerState.addTag(tag)
-            }
-        }
-        .onReceive(
-            NotificationCenter.default.publisher(for: .removeTagFromEditor)
-        ) { note in
-            guard let tag = note.object as? Tag else { return }
-
-            withAnimation {
-                tagPickerState.removeTag(tag)
-            }
-        }
-    }
-
     func setupPhotoLoadingHandlers(
         presentationState: PresentationState,
         notifier: NotificationService,
@@ -127,7 +79,9 @@ extension View {
             NotificationCenter.default.publisher(for: .tagSelectedPhotos)
         ) { note in
             guard let photos = note.object as? Set<Photo> else { return }
-            guard let tags = note.userInfo?["tags"] as? Set<SidebarItem> else { return }
+            guard let tags = note.userInfo?["tags"] as? Set<SidebarItem> else {
+                return
+            }
 
             do {
                 try photoStore.tagPhotos(photos, tags)

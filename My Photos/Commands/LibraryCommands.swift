@@ -44,14 +44,6 @@ struct LibraryCommands: Commands {
 //            }
 
             Divider()
-
-            Button("Previous Photo") { AppIntents.navigateToPreviousPhoto() }
-                .keyboardShortcut("<", modifiers: [])
-
-            Button("Next Photo") { AppIntents.navigateToNextPhoto() }
-                .keyboardShortcut(">", modifiers: [])
-
-            Divider()
             
             Button("Switch selection mode") {
                 AppIntents.toggleSelectionMode()

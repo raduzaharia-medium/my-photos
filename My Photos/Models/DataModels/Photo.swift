@@ -26,9 +26,9 @@ final class Photo: Identifiable {
     @Relationship var dateTakenDay: DateTakenDay?
     @Relationship var country: PlaceCountry?
     @Relationship var locality: PlaceLocality?
-    @Relationship var album: Album?
+    @Relationship var albums: [Album]
     @Relationship var people: [Person]
-    @Relationship var event: Event?
+    @Relationship var events: [Event]
 
     var isRecent: Bool {
         guard let dateTaken else { return false }
@@ -48,9 +48,9 @@ final class Photo: Identifiable {
         location: GeoCoordinate? = nil,
         country: PlaceCountry? = nil,
         locality: PlaceLocality? = nil,
-        album: Album? = nil,
+        albums: [Album] = [],
         people: [Person] = [],
-        event: Event? = nil,
+        events: [Event] = [],
         tags: [Tag] = [],
     ) {
         self.id = id
@@ -63,9 +63,9 @@ final class Photo: Identifiable {
         self.location = location
         self.country = country
         self.locality = locality
-        self.album = album
+        self.albums = albums
         self.people = people
-        self.event = event
+        self.events = events
         self.tags = tags
     }
 }

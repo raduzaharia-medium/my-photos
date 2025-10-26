@@ -7,7 +7,7 @@ final class Event: Identifiable, Equatable {
     @Attribute(.unique) var key: String
     @Attribute(.unique) var name: String
 
-    @Relationship(inverse: \Photo.event) var photos: [Photo] = []
+    @Relationship(inverse: \Photo.events) var photos: [Photo] = []
 
     init(_ name: String) {
         self.name = name

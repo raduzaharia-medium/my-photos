@@ -70,7 +70,7 @@ struct My_PhotosApp: App {
                 dateTakenMonth: month202201,
                 dateTakenDay: day20220109,
                 location: GeoCoordinate(44.439663, 26.096306),
-                album: album,
+                albums: [album],
                 people: [alice],
             )
         )
@@ -114,7 +114,7 @@ struct My_PhotosApp: App {
                 dateTakenMonth: month202203,
                 dateTakenDay: day20220325,
                 location: GeoCoordinate(45.657974, 25.601198),
-                event: birthday
+                events: [birthday]
             )
         )
 

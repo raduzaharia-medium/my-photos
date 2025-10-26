@@ -60,10 +60,9 @@ struct TagPickerSheet: View {
             }
         }.onAppear {
             for photo in photos {
-                if let album = photo.album { selectedAlbums.insert(album) }
-                if let event = photo.event { selectedEvents.insert(event) }
-
+                for album in photo.albums { selectedAlbums.insert(album) }
                 for person in photo.people { selectedPeople.insert(person) }
+                for event in photo.events { selectedEvents.insert(event) }
                 for tag in photo.tags { selectedTags.insert(tag) }
             }
         }

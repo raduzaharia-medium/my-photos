@@ -10,22 +10,6 @@ extension Notification.Name {
     )
 
     static let importPhotos = Notification.Name("importPhotos")
-    static let navigateToPreviousPhoto = Notification.Name(
-        "navigateToPreviousPhoto"
-    )
-    static let navigateToNextPhoto = Notification.Name("navigateToNextPhoto")
-
-    static let selectNextTagSuggestion = Notification.Name(
-        "selectNextTagSuggestion"
-    )
-    static let selectPreviousTagSuggestion = Notification.Name(
-        "selectPreviousTagSuggestion"
-    )
-    static let addSelectedTagToEditor = Notification.Name(
-        "addSelectedTagToEditor"
-    )
-    static let addTagToEditor = Notification.Name("addTagToEditor")
-    static let removeTagFromEditor = Notification.Name("removeTagFromEditor")
 
     static let selectPhoto = Notification.Name("selectPhoto")
     static let deselectPhoto = Notification.Name("deselectPhoto")
@@ -56,40 +40,6 @@ enum AppIntents {
 
     static func importPhotos(_ folder: URL) {
         NotificationCenter.default.post(name: .importPhotos, object: folder)
-    }
-    static func navigateToPreviousPhoto() {
-        NotificationCenter.default.post(
-            name: .navigateToPreviousPhoto,
-            object: nil
-        )
-    }
-    static func navigateToNextPhoto() {
-        NotificationCenter.default.post(name: .navigateToNextPhoto, object: nil)
-    }
-
-    static func selectNextTagSuggestion() {
-        NotificationCenter.default.post(
-            name: .selectNextTagSuggestion,
-            object: nil
-        )
-    }
-    static func selectPreviousTagSuggestion() {
-        NotificationCenter.default.post(
-            name: .selectPreviousTagSuggestion,
-            object: nil
-        )
-    }
-    static func addSelectedTagToEditor() {
-        NotificationCenter.default.post(
-            name: .addSelectedTagToEditor,
-            object: nil
-        )
-    }
-    static func addTagToEditor(_ tag: Tag) {
-        NotificationCenter.default.post(name: .addTagToEditor, object: tag)
-    }
-    static func removeTagFromEditor(_ tag: Tag) {
-        NotificationCenter.default.post(name: .removeTagFromEditor, object: tag)
     }
 
     static func selectPhoto(_ photo: Photo) {

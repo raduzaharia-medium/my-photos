@@ -7,7 +7,7 @@ final class Album: Identifiable, Equatable {
     @Attribute(.unique) var key: String
     @Attribute(.unique) var name: String
 
-    @Relationship(inverse: \Photo.album) var photos: [Photo] = []
+    @Relationship(inverse: \Photo.albums) var photos: [Photo] = []
 
     init(_ name: String) {
         self.name = name
