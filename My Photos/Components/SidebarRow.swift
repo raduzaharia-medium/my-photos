@@ -18,33 +18,26 @@ struct SidebarRow: View {
             Label(item.name, systemImage: item.icon)
             Spacer(minLength: 8)
 
-            if isDraggable {
-                Image(systemName: "line.3.horizontal")
-                    .foregroundStyle(.secondary)
-                    .accessibilityHidden(true)
-                    .draggable(SidebarDragItem(item.id))
-            }
+            #if os(macOS)
+                if isDraggable {
+                    Image(systemName: "line.3.horizontal")
+                        .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
+                        .draggable(SidebarDragItem(item.id))
+                }
+            #endif
 
-            Image(
-                systemName: isSelected ? "checkmark.circle.fill" : "circle"
-            )
-            .tint(isSelected ? .accentColor : .secondary)
-            .accessibilityLabel(isSelected ? "Selected" : "Not selected")
+            #if os(iOS)
+                Image(
+                    systemName: isSelected ? "checkmark.circle.fill" : "circle"
+                )
+                .tint(isSelected ? .accentColor : .secondary)
+                .accessibilityLabel(isSelected ? "Selected" : "Not selected")
+            #endif
         }
-        .contentShape(Rectangle().inset(by: -6))
         .tag(item)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(item.name)
-        .accessibilityAddTraits(.isButton)
-        .accessibilityValue(isSelected ? "Selected" : "Not selected")
-        .onTapGesture {
-            withAnimation {
-                if isSelected {
-                    state.photoFilter.remove(item)
-                } else {
-                    state.photoFilter.insert(item)
-                }
-            }
-        }.contextMenu { SidebarContextMenu(current: item) }
+        .contextMenu { SidebarContextMenu(current: item) }
     }
 }

@@ -10,6 +10,7 @@ enum SidebarItem: Hashable {
     case album(Album)
     case person(Person)
     case event(Event)
+    case all
 
     var name: String {
         switch self {
@@ -22,6 +23,7 @@ enum SidebarItem: Hashable {
         case .album(let album): return album.name
         case .person(let person): return person.name
         case .event(let event): return event.name
+        case .all: return "All photos"
         }
     }
 
@@ -36,6 +38,7 @@ enum SidebarItem: Hashable {
         case .album: return Album.icon
         case .person: return Person.icon
         case .event: return Event.icon
+        case .all: return "folder"
         }
     }
 
@@ -50,13 +53,14 @@ enum SidebarItem: Hashable {
         case .album(let album): return album.photos
         case .person(let person): return person.photos
         case .event(let event): return event.photos
+        case .all: return []
         }
     }
 
     var editable: Bool {
         switch self {
         case .tag: return true
-        case .dateDay, .dateMonth, .dateYear: return false
+        case .dateDay, .dateMonth, .dateYear, .all: return false
         case .placeCountry, .placeLocality: return true
         case .album, .person, .event: return true
         }
@@ -73,6 +77,7 @@ enum SidebarItem: Hashable {
         case .album(let album): return album.id
         case .person(let person): return person.id
         case .event(let event): return event.id
+        case .all: return UUID(uuid: UUID_NULL)
         }
     }
 
