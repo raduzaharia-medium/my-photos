@@ -1,17 +1,17 @@
 import SwiftUI
 
-struct TagChip: View {
-    let tag: Tag
+struct SidebarItemChip: View {
+    let item: SidebarItem
     var onRemove: () -> Void
 
     var body: some View {
         HStack(spacing: 6) {
             Label {
-                Text(tag.name)
+                Text(item.name)
                     .lineLimit(1)
                     .truncationMode(.tail)
             } icon: {
-                Image(systemName: Tag.icon)
+                Image(systemName: item.icon)
                     .symbolRenderingMode(.hierarchical)
             }
 

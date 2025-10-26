@@ -2,6 +2,10 @@ import SwiftUI
 
 struct TagPickerSheet: View {
     @Environment(TagPickerState.self) private var tagPickerState
+    @State private var selectedAlbums: Set<Album> = []
+    @State private var selectedPeople: Set<Person> = []
+    @State private var selectedEvents: Set<Event> = []
+    @State private var selectedTags: Set<Tag> = []
 
     var onSave: (Set<Tag>) -> Void
     var onCancel: () -> Void
@@ -18,12 +22,13 @@ struct TagPickerSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-//                    TagInput("People", kind: .person)
-//                    TagInput("Places", kind: .place)
-//                    TagInput("Events", kind: .event)
+                    AlbumInput(selection: $selectedAlbums)
+                    PersonInput(selection: $selectedPeople)
+                    EventInput(selection: $selectedEvents)
+                    TagInput(selection: $selectedTags)
                 }
             }
-            .onAppear() {
+            .onAppear {
                 tagPickerState.tags.removeAll()
                 tagPickerState.selectedIndex = nil
             }
