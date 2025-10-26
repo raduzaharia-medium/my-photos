@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SidebarContextMenu: View {
     @Environment(PresentationState.self) private var presentationState
+    @State private var deleteTagConfirmationPresented: Bool = true
 
     let current: SidebarItem
 
@@ -35,6 +36,12 @@ struct SidebarContextMenu: View {
                 } else if case .person(let person) = current {
                     PersonIntents.requestDelete(person)
                 } else if case .tag(let tag) = current {
+                    confirmationDialog(
+                        "Delete Tag",
+                        isPresented: $deleteTagConfirmationPresented
+                    ) {
+
+                    }
                     TagIntents.requestDelete(tag)
                 }
             } label: {

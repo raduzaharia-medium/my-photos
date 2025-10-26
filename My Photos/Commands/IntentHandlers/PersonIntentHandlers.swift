@@ -6,13 +6,13 @@ extension View {
     func setupPersonHandlers(
         modalPresenter: ModalService,
         notifier: NotificationService,
-        alerter: AlertService,
+        confirmer: ConfirmationService,
         personStore: PersonStore
     ) -> some View {
         let personEditorPresenter = PersonEditorPresenter(
             modalPresenter: modalPresenter
         )
-        let deletePersonPresenter = DeletePersonPresenter(alerter: alerter)
+        let deletePersonPresenter = DeletePersonPresenter(confirmer: confirmer)
 
         let edit: (NotificationCenter.Publisher.Output) -> Void = { note in
             guard let person = note.object as? Person else { return }

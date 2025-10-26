@@ -6,13 +6,13 @@ extension View {
     func setupAlbumHandlers(
         modalPresenter: ModalService,
         notifier: NotificationService,
-        alerter: AlertService,
+        confirmer: ConfirmationService,
         albumStore: AlbumStore
     ) -> some View {
         let albumEditorPresenter = AlbumEditorPresenter(
             modalPresenter: modalPresenter
         )
-        let deleteAlbumPresenter = DeleteAlbumPresenter(alerter: alerter)
+        let deleteAlbumPresenter = DeleteAlbumPresenter(confirmer: confirmer)
 
         let edit: (NotificationCenter.Publisher.Output) -> Void = { note in
             guard let album = note.object as? Album else { return }

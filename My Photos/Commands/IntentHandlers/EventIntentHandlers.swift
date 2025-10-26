@@ -6,13 +6,13 @@ extension View {
     func setupEventHandlers(
         modalPresenter: ModalService,
         notifier: NotificationService,
-        alerter: AlertService,
+        confirmer: ConfirmationService,
         eventStore: EventStore
     ) -> some View {
         let eventEditorPresenter = EventEditorPresenter(
             modalPresenter: modalPresenter
         )
-        let deleteEventPresenter = DeleteEventPresenter(alerter: alerter)
+        let deleteEventPresenter = DeleteEventPresenter(confirmer: confirmer)
 
         let edit: (NotificationCenter.Publisher.Output) -> Void = { note in
             guard let event = note.object as? Event else { return }

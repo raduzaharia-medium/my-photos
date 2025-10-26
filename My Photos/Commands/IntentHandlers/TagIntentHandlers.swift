@@ -6,13 +6,13 @@ extension View {
     func setupTagHandlers(
         modalPresenter: ModalService,
         notifier: NotificationService,
-        alerter: AlertService,
+        confirmer: ConfirmationService,
         tagStore: TagStore
     ) -> some View {
         let editTagPresenter = TagEditorPresenter(
             modalPresenter: modalPresenter
         )
-        let deleteTagPresenter = DeleteTagPresenter(alerter: alerter)
+        let deleteTagPresenter = DeleteTagPresenter(confirmer: confirmer)
 
         let edit: (NotificationCenter.Publisher.Output) -> Void = { note in
             guard let tag = note.object as? Tag else { return }

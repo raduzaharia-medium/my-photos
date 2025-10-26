@@ -10,6 +10,7 @@ struct ContentView: View {
     @StateObject private var alerter = AlertService()
     @StateObject private var fileImporter = FileImportService()
     @StateObject private var notifier = NotificationService()
+    @StateObject private var confirmer = ConfirmationService()
 
     private var tagStore: TagStore { TagStore(context: context) }
     private var albumStore: AlbumStore { AlbumStore(context: context) }
@@ -48,6 +49,13 @@ struct ContentView: View {
             } message: {
                 Text(alerter.message)
             }
+            .confirmationDialog(confirmer.title, isPresented: $confirmer.isVisible) {
+                Button(confirmer.actionLabel, role: .destructive) {
+                    confirmer.action()
+                }
+            } message: {
+                Text(confirmer.message)
+            }
             .fileImporter(
                 isPresented: $fileImporter.isVisible,
                 allowedContentTypes: fileImporter.allowedContentTypes,
@@ -63,13 +71,13 @@ struct ContentView: View {
             .setupTagHandlers(
                 modalPresenter: modalPresenter,
                 notifier: notifier,
-                alerter: alerter,
+                confirmer: confirmer,
                 tagStore: tagStore
             )
             .setupAlbumHandlers(
                 modalPresenter: modalPresenter,
                 notifier: notifier,
-                alerter: alerter,
+                confirmer: confirmer,
                 albumStore: albumStore
             )
             .setupPhotoLoadingHandlers(
@@ -90,13 +98,13 @@ struct ContentView: View {
             .setupPersonHandlers(
                 modalPresenter: modalPresenter,
                 notifier: notifier,
-                alerter: alerter,
+                confirmer: confirmer,
                 personStore: personStore
             )
             .setupEventHandlers(
                 modalPresenter: modalPresenter,
                 notifier: notifier,
-                alerter: alerter,
+                confirmer: confirmer,
                 eventStore: eventStore
             )
             .setupPresentationModeHandlers(presentationState: presentationState)

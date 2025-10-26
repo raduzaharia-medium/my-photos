@@ -1,23 +1,22 @@
 import SwiftUI
 
 final class DeleteAlbumPresenter: ObservableObject {
-    let alerter: AlertService
+    let confirmer: ConfirmationService
 
-    init(alerter: AlertService) {
-        self.alerter = alerter
+    init(confirmer: ConfirmationService) {
+        self.confirmer = confirmer
     }
 
     @MainActor
     func show(_ album: Album) {
         withAnimation {
-            alerter.show(
+            confirmer.show(
                 "Delete \(album.name)?",
                 "Are you sure you want to delete this album?",
                 actionLabel: "Delete",
                 onAction: {
                     withAnimation {
                         AlbumIntents.delete(album)
-//                        AppIntents.resetPhotoFilter()
                     }
                 }
             )
@@ -28,14 +27,13 @@ final class DeleteAlbumPresenter: ObservableObject {
     @MainActor
     func show(_ albums: [Album]) {
         withAnimation {
-            alerter.show(
+            confirmer.show(
                 "Delete \(albums.count) Albums?",
                 "Are you sure you want to delete these albums?",
                 actionLabel: "Delete",
                 onAction: {
                     withAnimation {
                         AlbumIntents.delete(albums)
-//                        AppIntents.resetPhotoFilter()
                     }
                 }
             )
