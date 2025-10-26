@@ -75,7 +75,7 @@ private struct SelectablePhotoCard: View {
         PhotoCard(photo, variant: .selectable, isSelected: isSelected)
             .onTapGesture { AppIntents.togglePhotoSelection(photo) }
             .draggable(PhotoDragItem(photo.id)) {
-                DragPreviewStack(count: presentationState.selectedPhotos.count)
+                DragPreviewStack(count: presentationState.photoSelection.count)
             }
     }
 }

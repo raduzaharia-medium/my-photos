@@ -9,7 +9,7 @@ struct DragPreviewStack: View {
         ZStack {
             ZStack {
                 ForEach(
-                    Array(Array(state.selectedPhotos.prefix(4)).enumerated()),
+                    Array(Array(state.photoSelection.prefix(4)).enumerated()),
                     id: \.offset
                 ) { pair in
                     let idx = pair.offset

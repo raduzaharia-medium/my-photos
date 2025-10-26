@@ -19,12 +19,12 @@ struct PhotosGridToolbar: ToolbarContent {
         if presentationState.isSelecting {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
-                    AppIntents.requestTagPhotos(Array(presentationState.selectedPhotos))
+                    AppIntents.requestTagPhotos(Array(presentationState.photoSelection))
                 } label: {
                     Image(systemName: "tag")
                 }.controlSize(.regular)
                     .disabled(
-                        presentationState.selectedPhotos.isEmpty
+                        presentationState.photoSelection.isEmpty
                             && !presentationState.allPhotosSelected
                     )
 

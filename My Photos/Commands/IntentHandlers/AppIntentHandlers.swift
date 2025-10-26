@@ -101,21 +101,21 @@ extension View {
                 NotificationCenter.default.publisher(for: .selectPhoto)
             ) { note in
                 guard let photo = note.object as? Photo else { return }
-                presentationState.selectedPhotos.insert(photo)
+                presentationState.photoSelection.insert(photo)
             }.onReceive(
                 NotificationCenter.default.publisher(for: .deselectPhoto)
             ) { note in
                 guard let photo = note.object as? Photo else { return }
-                presentationState.selectedPhotos.remove(photo)
+                presentationState.photoSelection.remove(photo)
             }.onReceive(
                 NotificationCenter.default.publisher(for: .togglePhotoSelection)
             ) { note in
                 guard let photo = note.object as? Photo else { return }
 
-                if presentationState.selectedPhotos.contains(photo) {
-                    presentationState.selectedPhotos.remove(photo)
+                if presentationState.photoSelection.contains(photo) {
+                    presentationState.photoSelection.remove(photo)
                 } else {
-                    presentationState.selectedPhotos.insert(photo)
+                    presentationState.photoSelection.insert(photo)
                 }
             }.onReceive(
                 NotificationCenter.default.publisher(
@@ -135,7 +135,7 @@ extension View {
             presentationState.isSelecting.toggle()
             presentationState.showOnlySelected = false
             presentationState.allPhotosSelected = false
-            presentationState.selectedPhotos.removeAll()
+            presentationState.photoSelection.removeAll()
         }.onReceive(
             NotificationCenter.default.publisher(for: .toggleSelectionFilter)
         ) { _ in
