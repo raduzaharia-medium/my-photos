@@ -58,6 +58,14 @@ struct TagPickerSheet: View {
                     .disabled(allItems.isEmpty)
                 }
             }
+        }.onAppear {
+            for photo in photos {
+                if let album = photo.album { selectedAlbums.insert(album) }
+                if let event = photo.event { selectedEvents.insert(event) }
+
+                for person in photo.people { selectedPeople.insert(person) }
+                for tag in photo.tags { selectedTags.insert(tag) }
+            }
         }
     }
 }
