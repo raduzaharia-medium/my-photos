@@ -9,7 +9,7 @@ struct PhotosGrid: View {
     var body: some View {
         NavigationStack(path: $path) {
             ScrollView {
-                MainPhotoGrid(photos: photos)
+                MainPhotoGrid(photos: photos) { photo in path.append(photo) }
             }
             .navigationDestination(for: Photo.self) { photo in
                 if let index = photos.firstIndex(of: photo), !photos.isEmpty {
@@ -34,10 +34,11 @@ private struct MainPhotoGrid: View {
     ]
 
     let photos: [Photo]
+    let open: (Photo) -> Void
 
     var body: some View {
         LazyVGrid(columns: Self.columns, spacing: 8) {
-            PhotoCards(photos: photos)
+            PhotoCards(photos: photos, open: open)
                 .buttonStyle(.plain)
         }
         .padding(.all)
@@ -48,16 +49,19 @@ private struct PhotoCards: View {
     @Environment(PresentationState.self) private var presentationState
 
     let photos: [Photo]
+    let open: (Photo) -> Void
 
     var body: some View {
         ForEach(photos) { photo in
-            if presentationState.isSelecting {
-                SelectablePhotoCard(photo: photo)
-            } else {
-                NavigationLink(value: photo) {
-                    PhotoCard(photo, variant: .grid)
+            SelectablePhotoCard(photo: photo)
+                .contentShape(Rectangle())
+                .onTapGesture { AppIntents.togglePhotoSelection(photo) }
+                .onTapGesture(count: 2) { open(photo) }
+                .draggable(PhotoDragItem(photo.id)) {
+                    DragPreviewStack(
+                        count: presentationState.photoSelection.count
+                    )
                 }
-            }
         }
     }
 }
@@ -70,12 +74,11 @@ private struct SelectablePhotoCard: View {
     var allPhotosSelected: Bool { presentationState.allPhotosSelected }
     var isPhotoSelected: Bool { presentationState.isSelected(photo) }
     var isSelected: Bool { allPhotosSelected || isPhotoSelected }
+    var variant: PhotoCardVariant {
+        presentationState.isSelecting ? .selectable : .grid
+    }
 
     var body: some View {
-        PhotoCard(photo, variant: .selectable, isSelected: isSelected)
-            .onTapGesture { AppIntents.togglePhotoSelection(photo) }
-            .draggable(PhotoDragItem(photo.id)) {
-                DragPreviewStack(count: presentationState.photoSelection.count)
-            }
+        PhotoCard(photo, variant: variant, isSelected: isSelected)
     }
 }

@@ -99,6 +99,16 @@ struct PhotoCard: View {
             view.aspectRatio(1, contentMode: .fit)
         }
         .contentShape(Rectangle())
+        .overlay(
+            RoundedRectangle(
+                cornerRadius: variant.tokens.cornerRadius,
+                style: .continuous
+            )
+            .stroke(
+                isSelected ? Color.accentColor.opacity(0.6) : Color.clear,
+                lineWidth: isSelected ? 2 : 0
+            )
+        )
     }
 }
 
