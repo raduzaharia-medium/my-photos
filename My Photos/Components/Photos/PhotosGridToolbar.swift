@@ -3,6 +3,8 @@ import SwiftUI
 struct PhotosGridToolbar: ToolbarContent {
     @Environment(PresentationState.self) private var presentationState
 
+    let photos: [Photo]
+    
     var body: some ToolbarContent {
         @Bindable var presentation = presentationState
 
@@ -17,7 +19,7 @@ struct PhotosGridToolbar: ToolbarContent {
         if presentationState.isSelecting {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
-                    AppIntents.requestTagPhotos()
+                    AppIntents.requestTagPhotos(photos)
                 } label: {
                     Image(systemName: "tag")
                 }.controlSize(.regular)

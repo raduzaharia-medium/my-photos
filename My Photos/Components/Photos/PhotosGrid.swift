@@ -22,7 +22,7 @@ struct PhotosGrid: View {
                     )
                 }
             }
-            .toolbar { PhotosGridToolbar() }
+            .toolbar { PhotosGridToolbar(photos: photos) }
             .onChange(of: photos) { path.removeLast(path.count) }
         }
     }

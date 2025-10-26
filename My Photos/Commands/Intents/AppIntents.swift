@@ -40,8 +40,8 @@ enum AppIntents {
     static func requestImportPhotos() {
         NotificationCenter.default.post(name: .requestImportPhotos, object: nil)
     }
-    static func requestTagPhotos() {
-        NotificationCenter.default.post(name: .requestTagPhotos, object: nil)
+    static func requestTagPhotos(_ photos: [Photo]) {
+        NotificationCenter.default.post(name: .requestTagPhotos, object: photos)
     }
 
     static func toggleSelectionMode() {
@@ -110,7 +110,7 @@ enum AppIntents {
             object: nil
         )
     }
-    static func tagSelectedPhotos(_ tags: Set<Tag>) {
+    static func tagSelectedPhotos(_ photos: Set<Photo>, _ tags: Set<SidebarItem>) {
         NotificationCenter.default.post(name: .tagSelectedPhotos, object: tags)
     }
 }

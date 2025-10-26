@@ -1,19 +1,33 @@
 import SwiftUI
 
 struct TagPickerSheet: View {
-    @Environment(TagPickerState.self) private var tagPickerState
     @State private var selectedAlbums: Set<Album> = []
     @State private var selectedPeople: Set<Person> = []
     @State private var selectedEvents: Set<Event> = []
     @State private var selectedTags: Set<Tag> = []
 
-    var onSave: (Set<Tag>) -> Void
+    let photos: [Photo]
+
+    private var allItems: Set<SidebarItem> {
+        let albumItems = Set(selectedAlbums.map { SidebarItem.album($0) })
+        let peopleItems = Set(selectedPeople.map { SidebarItem.person($0) })
+        let eventItems = Set(selectedEvents.map { SidebarItem.event($0) })
+        let tagItems = Set(selectedTags.map { SidebarItem.tag($0) })
+
+        return albumItems.union(peopleItems).union(eventItems).union(tagItems)
+    }
+
+    var onSave: (Set<Photo>, Set<SidebarItem>) -> Void
     var onCancel: () -> Void
 
     init(
-        onSave: @escaping (Set<Tag>) -> Void,
+        photos: [Photo],
+
+        onSave: @escaping (Set<Photo>, Set<SidebarItem>) -> Void,
         onCancel: @escaping () -> Void
     ) {
+        self.photos = photos
+
         self.onSave = onSave
         self.onCancel = onCancel
     }
@@ -28,24 +42,20 @@ struct TagPickerSheet: View {
                     TagInput(selection: $selectedTags)
                 }
             }
-            .onAppear {
-                tagPickerState.tags.removeAll()
-                tagPickerState.selectedIndex = nil
-            }
             .padding(20)
             .frame(minWidth: 360, minHeight: 300)
-            .navigationTitle("Assign Tag")
+            .navigationTitle("Assign Tags")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .cancel) { onCancel() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", role: .confirm) {
-                        guard !tagPickerState.tags.isEmpty else { return }
-                        onSave(tagPickerState.tags)
+                        guard !allItems.isEmpty else { return }
+                        onSave(Set(photos), allItems)
                     }
                     .keyboardShortcut(.defaultAction)
-                    .disabled(tagPickerState.tags.isEmpty)
+                    .disabled(allItems.isEmpty)
                 }
             }
         }

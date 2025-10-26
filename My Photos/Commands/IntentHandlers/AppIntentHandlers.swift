@@ -126,10 +126,12 @@ extension View {
         }.onReceive(
             NotificationCenter.default.publisher(for: .tagSelectedPhotos)
         ) { note in
-            guard let tags = note.object as? [Tag] else { return }
+            guard let photos = note.object as? Set<Photo> else { return }
+            guard let tags = note.userInfo?["tags"] as? Set<SidebarItem> else { return }
 
             do {
-                try photoStore.tagPhotos(presentationState.selectedPhotos, tags)
+                try photoStore.tagPhotos(photos, tags)
+                notifier.show("Photos tagged", .success)
             } catch {
                 notifier.show("Failed to tag photos", .error)
             }
@@ -210,8 +212,9 @@ extension View {
             }
             .onReceive(
                 NotificationCenter.default.publisher(for: .requestTagPhotos)
-            ) { _ in
-                pickTagPresenter.show()
+            ) { note in
+                guard let photos = note.object as? [Photo] else { return }
+                pickTagPresenter.show(photos)
             }
     }
 }
