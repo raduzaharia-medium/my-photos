@@ -8,22 +8,24 @@ struct TagPickerSheet: View {
 
     let photos: [Photo]
 
-    private var allItems: Set<SidebarItem> {
+    private var allItems: [SidebarItem] {
         let albumItems = Set(selectedAlbums.map { SidebarItem.album($0) })
         let peopleItems = Set(selectedPeople.map { SidebarItem.person($0) })
         let eventItems = Set(selectedEvents.map { SidebarItem.event($0) })
         let tagItems = Set(selectedTags.map { SidebarItem.tag($0) })
 
-        return albumItems.union(peopleItems).union(eventItems).union(tagItems)
+        return Array(
+            albumItems.union(peopleItems).union(eventItems).union(tagItems)
+        )
     }
 
-    var onSave: (Set<Photo>, Set<SidebarItem>) -> Void
+    var onSave: ([Photo], [SidebarItem]) -> Void
     var onCancel: () -> Void
 
     init(
         photos: [Photo],
 
-        onSave: @escaping (Set<Photo>, Set<SidebarItem>) -> Void,
+        onSave: @escaping ([Photo], [SidebarItem]) -> Void,
         onCancel: @escaping () -> Void
     ) {
         self.photos = photos
@@ -52,7 +54,7 @@ struct TagPickerSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", role: .confirm) {
                         guard !allItems.isEmpty else { return }
-                        onSave(Set(photos), allItems)
+                        onSave(photos, allItems)
                     }
                     .keyboardShortcut(.defaultAction)
                     .disabled(allItems.isEmpty)

@@ -78,8 +78,8 @@ extension View {
         }.onReceive(
             NotificationCenter.default.publisher(for: .tagSelectedPhotos)
         ) { note in
-            guard let photos = note.object as? Set<Photo> else { return }
-            guard let tags = note.userInfo?["tags"] as? Set<SidebarItem> else {
+            guard let photos = note.object as? [Photo] else { return }
+            guard let tags = note.userInfo?["tags"] as? [SidebarItem] else {
                 return
             }
 

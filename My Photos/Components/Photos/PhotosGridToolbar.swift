@@ -19,7 +19,7 @@ struct PhotosGridToolbar: ToolbarContent {
         if presentationState.isSelecting {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
-                    AppIntents.requestTagPhotos(photos)
+                    AppIntents.requestTagPhotos(Array(presentationState.selectedPhotos))
                 } label: {
                     Image(systemName: "tag")
                 }.controlSize(.regular)

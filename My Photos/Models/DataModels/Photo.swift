@@ -68,4 +68,25 @@ final class Photo: Identifiable {
         self.events = events
         self.tags = tags
     }
+    
+    func addAlbum(_ album: Album) {
+        if !self.albums.contains(where: { $0.id == album.id }) {
+            self.albums.append(album)
+        }
+    }
+    func addPerson(_ person: Person) {
+        if !self.people.contains(where: { $0.id == person.id }) {
+            self.people.append(person)
+        }
+    }
+    func addEvent(_ event: Event) {
+        if !self.events.contains(where: { $0.id == event.id }) {
+            self.events.append(event)
+        }
+    }
+    func addTag(_ tag: Tag) {
+        if !self.tags.contains(where: { $0.id == tag.id }) {
+            self.tags.append(tag)
+        }
+    }
 }

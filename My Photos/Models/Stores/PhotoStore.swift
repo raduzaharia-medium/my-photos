@@ -20,11 +20,16 @@ final class PhotoStore {
         try context.save()
     }
 
-    func tagPhotos(_ photos: Set<Photo>, _ tags: Set<SidebarItem>) throws {
+    func tagPhotos(_ photos: [Photo], _ tags: [SidebarItem]) throws {
         for photo in photos {
             for tag in tags {
                 if !photo.tags.contains(where: { $0.id == tag.id }) {
-                    // photo.tags.append(tag)
+                    if case .album(let album) = tag { photo.addAlbum(album) }
+                    if case .person(let person) = tag {
+                        photo.addPerson(person)
+                    }
+                    if case .event(let event) = tag { photo.addEvent(event) }
+                    if case .tag(let tag) = tag { photo.addTag(tag) }
                 }
             }
         }
