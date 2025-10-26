@@ -21,90 +21,99 @@ struct ContentView: View {
     private var fileStore: FileStore { FileStore() }
 
     var body: some View {
-        NavigationSplitView {
-            SidebarView()
-        } detail: {
+        MainView()
+            .notification(
+                isPresented: $notifier.isVisible,
+                message: notifier.message,
+                style: notifier.style
+            )
+            .sheet(
+                item: $modalPresenter.item,
+                onDismiss: {
+                    modalPresenter.item?.onDismiss?()
+                }
+            ) { item in
+                item.content
+            }
+            .alert(
+                alerter.title,
+                isPresented: $alerter.isVisible
+            ) {
+                Button(alerter.actionLabel, role: .destructive) {
+                    alerter.action()
+                }
+                Button(alerter.cancelLabel, role: .cancel) {
+                    alerter.cancel()
+                }
+            } message: {
+                Text(alerter.message)
+            }
+            .fileImporter(
+                isPresented: $fileImporter.isVisible,
+                allowedContentTypes: fileImporter.allowedContentTypes,
+                allowsMultipleSelection: fileImporter.multipleSelection,
+                onCompletion: fileImporter.action
+            )
+            .setupHandlers(
+                modalPresenter: modalPresenter,
+                notifier: notifier,
+                fileImporter: fileImporter,
+                alerter: alerter,
+            )
+            .setupTagHandlers(
+                modalPresenter: modalPresenter,
+                notifier: notifier,
+                alerter: alerter,
+                tagStore: tagStore
+            )
+            .setupAlbumHandlers(
+                modalPresenter: modalPresenter,
+                notifier: notifier,
+                alerter: alerter,
+                albumStore: albumStore
+            )
+            .setupPhotoLoadingHandlers(
+                presentationState: presentationState,
+                notifier: notifier,
+                photoStore: photoStore,
+                tagStore: tagStore,
+                fileStore: fileStore,
+                dateStore: dateStore,
+                placeStore: placeStore
+            )
+            .setupTagLoadingHandlers(
+                presentationState: presentationState,
+                tagPickerState: tagPickerState,
+                dateStore: dateStore,
+                notifier: notifier,
+            )
+            .setupPersonHandlers(
+                modalPresenter: modalPresenter,
+                notifier: notifier,
+                alerter: alerter,
+                personStore: personStore
+            )
+            .setupEventHandlers(
+                modalPresenter: modalPresenter,
+                notifier: notifier,
+                alerter: alerter,
+                eventStore: eventStore
+            )
+            .setupPresentationModeHandlers(presentationState: presentationState)
+            .setupPhotoSelectionHandlers(presentationState: presentationState)
+    }
+}
+
+private struct MainView: View {
+    var body: some View {
+        #if os(macOS)
+            NavigationSplitView {
+                SidebarView()
+            } detail: {
+                DetailView()
+            }.navigationSplitViewStyle(.balanced)
+        #else
             DetailView()
-        }
-        .navigationSplitViewStyle(.balanced)
-        .notification(
-            isPresented: $notifier.isVisible,
-            message: notifier.message,
-            style: notifier.style
-        )
-        .sheet(
-            item: $modalPresenter.item,
-            onDismiss: {
-                modalPresenter.item?.onDismiss?()
-            }
-        ) { item in
-            item.content
-        }
-        .alert(
-            alerter.title,
-            isPresented: $alerter.isVisible
-        ) {
-            Button(alerter.actionLabel, role: .destructive) {
-                alerter.action()
-            }
-            Button(alerter.cancelLabel, role: .cancel) {
-                alerter.cancel()
-            }
-        } message: {
-            Text(alerter.message)
-        }
-        .fileImporter(
-            isPresented: $fileImporter.isVisible,
-            allowedContentTypes: fileImporter.allowedContentTypes,
-            allowsMultipleSelection: fileImporter.multipleSelection,
-            onCompletion: fileImporter.action
-        )
-        .setupHandlers(
-            modalPresenter: modalPresenter,
-            notifier: notifier,
-            fileImporter: fileImporter,
-            alerter: alerter,
-        )
-        .setupTagHandlers(
-            modalPresenter: modalPresenter,
-            notifier: notifier,
-            alerter: alerter,
-            tagStore: tagStore
-        )
-        .setupAlbumHandlers(
-            modalPresenter: modalPresenter,
-            notifier: notifier,
-            alerter: alerter,
-            albumStore: albumStore
-        )
-        .setupPhotoLoadingHandlers(
-            presentationState: presentationState,
-            notifier: notifier,
-            photoStore: photoStore,
-            tagStore: tagStore,
-            fileStore: fileStore,
-            dateStore: dateStore,
-            placeStore: placeStore
-        )
-        .setupTagLoadingHandlers(
-            presentationState: presentationState,
-            tagPickerState: tagPickerState,
-            dateStore: dateStore,
-            notifier: notifier,
-        )
-        .setupPersonHandlers(
-            modalPresenter: modalPresenter,
-            notifier: notifier,
-            alerter: alerter,
-            personStore: personStore
-        )
-        .setupEventHandlers(
-            modalPresenter: modalPresenter,
-            notifier: notifier,
-            alerter: alerter,
-            eventStore: eventStore
-        )
-        .setupPresentationModeHandlers(presentationState: presentationState)
-        .setupPhotoSelectionHandlers(presentationState: presentationState)
+        #endif
     }
 }

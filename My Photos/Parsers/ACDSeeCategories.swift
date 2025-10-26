@@ -19,31 +19,42 @@ struct ACDSeeCategories {
         guard let xml else { return nil }
         return xml
     }
-    var categoriesXml: XMLDocument? {
-        guard let xml else { return nil }
-        guard let doc = try? XMLDocument(xmlString: xml) else { return nil }
 
-        return doc
-    }
-    var placesXml: XMLDocument? {
-        guard let categoriesXml else { return nil }
+    #if os(macOS)
+        var categoriesXml: XMLDocument? {
+            guard let xml else { return nil }
+            guard let doc = try? XMLDocument(xmlString: xml) else { return nil }
 
-        let xpath = "//Category[normalize-space(text())='Places']"
-        let nodes = try? categoriesXml.nodes(forXPath: xpath) as? [XMLElement]
-        guard let nodes else { return nil }
+            return doc
+        }
+    #endif
 
-        guard let node = nodes.first else { return nil }
+    #if os(macOS)
+        var placesXml: XMLDocument? {
+            guard let categoriesXml else { return nil }
 
-        node.detach()
+            let xpath = "//Category[normalize-space(text())='Places']"
+            let nodes =
+                try? categoriesXml.nodes(forXPath: xpath) as? [XMLElement]
+            guard let nodes else { return nil }
 
-        return XMLDocument(rootElement: node)
-    }
+            guard let node = nodes.first else { return nil }
+
+            node.detach()
+
+            return XMLDocument(rootElement: node)
+        }
+    #endif
 
     var places: [ParsedTag] {
-        guard let placesXml else { return [] }
-        return placesXml.buildTags()
+        #if os(macOS)
+            guard let placesXml else { return [] }
+            return placesXml.buildTags()
+        #else
+            return []
+        #endif
     }
-    
+
     var country: String? {
         return places.first?.name
     }
@@ -63,39 +74,42 @@ struct ACDSeeCategories {
     }
 }
 
-extension XMLDocument {
-    func buildTags() -> [ParsedTag] {
-        guard let root = rootElement() else { return [] }
+#if os(macOS)
+    extension XMLDocument {
+        func buildTags() -> [ParsedTag] {
+            guard let root = rootElement() else { return [] }
 
-        func build(from node: XMLElement) -> ParsedTag? {
-            guard let name = node.categoryLabel() else { return nil }
-            var tag = ParsedTag(name: name)
-            for case let child as XMLElement in node.children ?? [] {
-                if let builtChild = build(from: child) {
-                    tag.addChild(builtChild)
+            func build(from node: XMLElement) -> ParsedTag? {
+                guard let name = node.categoryLabel() else { return nil }
+                var tag = ParsedTag(name: name)
+                for case let child as XMLElement in node.children ?? [] {
+                    if let builtChild = build(from: child) {
+                        tag.addChild(builtChild)
+                    }
+                }
+                return tag
+            }
+
+            var tops: [ParsedTag] = []
+            for case let child as XMLElement in root.children ?? [] {
+                if let top = build(from: child) {
+                    tops.append(top)
                 }
             }
-            return tag
+            return tops
         }
+    }
+#endif
 
-        var tops: [ParsedTag] = []
-        for case let child as XMLElement in root.children ?? [] {
-            if let top = build(from: child) {
-                tops.append(top)
-            }
+#if os(macOS)
+    extension XMLElement {
+        func categoryLabel() -> String? {
+            let text = (children ?? [])
+                .filter { $0.kind == .text }
+                .compactMap { $0.stringValue }
+                .joined()
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            return text.isEmpty ? nil : text
         }
-        return tops
     }
-}
-
-extension XMLElement {
-    func categoryLabel() -> String? {
-        let text = (children ?? [])
-            .filter { $0.kind == .text }
-            .compactMap { $0.stringValue }
-            .joined()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        return text.isEmpty ? nil : text
-    }
-
-}
+#endif

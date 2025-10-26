@@ -23,17 +23,6 @@ extension View {
                     return .ignored
                 }
             }
-        #else
-            self.onMoveCommand { direction in
-                switch direction {
-                case .up:
-                    onUp()
-                case .down:
-                    onDown()
-                default:
-                    break
-                }
-            }
         #endif
     }
 }

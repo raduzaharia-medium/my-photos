@@ -35,6 +35,14 @@ struct DetailView: View {
                 PhotosGrid(photos: photos)
             }
             Tab("Map", systemImage: "map") { PhotosMap(photos: photos) }
+            Tab("Search", systemImage: "magnifyingglass", role: .search) {
+            }
         }
+        #if os(iOS) || os(tvOS)
+            .tabBarMinimizeBehavior(.onScrollDown)
+            .tabViewBottomAccessory {
+                SidebarFooter()
+            }
+        #endif
     }
 }
