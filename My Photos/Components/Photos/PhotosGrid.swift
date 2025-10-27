@@ -2,7 +2,6 @@ import SwiftData
 import SwiftUI
 
 struct PhotosGrid: View {
-    @Environment(PresentationState.self) private var presentationState
     @State private var path = NavigationPath()
     @State private var selection = Set<Photo>()
 
@@ -14,7 +13,7 @@ struct PhotosGrid: View {
                 MainPhotoGrid(selection: $selection, photos: photos) { photo in
                     path.append(photo)
                 }.onChange(of: selection) {
-                    presentationState.photoSelection = selection
+                    AppIntents.selectPhotos(Array(selection))
                 }
             }
             .navigationDestination(for: Photo.self) { photo in
@@ -54,21 +53,18 @@ private struct MainPhotoGrid: View {
 }
 
 private struct PhotoCards: View {
-    @Environment(PresentationState.self) private var presentationState
     @Binding var selection: Set<Photo>
 
     let photos: [Photo]
     let open: (Photo) -> Void
 
-    var allPhotosSelected: Bool { presentationState.allPhotosSelected }
+    var allSelected: Bool { selection.count == photos.count }
 
     var body: some View {
         ForEach(photos) { photo in
-            var isSelected: Bool {
-                selection.contains(photo) || allPhotosSelected
-            }
+            var isSelected: Bool { selection.contains(photo) || allSelected }
 
-            SelectablePhotoCard(photo: photo, isSelected: isSelected)
+            PhotoCard(photo, variant: .grid, isSelected: isSelected)
                 .contentShape(Rectangle())
                 .gesture(
                     TapGesture().modifiers(.command).onEnded {
@@ -83,25 +79,8 @@ private struct PhotoCards: View {
                     TapGesture(count: 2).onEnded { open(photo) }
                 )
                 .draggable(PhotoDragItem(photo.id)) {
-                    DragPreviewStack(
-                        count: presentationState.photoSelection.count
-                    )
+                    DragPreviewStack(count: selection.count)
                 }
         }
-    }
-}
-
-private struct SelectablePhotoCard: View {
-    @Environment(PresentationState.self) private var presentationState
-
-    let photo: Photo
-    let isSelected: Bool
-
-    var variant: PhotoCardVariant {
-        presentationState.isSelecting ? .selectable : .grid
-    }
-
-    var body: some View {
-        PhotoCard(photo, variant: variant, isSelected: isSelected)
     }
 }

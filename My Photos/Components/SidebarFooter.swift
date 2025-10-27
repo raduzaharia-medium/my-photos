@@ -38,7 +38,7 @@ struct SidebarFooter: View {
                     .tag(Filter.edited)
                     .help(Text("Show only edited photos"))
 
-                if state.isSelecting == true {
+                if !state.photoSelection.isEmpty {
                     Image(systemName: Filter.selected.icon)
                         .accessibilityLabel(Text(Filter.selected.name))
                         .tag(Filter.selected)

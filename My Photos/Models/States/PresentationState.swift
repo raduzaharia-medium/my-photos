@@ -8,10 +8,6 @@ final class PresentationState {
     var photoFilter: Set<SidebarItem> = []
     var photoSelection: Set<Photo> = []
     
-    var showOnlySelected: Bool = false
-    var isSelecting: Bool = false
-    var allPhotosSelected: Bool = false
-
     func isSelected(_ photo: Photo) -> Bool {
         return photoSelection.contains(photo)
     }

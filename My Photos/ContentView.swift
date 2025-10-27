@@ -101,7 +101,6 @@ struct ContentView: View {
                 confirmer: confirmer,
                 eventStore: eventStore
             )
-            .setupPresentationModeHandlers(presentationState: presentationState)
             .setupPhotoSelectionHandlers(presentationState: presentationState)
     }
 }

@@ -12,7 +12,6 @@ enum PhotoCardVariant: Hashable {
     case pin
     case grid
     case detail
-    case selectable
 
     var tokens: PhotoCardTokens {
         switch self {
@@ -39,14 +38,6 @@ enum PhotoCardVariant: Hashable {
                 shadowRadius: 8,
                 shadowOpacity: 0.2,
                 padding: 10,
-            )
-        case .selectable:
-            return .init(
-                size: nil,
-                cornerRadius: 12,
-                shadowRadius: 5,
-                shadowOpacity: 0.15,
-                padding: 8,
             )
         }
     }
@@ -85,14 +76,6 @@ struct PhotoCard: View {
                     .padding(variant.tokens.padding)
 
             }
-
-            if variant == .selectable {
-                Image(
-                    systemName: isSelected ? "checkmark.circle.fill" : "circle"
-                )
-                .imageScale(.large)
-                .padding(6)
-            }
         }
         .applyIf(variant.tokens.size != nil) { view in
             view.frame(width: variant.tokens.size, height: variant.tokens.size)
@@ -108,7 +91,7 @@ struct PhotoCard: View {
             ).stroke(
                 isSelected
                     ? (controlActiveState == .inactive
-                       ? Color.gray.opacity(0.8)
+                        ? Color.gray.opacity(0.8)
                         : Color.accentColor)
                     : Color.clear,
                 lineWidth: isSelected ? 2 : 0

@@ -98,51 +98,14 @@ extension View {
         return
             self
             .onReceive(
-                NotificationCenter.default.publisher(for: .selectPhoto)
+                NotificationCenter.default.publisher(for: .selectPhotos)
             ) { note in
-                guard let photo = note.object as? Photo else { return }
-                presentationState.photoSelection.insert(photo)
-            }.onReceive(
-                NotificationCenter.default.publisher(for: .deselectPhoto)
-            ) { note in
-                guard let photo = note.object as? Photo else { return }
-                presentationState.photoSelection.remove(photo)
-            }.onReceive(
-                NotificationCenter.default.publisher(for: .togglePhotoSelection)
-            ) { note in
-                guard let photo = note.object as? Photo else { return }
+                guard let photos = note.object as? [Photo] else { return }
 
-                if presentationState.photoSelection.contains(photo) {
-                    presentationState.photoSelection.remove(photo)
-                } else {
-                    presentationState.photoSelection.insert(photo)
+                withAnimation {
+                    presentationState.photoSelection = Set(photos)
                 }
-            }.onReceive(
-                NotificationCenter.default.publisher(
-                    for: .toggleSelectAllPhotos
-                )
-            ) { note in
-                presentationState.allPhotosSelected.toggle()
             }
-    }
-
-    func setupPresentationModeHandlers(presentationState: PresentationState)
-        -> some View
-    {
-        return self.onReceive(
-            NotificationCenter.default.publisher(for: .toggleSelectionMode)
-        ) { _ in
-            presentationState.isSelecting.toggle()
-            presentationState.showOnlySelected = false
-            presentationState.allPhotosSelected = false
-            presentationState.photoSelection.removeAll()
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .toggleSelectionFilter)
-        ) { _ in
-            withAnimation {
-                presentationState.showOnlySelected.toggle()
-            }
-        }
     }
 
     func setupHandlers(
