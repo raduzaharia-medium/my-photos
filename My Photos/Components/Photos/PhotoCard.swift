@@ -53,6 +53,8 @@ enum PhotoCardVariant: Hashable {
 }
 
 struct PhotoCard: View {
+    @Environment(\.controlActiveState) private var controlActiveState
+
     private let photo: Photo
     private let variant: PhotoCardVariant
     private var isSelected: Bool
@@ -103,9 +105,12 @@ struct PhotoCard: View {
             RoundedRectangle(
                 cornerRadius: variant.tokens.cornerRadius,
                 style: .continuous
-            )
-            .stroke(
-                isSelected ? Color.accentColor.opacity(0.6) : Color.clear,
+            ).stroke(
+                isSelected
+                    ? (controlActiveState == .inactive
+                       ? Color.gray.opacity(0.8)
+                        : Color.accentColor)
+                    : Color.clear,
                 lineWidth: isSelected ? 2 : 0
             )
         )
