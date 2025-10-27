@@ -49,7 +49,10 @@ struct ContentView: View {
             } message: {
                 Text(alerter.message)
             }
-            .confirmationDialog(confirmer.title, isPresented: $confirmer.isVisible) {
+            .confirmationDialog(
+                confirmer.title,
+                isPresented: $confirmer.isVisible
+            ) {
                 Button(confirmer.actionLabel, role: .destructive) {
                     confirmer.action()
                 }
@@ -101,7 +104,6 @@ struct ContentView: View {
                 confirmer: confirmer,
                 eventStore: eventStore
             )
-            .setupPhotoSelectionHandlers(presentationState: presentationState)
     }
 }
 

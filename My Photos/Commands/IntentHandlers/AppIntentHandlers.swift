@@ -89,23 +89,27 @@ extension View {
             } catch {
                 notifier.show("Failed to tag photos", .error)
             }
-        }
-    }
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .selectPhotos)
+        ) { note in
+            guard let photos = note.object as? [Photo] else { return }
 
-    func setupPhotoSelectionHandlers(presentationState: PresentationState)
-        -> some View
-    {
-        return
-            self
-            .onReceive(
-                NotificationCenter.default.publisher(for: .selectPhotos)
-            ) { note in
-                guard let photos = note.object as? [Photo] else { return }
+            withAnimation {
+                presentationState.photoSelection = Set(photos)
+            }
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .toggleSelection)
+        ) { note in
+            guard let photo = note.object as? Photo else { return }
 
-                withAnimation {
-                    presentationState.photoSelection = Set(photos)
+            withAnimation {
+                if presentationState.isSelected(photo) {
+                    presentationState.photoSelection.remove(photo)
+                } else {
+                    presentationState.photoSelection.insert(photo)
                 }
             }
+        }
     }
 
     func setupHandlers(

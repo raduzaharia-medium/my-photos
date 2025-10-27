@@ -21,7 +21,11 @@ struct PhotosGridToolbar: ToolbarContent {
                 .disabled(!allowTagging)
 
             Button {
-                AppIntents.toggleSelectAllPhotos()
+                if allSelected {
+                    AppIntents.selectPhotos([])
+                } else {
+                    AppIntents.selectPhotos(photos)
+                }
             } label: {
                 Image(systemName: selectionIcon)
             }.controlSize(.regular)
