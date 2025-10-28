@@ -14,23 +14,15 @@ struct PhotoNavigator: View {
 
     var body: some View {
         #if os(macOS)
-            DesktopNavigator(
-                index: $index,
-                currentPhoto: currentPhoto,
-                photos: photos
-            )
+            Desktop(index: $index, currentPhoto: currentPhoto, photos: photos)
         #endif
         #if os(iOS) || os(iPadOS)
-            MobileNavigator(
-                index: $index,
-                currentPhoto: currentPhoto,
-                photos: photos
-            )
+            Mobile(index: $index, currentPhoto: currentPhoto, photos: photos)
         #endif
     }
 }
 
-struct DesktopNavigator: View {
+private struct Desktop: View {
     @Binding var index: Int
     let currentPhoto: Photo
     let photos: [Photo]
@@ -48,7 +40,7 @@ struct DesktopNavigator: View {
     }
 }
 
-struct MobileNavigator: View {
+private struct Mobile: View {
     @Binding var index: Int
     let currentPhoto: Photo
     let photos: [Photo]
