@@ -11,6 +11,7 @@ extension Notification.Name {
 
     static let importPhotos = Notification.Name("importPhotos")
     static let selectPhotos = Notification.Name("selectPhotos")
+    static let enablePhotoSelectionMode = Notification.Name("enablePhotoSelectionMode")
     static let toggleSelection = Notification.Name("toggleSelection")
     static let tagSelectedPhotos = Notification.Name("tagSelectedPhotos")
 }
@@ -39,6 +40,9 @@ enum AppIntents {
 
     static func selectPhotos(_ photos: [Photo]) {
         NotificationCenter.default.post(name: .selectPhotos, object: photos)
+    }
+    static func enablePhotoSelectionMode() {
+        NotificationCenter.default.post(name: .enablePhotoSelectionMode, object: nil)
     }
     static func toggleSelection(_ photo: Photo) {
         NotificationCenter.default.post(name: .toggleSelection, object: photo)

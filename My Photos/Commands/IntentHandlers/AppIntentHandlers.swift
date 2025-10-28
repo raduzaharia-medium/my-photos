@@ -97,7 +97,11 @@ extension View {
             withAnimation {
                 presentationState.photoSelection = Set(photos)
             }
-        }.onReceive(
+        }.onReceive(NotificationCenter.default.publisher(for: .enablePhotoSelectionMode)) {
+            _ in
+            presentationState.photoSelectionMode = true
+        }
+        .onReceive(
             NotificationCenter.default.publisher(for: .toggleSelection)
         ) { note in
             guard let photo = note.object as? Photo else { return }

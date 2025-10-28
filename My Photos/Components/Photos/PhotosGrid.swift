@@ -83,9 +83,18 @@ private struct PhotoCards: View {
                     }
                 #endif
                 #if os(iOS)
-                    .onTapGesture { open(photo) }
+                    .onTapGesture {
+                        if state.photoSelectionMode {
+                            AppIntents.toggleSelection(photo)
+                        } else {
+                            open(photo)
+                        }
+                    }
                     .onLongPressGesture(minimumDuration: 0.3) {
-                        withAnimation { AppIntents.selectPhotos([photo]) }
+                        withAnimation {
+                            AppIntents.enablePhotoSelectionMode()
+                            AppIntents.selectPhotos([photo])
+                        }
                     }
                 #endif
         }

@@ -44,6 +44,8 @@ enum PhotoCardVariant: Hashable {
 }
 
 struct PhotoCard: View {
+    @Environment(PresentationState.self) private var presentationState
+
     #if os(macOS) || os(iPadOS)
         @Environment(\.controlActiveState) private var controlActiveState
     #endif
@@ -51,14 +53,6 @@ struct PhotoCard: View {
     private let photo: Photo
     private let variant: PhotoCardVariant
     private var isSelected: Bool
-
-    var windowIsActive: Bool {
-        #if os(macOS) || os(iPadOS)
-            return controlActiveState == .active
-        #else
-            return true
-        #endif
-    }
 
     init(_ photo: Photo, variant: PhotoCardVariant, isSelected: Bool = false) {
         self.photo = photo
@@ -86,6 +80,17 @@ struct PhotoCard: View {
                     .padding(variant.tokens.padding)
 
             }
+
+            #if os(iOS)
+                if variant == .grid && presentationState.photoSelectionMode {
+                    Image(
+                        systemName: isSelected
+                            ? "checkmark.circle.fill" : "circle"
+                    )
+                    .imageScale(.large)
+                    .padding(6)
+                }
+            #endif
         }
         .applyIf(variant.tokens.size != nil) { view in
             view.frame(width: variant.tokens.size, height: variant.tokens.size)
@@ -94,19 +99,21 @@ struct PhotoCard: View {
             view.aspectRatio(1, contentMode: .fit)
         }
         .contentShape(Rectangle())
-        .overlay(
-            RoundedRectangle(
-                cornerRadius: variant.tokens.cornerRadius,
-                style: .continuous
+        #if os(macOS)
+            .overlay(
+                RoundedRectangle(
+                    cornerRadius: variant.tokens.cornerRadius,
+                    style: .continuous
+                )
+                .stroke(
+                    isSelected
+                        ? (!controlActiveState == .active
+                            ? Color.gray.opacity(0.8) : Color.accentColor)
+                        : Color.clear,
+                    lineWidth: isSelected ? 2 : 0
+                )
             )
-            .stroke(
-                isSelected
-                    ? (!windowIsActive
-                        ? Color.gray.opacity(0.8) : Color.accentColor)
-                    : Color.clear,
-                lineWidth: isSelected ? 2 : 0
-            )
-        )
+        #endif
     }
 }
 
