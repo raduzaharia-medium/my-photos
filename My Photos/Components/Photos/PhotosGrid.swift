@@ -41,17 +41,11 @@ private struct MainPhotoGrid: View {
     let open: (Photo) -> Void
 
     var body: some View {
-        ZStack {
-            Color.clear
-                .contentShape(Rectangle())
-                .onTapGesture { AppIntents.selectPhotos([]) }
-
-            LazyVGrid(columns: columns, spacing: 8) {
-                PhotoCards(photos: photos, open: open)
-                    .buttonStyle(.plain)
-            }
-            .padding(.all)
+        LazyVGrid(columns: columns, spacing: 8) {
+            PhotoCards(photos: photos, open: open)
+                .buttonStyle(.plain)
         }
+        .padding(.all)
     }
 }
 
@@ -69,10 +63,14 @@ private struct PhotoCards: View {
                 .contentShape(Rectangle())
                 .gesture(
                     TapGesture().modifiers(.command).onEnded {
-                        AppIntents.toggleSelection(photo)
+                        withAnimation {
+                            AppIntents.toggleSelection(photo)
+                        }
                     }
                 )
-                .onTapGesture { AppIntents.selectPhotos([photo]) }
+                .onTapGesture {
+                    withAnimation { AppIntents.selectPhotos([photo]) }
+                }
                 .simultaneousGesture(
                     TapGesture(count: 2).onEnded { open(photo) }
                 )

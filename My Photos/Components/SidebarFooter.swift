@@ -43,8 +43,10 @@ struct SidebarFooter: View {
                         .accessibilityLabel(Text(Filter.selected.name))
                         .tag(Filter.selected)
                         .help(Text("Show only selected photos"))
+                        .transition(.move(edge: .trailing))
                 }
             }
+            .animation(.default, value: state.photoSelection)
             .pickerStyle(.segmented)
             .labelsHidden()
         }
