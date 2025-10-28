@@ -34,14 +34,16 @@ struct AlbumInput: View {
                     .padding(.leading, selection.isEmpty ? 6 : 0)
                     .textFieldStyle(.plain)
                     .focused($isTextFieldFocused)
-                    .textInputSuggestions {
-                        if searchText.count > 1 {
-                            ForEach(filteredAlbums) { album in
-                                Label(album.name, systemImage: Album.icon)
+                    #if os(macOS) || os(iPadOS)
+                        .textInputSuggestions {
+                            if searchText.count > 1 {
+                                ForEach(filteredAlbums) { album in
+                                    Label(album.name, systemImage: Album.icon)
                                     .textInputCompletion(album.name)
+                                }
                             }
                         }
-                    }
+                    #endif
                     .onSubmit {
                         if let first = filteredAlbums.first {
                             selection.insert(first)

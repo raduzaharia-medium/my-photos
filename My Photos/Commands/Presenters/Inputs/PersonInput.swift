@@ -34,14 +34,16 @@ struct PersonInput: View {
                     .padding(.leading, selection.isEmpty ? 6 : 0)
                     .textFieldStyle(.plain)
                     .focused($isTextFieldFocused)
-                    .textInputSuggestions {
-                        if searchText.count > 1 {
-                            ForEach(filteredPeople) { person in
-                                Label(person.name, systemImage: Person.icon)
+                    #if os(macOS) || os(iPadOS)
+                        .textInputSuggestions {
+                            if searchText.count > 1 {
+                                ForEach(filteredPeople) { person in
+                                    Label(person.name, systemImage: Person.icon)
                                     .textInputCompletion(person.name)
+                                }
                             }
                         }
-                    }
+                    #endif
                     .onSubmit {
                         if let first = filteredPeople.first {
                             selection.insert(first)

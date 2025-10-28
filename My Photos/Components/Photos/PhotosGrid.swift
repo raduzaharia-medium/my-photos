@@ -2,6 +2,10 @@ import SwiftData
 import SwiftUI
 
 struct PhotosGrid: View {
+    #if os(iOS)
+        @Namespace private var transition
+    #endif
+
     @State private var path = NavigationPath()
 
     let photos: [Photo]
@@ -12,17 +16,17 @@ struct PhotosGrid: View {
                 MainPhotoGrid(photos: photos) { photo in
                     path.append(photo)
                 }
+                #if os(iOS)
+                    .matchedTransitionSource(id: "zoom", in: transition)
+                #endif
             }
             .navigationDestination(for: Photo.self) { photo in
-                if let index = photos.firstIndex(of: photo), !photos.isEmpty {
-                    PhotoNavigator(photos, index: index)
-                } else {
-                    ContentUnavailableView(
-                        "Photo unavailable",
-                        systemImage: "exclamationmark.triangle",
-                        description: Text("This photo can’t be opened.")
-                    )
-                }
+                PhotoViewer(photo: photo, photos: photos)
+                    #if os(iOS)
+                        .navigationTransition(
+                            .zoom(sourceID: "zoom", in: transition)
+                        )
+                    #endif
             }
             .toolbar { PhotosGridToolbar(photos: photos) }
             .onChange(of: photos) {
@@ -61,22 +65,43 @@ private struct PhotoCards: View {
 
             PhotoCard(photo, variant: .grid, isSelected: isSelected)
                 .contentShape(Rectangle())
-                .gesture(
-                    TapGesture().modifiers(.command).onEnded {
-                        withAnimation {
-                            AppIntents.toggleSelection(photo)
+                #if os(macOS) || os(iPadOS)
+                    .gesture(
+                        TapGesture().modifiers(.command).onEnded {
+                            withAnimation {
+                                AppIntents.toggleSelection(photo)
+                            }
                         }
+                    ).onTapGesture {
+                        withAnimation { AppIntents.selectPhotos([photo]) }
                     }
-                )
-                .onTapGesture {
-                    withAnimation { AppIntents.selectPhotos([photo]) }
-                }
-                .simultaneousGesture(
-                    TapGesture(count: 2).onEnded { open(photo) }
-                )
-                .draggable(PhotoDragItem(photo.id)) {
-                    DragPreviewStack(count: state.photoSelection.count)
-                }
+                    .simultaneousGesture(
+                        TapGesture(count: 2).onEnded { open(photo) }
+                    )
+                    .draggable(PhotoDragItem(photo.id)) {
+                        DragPreviewStack(count: state.photoSelection.count)
+                    }
+                #endif
+                #if os(iOS)
+                    .onTapGesture { open(photo) }
+                #endif
+        }
+    }
+}
+
+private struct PhotoViewer: View {
+    let photo: Photo
+    let photos: [Photo]
+
+    var body: some View {
+        if let index = photos.firstIndex(of: photo), !photos.isEmpty {
+            PhotoNavigator(photos, index: index)
+        } else {
+            ContentUnavailableView(
+                "Photo unavailable",
+                systemImage: "exclamationmark.triangle",
+                description: Text("This photo can’t be opened.")
+            )
         }
     }
 }

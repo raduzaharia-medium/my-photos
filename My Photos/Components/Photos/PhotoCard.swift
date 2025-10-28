@@ -34,9 +34,9 @@ enum PhotoCardVariant: Hashable {
         case .detail:
             return .init(
                 size: nil,
-                cornerRadius: 16,
-                shadowRadius: 8,
-                shadowOpacity: 0.2,
+                cornerRadius: 0,
+                shadowRadius: 0,
+                shadowOpacity: 0,
                 padding: 10,
             )
         }
@@ -44,11 +44,21 @@ enum PhotoCardVariant: Hashable {
 }
 
 struct PhotoCard: View {
-    @Environment(\.controlActiveState) private var controlActiveState
+    #if os(macOS) || os(iPadOS)
+        @Environment(\.controlActiveState) private var controlActiveState
+    #endif
 
     private let photo: Photo
     private let variant: PhotoCardVariant
     private var isSelected: Bool
+
+    var windowIsActive: Bool {
+        #if os(macOS) || os(iPadOS)
+            return controlActiveState == .active
+        #else
+            return true
+        #endif
+    }
 
     init(_ photo: Photo, variant: PhotoCardVariant, isSelected: Bool = false) {
         self.photo = photo
@@ -88,11 +98,11 @@ struct PhotoCard: View {
             RoundedRectangle(
                 cornerRadius: variant.tokens.cornerRadius,
                 style: .continuous
-            ).stroke(
+            )
+            .stroke(
                 isSelected
-                    ? (controlActiveState == .inactive
-                        ? Color.gray.opacity(0.8)
-                        : Color.accentColor)
+                    ? (!windowIsActive
+                        ? Color.gray.opacity(0.8) : Color.accentColor)
                     : Color.clear,
                 lineWidth: isSelected ? 2 : 0
             )

@@ -34,14 +34,16 @@ struct EventInput: View {
                     .padding(.leading, selection.isEmpty ? 6 : 0)
                     .textFieldStyle(.plain)
                     .focused($isTextFieldFocused)
-                    .textInputSuggestions {
-                        if searchText.count > 1 {
-                            ForEach(filteredEvents) { event in
-                                Label(event.name, systemImage: Event.icon)
+                    #if os(macOS) || os(iPadOS)
+                        .textInputSuggestions {
+                            if searchText.count > 1 {
+                                ForEach(filteredEvents) { event in
+                                    Label(event.name, systemImage: Event.icon)
                                     .textInputCompletion(event.name)
+                                }
                             }
                         }
-                    }
+                    #endif
                     .onSubmit {
                         if let first = filteredEvents.first {
                             selection.insert(first)

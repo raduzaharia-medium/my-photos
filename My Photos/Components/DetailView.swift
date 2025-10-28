@@ -40,9 +40,6 @@ struct DetailView: View {
         }
         #if os(iOS) || os(tvOS)
             .tabBarMinimizeBehavior(.onScrollDown)
-            .tabViewBottomAccessory {
-                SidebarFooter()
-            }
         #endif
     }
 }

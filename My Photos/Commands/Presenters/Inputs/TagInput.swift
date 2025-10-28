@@ -34,14 +34,16 @@ struct TagInput: View {
                     .padding(.leading, selection.isEmpty ? 6 : 0)
                     .textFieldStyle(.plain)
                     .focused($isTextFieldFocused)
-                    .textInputSuggestions {
-                        if searchText.count > 1 {
-                            ForEach(filteredTags) { tag in
-                                Label(tag.name, systemImage: Tag.icon)
+                    #if os(macOS) || os(iPadOS)
+                        .textInputSuggestions {
+                            if searchText.count > 1 {
+                                ForEach(filteredTags) { tag in
+                                    Label(tag.name, systemImage: Tag.icon)
                                     .textInputCompletion(tag.name)
+                                }
                             }
                         }
-                    }
+                    #endif
                     .onSubmit {
                         if let first = filteredTags.first {
                             selection.insert(first)
