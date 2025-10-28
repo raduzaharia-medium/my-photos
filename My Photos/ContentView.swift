@@ -23,6 +23,9 @@ struct ContentView: View {
 
     var body: some View {
         MainView()
+            .animation(.default, value: presentationState.photoFilter)
+            .animation(.default, value: presentationState.photoSelection)
+            .animation(.default, value: presentationState.photoSource)
             .notification(
                 isPresented: $notifier.isVisible,
                 message: notifier.message,

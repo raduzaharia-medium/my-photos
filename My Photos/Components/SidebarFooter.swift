@@ -1,23 +1,23 @@
 import SwiftUI
 
 struct SidebarFooter: View {
-    @Environment(PresentationState.self) private var state
-    @State private var photoSource: Filter = .all
+    @Bindable var state: PresentationState
 
     var body: some View {
         HStack {
-            if !state.photoFilter.isEmpty {
+            if !state.photoFilter.isEmpty || state.photoSource != .all {
                 Button {
                     withAnimation {
-                        photoSource = .all
+                        state.photoSource = .all
                         state.photoFilter = []
                     }
                 } label: {
                     Image(systemName: "arrow.counterclockwise.circle")
-                }.buttonStyle(.borderless).help("Reset filters")
+                }.buttonStyle(.borderless)
+                    .help("Reset filters")
             }
 
-            Picker("", selection: $photoSource) {
+            Picker("", selection: $state.photoSource) {
                 Image(systemName: Filter.all.icon)
                     .accessibilityLabel(Text(Filter.all.name))
                     .tag(Filter.all)
@@ -47,11 +47,9 @@ struct SidebarFooter: View {
             }
             .pickerStyle(.segmented)
             .labelsHidden()
-            .onChange(of: photoSource) {
-                withAnimation {
-                    state.photoSource = photoSource
-                }
-            }
         }
+        .animation(.default, value: state.photoFilter)
+        .animation(.default, value: state.photoSource)
+        .animation(.default, value: state.photoSelection)
     }
 }

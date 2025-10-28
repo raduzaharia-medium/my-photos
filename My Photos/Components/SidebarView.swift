@@ -3,8 +3,7 @@ import UniformTypeIdentifiers
 
 struct SidebarView: View {
     @Environment(PresentationState.self) private var state
-    @State private var selection: Set<SidebarItem> = [.all]
-
+    
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -15,10 +14,15 @@ struct SidebarView: View {
             Spacer()
         }.padding()
 
-        List(selection: $selection) {
-            Label(SidebarItem.all.name, systemImage: SidebarItem.all.icon)
-                .tag(SidebarItem.all)
+        SidebarList(state: state)
+    }
+}
 
+private struct SidebarList: View {
+    @Bindable var state: PresentationState
+    
+    var body: some View {
+        List(selection: $state.photoFilter) {
             DatesSection()
             PlacesSection()
             AlbumsSection()
@@ -27,23 +31,13 @@ struct SidebarView: View {
             TagsSection()
         }
         .listStyle(.sidebar)
-        .onChange(of: selection) {
-            withAnimation {
-                if selection.contains(SidebarItem.all) {
-                    selection = [.all]
-                    state.photoFilter = []
-                } else {
-                    state.photoFilter = selection.filter { $0 != .all }
-                }
-            }
-        }
         #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
         #endif
         .toolbar {
             TagToolbar()
         }.safeAreaBar(edge: .bottom) {
-            SidebarFooter()
+            SidebarFooter(state: state)
         }.padding(12)
     }
 }
