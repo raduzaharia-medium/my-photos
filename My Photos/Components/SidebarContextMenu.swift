@@ -36,12 +36,6 @@ struct SidebarContextMenu: View {
                 } else if case .person(let person) = current {
                     PersonIntents.requestDelete(person)
                 } else if case .tag(let tag) = current {
-                    confirmationDialog(
-                        "Delete Tag",
-                        isPresented: $deleteTagConfirmationPresented
-                    ) {
-
-                    }
                     TagIntents.requestDelete(tag)
                 }
             } label: {
