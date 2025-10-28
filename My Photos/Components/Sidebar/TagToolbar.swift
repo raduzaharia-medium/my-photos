@@ -2,7 +2,7 @@ import SwiftUI
 
 struct TagToolbar: ToolbarContent {
     var body: some ToolbarContent {
-        ToolbarItem {
+        ToolbarItem(placement: .topBarTrailing) {
             Menu {
                 Button {
                     AlbumIntents.requestCreate()

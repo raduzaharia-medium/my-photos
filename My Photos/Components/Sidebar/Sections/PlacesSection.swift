@@ -11,7 +11,8 @@ struct PlacesSection: View {
                     DateSectionLocalities(country: country)
                 } label: {
                     SidebarRow(.placeCountry(country)).tag(country)
-                }
+                }.listRowSeparator(.hidden)
+
             }
         }
     }

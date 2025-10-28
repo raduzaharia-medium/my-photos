@@ -36,6 +36,11 @@ struct DetailView: View {
             }
             Tab("Map", systemImage: "map") { PhotosMap(photos: photos) }
             Tab("Search", systemImage: "magnifyingglass", role: .search) {
+                NavigationStack {
+                    SidebarView()
+                        .navigationTitle("Search and filter")
+                        .toolbarTitleDisplayMode(.inline)
+                }
             }
         }
         #if os(iOS) || os(tvOS)

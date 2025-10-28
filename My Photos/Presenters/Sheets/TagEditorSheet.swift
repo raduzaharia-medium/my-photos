@@ -29,9 +29,9 @@ struct TagEditorSheet: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                NameInput(name: $name)
-                    .onSubmit { onSave(tag, trim, parent) }
+                NameInput(name: $name).onSubmit { onSave(tag, trim, parent) }
                 ParentPicker(parent: $parent, tag: tag)
+                Spacer(minLength: 0)
             }.padding(20)
                 .navigationTitle(title)
                 .toolbar {
@@ -47,6 +47,8 @@ struct TagEditorSheet: View {
                 }
                 .interactiveDismissDisabled(!canSave)
         }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
     }
 }
 

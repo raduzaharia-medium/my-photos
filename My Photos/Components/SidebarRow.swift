@@ -31,6 +31,13 @@ struct SidebarRow: View {
                 Image(
                     systemName: isSelected ? "checkmark.circle.fill" : "circle"
                 )
+                .onTapGesture {
+                    if isSelected {
+                        state.photoFilter.remove(item)
+                    } else {
+                        state.photoFilter.insert(item)
+                    }
+                }
                 .tint(isSelected ? .accentColor : .secondary)
                 .accessibilityLabel(isSelected ? "Selected" : "Not selected")
             #endif
@@ -39,5 +46,6 @@ struct SidebarRow: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel(item.name)
         .contextMenu { SidebarContextMenu(current: item) }
+        .listRowSeparator(.hidden)
     }
 }

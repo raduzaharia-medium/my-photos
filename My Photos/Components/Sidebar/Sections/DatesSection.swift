@@ -11,7 +11,8 @@ struct DatesSection: View {
                     DateSectionMonths(year: year)
                 } label: {
                     SidebarRow(.dateYear(year)).tag(year)
-                }
+                }.listRowSeparator(.hidden)
+
             }
         }
     }
@@ -32,7 +33,8 @@ private struct DateSectionMonths: View {
                 DateSectionDays(month: month)
             } label: {
                 SidebarRow(.dateMonth(month)).tag(month)
-            }
+            }.listRowSeparator(.hidden)
+
         }
     }
 }

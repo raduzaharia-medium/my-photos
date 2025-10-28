@@ -1,34 +1,34 @@
 import SwiftUI
 
-struct AlbumEditorSheet: View {
+struct PersonEditorSheet: View {
     @State private var name: String
 
-    let album: Album?
+    let person: Person?
 
-    var title: String { album == nil ? "New Album" : "Edit Album" }
+    var title: String { person == nil ? "New Person" : "Edit Person" }
     var trim: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
     var canSave: Bool { !trim.isEmpty }
 
-    var onSave: (Album?, String) -> Void
+    var onSave: (Person?, String) -> Void
     var onCancel: () -> Void
 
     init(
-        _ album: Album? = nil,
-        onSave: @escaping (Album?, String) -> Void,
+        _ person: Person? = nil,
+        onSave: @escaping (Person?, String) -> Void,
         onCancel: @escaping () -> Void
     ) {
-        self.album = album
+        self.person = person
         self.onSave = onSave
         self.onCancel = onCancel
 
-        _name = State(initialValue: album?.name ?? "")
+        _name = State(initialValue: person?.name ?? "")
     }
 
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                NameInput(name: $name)
-                    .onSubmit { onSave(album, trim) }
+                NameInput(name: $name).onSubmit { onSave(person, trim) }
+                Spacer(minLength: 0)
             }.padding(20)
                 .navigationTitle(title)
                 .toolbar {
@@ -37,13 +37,15 @@ struct AlbumEditorSheet: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save", role: .confirm) {
-                            onSave(album, trim)
+                            onSave(person, trim)
                         }.keyboardShortcut(.defaultAction)
                             .disabled(!canSave)
                     }
                 }
                 .interactiveDismissDisabled(!canSave)
         }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
     }
 }
 
@@ -55,7 +57,7 @@ private struct NameInput: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Name").font(.caption).foregroundStyle(.secondary)
             TextField(
-                "e.g. Winter Vacation, Kittens",
+                "e.g. Michael, Sophie Smith",
                 text: $name
             )
             .textFieldStyle(.roundedBorder)

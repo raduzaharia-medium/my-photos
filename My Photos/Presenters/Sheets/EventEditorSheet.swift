@@ -27,8 +27,8 @@ struct EventEditorSheet: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                NameInput(name: $name)
-                    .onSubmit { onSave(event, trim) }
+                NameInput(name: $name).onSubmit { onSave(event, trim) }
+                Spacer(minLength: 0)
             }.padding(20)
                 .navigationTitle(title)
                 .toolbar {
@@ -44,6 +44,8 @@ struct EventEditorSheet: View {
                 }
                 .interactiveDismissDisabled(!canSave)
         }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
     }
 }
 

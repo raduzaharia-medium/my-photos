@@ -3,16 +3,18 @@ import UniformTypeIdentifiers
 
 struct SidebarView: View {
     @Environment(PresentationState.self) private var state
-    
+
     var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text("Photos").font(.title)
-                Text("Showing \(state.photoSource.name.lowercased())")
-                    .font(.subheadline)
-            }
-            Spacer()
-        }.padding()
+        #if os(macOS)
+            HStack {
+                VStack(alignment: .leading) {
+                    Text("Photos").font(.title)
+                    Text("Showing \(state.photoSource.name.lowercased())")
+                        .font(.subheadline)
+                }
+                Spacer()
+            }.padding()
+        #endif
 
         SidebarList(state: state)
     }
@@ -20,7 +22,7 @@ struct SidebarView: View {
 
 private struct SidebarList: View {
     @Bindable var state: PresentationState
-    
+
     var body: some View {
         List(selection: $state.photoFilter) {
             DatesSection()
@@ -31,13 +33,15 @@ private struct SidebarList: View {
             TagsSection()
         }
         .listStyle(.sidebar)
+        .toolbar { TagToolbar() }
+        .padding(12)
         #if os(macOS)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
+            .safeAreaBar(edge: .bottom) { SidebarFooter(state: state) }
         #endif
-        .toolbar {
-            TagToolbar()
-        }.safeAreaBar(edge: .bottom) {
-            SidebarFooter(state: state)
-        }.padding(12)
+        #if os(iOS)
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
+        #endif
     }
 }

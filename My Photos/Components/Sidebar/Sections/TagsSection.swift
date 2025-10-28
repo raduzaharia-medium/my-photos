@@ -15,7 +15,8 @@ struct TagsSection: View {
                         TagSectionChildren(parent: tag)
                     } label: {
                         TagRow(tag: tag)
-                    }
+                    }.listRowSeparator(.hidden)
+
                 }
             }
         }
@@ -40,7 +41,8 @@ private struct TagSectionChildren: View {
                     TagSectionChildren(parent: tag)
                 } label: {
                     TagRow(tag: tag)
-                }
+                }.listRowSeparator(.hidden)
+
             }
         }
     }

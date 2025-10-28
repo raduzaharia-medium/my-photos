@@ -55,3 +55,4 @@ struct SidebarFooter: View {
         .animation(.default, value: state.photoSelection)
     }
 }
+
