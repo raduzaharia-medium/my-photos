@@ -19,12 +19,13 @@ struct PhotosGridToolbar: ToolbarContent {
         #if os(iOS)
             if state.photoSelectionMode {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
+                    Button("Done", role: .cancel) {
                         AppIntents.selectPhotos([])
                         state.photoSelectionMode = false
                     }
                     .accessibilityIdentifier("Done")
                     .keyboardShortcut(.cancelAction)
+                    .tint(.accentColor)
                 }
             }
         #endif
