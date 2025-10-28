@@ -45,7 +45,7 @@ struct TagPickerSheet: View {
                 }
             }
             .padding(20)
-            .frame(minWidth: 360, minHeight: 300)
+            .frame(minHeight: 200)
             .navigationTitle("Assign Tags")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
