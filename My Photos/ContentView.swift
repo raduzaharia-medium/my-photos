@@ -4,7 +4,6 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.modelContext) private var context
     @Environment(PresentationState.self) private var presentationState
-    @Environment(TagPickerState.self) private var tagPickerState
 
     @StateObject private var modalPresenter = ModalService()
     @StateObject private var alerter = AlertService()
