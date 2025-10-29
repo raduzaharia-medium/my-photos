@@ -22,6 +22,7 @@ struct PhotoNavigator: View {
     }
 }
 
+#if os(macOS)
 private struct Desktop: View {
     @Binding var index: Int
     let currentPhoto: Photo
@@ -39,8 +40,9 @@ private struct Desktop: View {
         .navigationTitle(Text(currentPhoto.title))
     }
 }
+#endif
 
-#if os(iOS)
+#if os(iOS) || os(iPadOS)
     private struct Mobile: View {
         @Binding var index: Int
         let currentPhoto: Photo

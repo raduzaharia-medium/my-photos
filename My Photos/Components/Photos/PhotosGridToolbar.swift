@@ -21,7 +21,7 @@ struct PhotosGridToolbar: ToolbarContent {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done", role: .cancel) {
                         AppIntents.selectPhotos([])
-                        state.photoSelectionMode = false
+                        AppIntents.disablePhotoSelectionMode()
                     }
                     .accessibilityIdentifier("Done")
                     .keyboardShortcut(.cancelAction)

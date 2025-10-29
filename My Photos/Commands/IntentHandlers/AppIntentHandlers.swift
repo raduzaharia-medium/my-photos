@@ -97,9 +97,16 @@ extension View {
             withAnimation {
                 presentationState.photoSelection = Set(photos)
             }
-        }.onReceive(NotificationCenter.default.publisher(for: .enablePhotoSelectionMode)) {
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .enablePhotoSelectionMode)
+        ) {
             _ in
             presentationState.photoSelectionMode = true
+        }.onReceive(
+            NotificationCenter.default.publisher(for: .disablePhotoSelectionMode)
+        ) {
+            _ in
+            presentationState.photoSelectionMode = false
         }
         .onReceive(
             NotificationCenter.default.publisher(for: .toggleSelection)
