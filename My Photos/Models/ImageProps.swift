@@ -24,6 +24,10 @@ struct ImageProps {
     private var gpsLonKey: CFString { kCGImagePropertyGPSLongitude }
     private var gpsLonRefKey: CFString { kCGImagePropertyGPSLongitudeRef }
 
+    private var iptcLocationCreatedKey: CFString {
+        kCGImagePropertyIPTCExtLocationCreated
+    }
+
     private var iptcCountryKeyNew: CFString {
         kCGImagePropertyIPTCExtLocationCountryName
     }
@@ -80,20 +84,27 @@ struct ImageProps {
         return GeoCoordinate(latitude, longitude)
     }
 
+    var locationCreated: NSDictionary? {
+        let result = iptc?[iptcLocationCreatedKey] as? [NSDictionary]
+        return result?[0]
+    }
+
     var country: String? {
         let iptcCountry = iptc?[iptcCountryKey] as? String
         let iptcCountryNew = iptc?[iptcCountryKeyNew] as? String
         let xmpCountry = xmp?[xmpCountryKey] as? String
+        let iptcCreatedCountry = locationCreated?["CountryName"] as? String
 
-        return iptcCountryNew ?? iptcCountry ?? xmpCountry
+        return iptcCreatedCountry ?? iptcCountryNew ?? iptcCountry ?? xmpCountry
     }
 
     var city: String? {
         let iptcCity = iptc?[iptcCityKey] as? String
         let iptcCityNew = iptc?[iptcCityKeyNew] as? String
         let xmpCity = xmp?[xmpCityKey] as? String
+        let iptcCreatedCity = locationCreated?["City"] as? String
 
-        return iptcCityNew ?? iptcCity ?? xmpCity
+        return iptcCreatedCity ?? iptcCityNew ?? iptcCity ?? xmpCity
     }
 
     private var titleString: String? {
