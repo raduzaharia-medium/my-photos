@@ -107,7 +107,7 @@ struct PhotoCard: View {
                 )
                 .stroke(
                     isSelected
-                        ? (!controlActiveState == .active
+                        ? (controlActiveState == .inactive
                             ? Color.gray.opacity(0.8) : Color.accentColor)
                         : Color.clear,
                     lineWidth: isSelected ? 2 : 0

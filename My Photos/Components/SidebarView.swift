@@ -5,7 +5,7 @@ struct SidebarView: View {
     @Environment(PresentationState.self) private var state
 
     var body: some View {
-        #if os(macOS)
+        #if os(macOS) || os(iPadOS)
             HStack {
                 VStack(alignment: .leading) {
                     Text("Photos").font(.title)
@@ -35,8 +35,7 @@ private struct SidebarList: View {
         .listStyle(.sidebar)
         .toolbar { TagToolbar() }
         .padding(12)
-        #if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
+        #if os(macOS) || os(iPadOS)
             .safeAreaBar(edge: .bottom) { SidebarFooter(state: state) }
         #endif
         #if os(iOS)

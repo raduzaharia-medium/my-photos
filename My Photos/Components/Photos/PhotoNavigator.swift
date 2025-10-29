@@ -40,25 +40,29 @@ private struct Desktop: View {
     }
 }
 
-private struct Mobile: View {
-    @Binding var index: Int
-    let currentPhoto: Photo
-    let photos: [Photo]
+#if os(iOS)
+    private struct Mobile: View {
+        @Binding var index: Int
+        let currentPhoto: Photo
+        let photos: [Photo]
 
-    var body: some View {
-        VStack(spacing: 0) {
-            TabView(selection: $index) {
-                ForEach(Array(photos.enumerated()), id: \.offset) { i, photo in
-                    PhotoCard(photo, variant: .detail)
-                        .padding(16)
-                        .tag(i)
+        var body: some View {
+            VStack(spacing: 0) {
+                TabView(selection: $index) {
+                    ForEach(Array(photos.enumerated()), id: \.offset) {
+                        i,
+                        photo in
+                        PhotoCard(photo, variant: .detail)
+                            .padding(16)
+                            .tag(i)
+                    }
                 }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .animation(.default, value: index)
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .animation(.default, value: index)
+            .focusable()
+            .toolbarBackground(.hidden, for: .automatic)
+            .navigationTitle(Text(currentPhoto.title))
         }
-        .focusable()
-        .toolbarBackground(.hidden, for: .automatic)
-        .navigationTitle(Text(currentPhoto.title))
     }
-}
+#endif

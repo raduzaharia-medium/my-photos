@@ -111,12 +111,13 @@ struct ContentView: View {
 
 private struct MainView: View {
     var body: some View {
-        #if os(macOS)
+        #if os(macOS) || os(iPadOS)
             NavigationSplitView {
                 SidebarView()
             } detail: {
                 DetailView()
             }.navigationSplitViewStyle(.balanced)
+                .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 300)
         #else
             DetailView()
         #endif

@@ -1,8 +1,14 @@
 import SwiftUI
 
 struct TagToolbar: ToolbarContent {
+    #if os(iOS)
+    var placement: ToolbarItemPlacement = .topBarTrailing
+    #else
+    var placement: ToolbarItemPlacement = .automatic
+    #endif
+    
     var body: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
+        ToolbarItem(placement: placement) {
             Menu {
                 Button {
                     AlbumIntents.requestCreate()
