@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct PhotosGrid: View {
-    #if os(iOS)
+    #if os(iOS) || os(iPadOS)
         @Namespace private var transition
     #endif
 
@@ -16,13 +16,13 @@ struct PhotosGrid: View {
                 MainPhotoGrid(photos: photos) { photo in
                     path.append(photo)
                 }
-                #if os(iOS)
+                #if os(iOS) || os(iPadOS)
                     .matchedTransitionSource(id: "zoom", in: transition)
                 #endif
             }
             .navigationDestination(for: Photo.self) { photo in
                 PhotoViewer(photo: photo, photos: photos)
-                    #if os(iOS)
+                    #if os(iOS) || os(iPadOS)
                         .navigationTransition(
                             .zoom(sourceID: "zoom", in: transition)
                         )
@@ -65,37 +65,11 @@ private struct PhotoCards: View {
 
             PhotoCard(photo, variant: .grid, isSelected: isSelected)
                 .contentShape(Rectangle())
-                #if os(macOS) || os(iPadOS)
-                    .gesture(
-                        TapGesture().modifiers(.command).onEnded {
-                            withAnimation {
-                                AppIntents.toggleSelection(photo)
-                            }
-                        }
-                    ).onTapGesture {
-                        withAnimation { AppIntents.selectPhotos([photo]) }
-                    }
-                    .simultaneousGesture(
-                        TapGesture(count: 2).onEnded { open(photo) }
-                    )
-                    .draggable(PhotoDragItem(photo.id)) {
-                        DragPreviewStack(count: state.photoSelection.count)
-                    }
+                #if os(macOS)
+                    .modifier(DesktopModifiers(photo: photo, open: open))
                 #endif
-                #if os(iOS)
-                    .onTapGesture {
-                        if state.photoSelectionMode {
-                            AppIntents.toggleSelection(photo)
-                        } else {
-                            open(photo)
-                        }
-                    }
-                    .onLongPressGesture(minimumDuration: 0.3) {
-                        withAnimation {
-                            AppIntents.enablePhotoSelectionMode()
-                            AppIntents.selectPhotos([photo])
-                        }
-                    }
+                #if os(iOS) || os(iPadOS)
+                    .modifier(MobileModifiers(photo: photo, open: open))
                 #endif
         }
     }
@@ -117,3 +91,55 @@ private struct PhotoViewer: View {
         }
     }
 }
+
+#if os(macOS)
+    private struct DesktopModifiers: ViewModifier {
+        @Environment(PresentationState.self) private var state
+
+        let photo: Photo
+        let open: (Photo) -> Void
+
+        func body(content: Content) -> some View {
+            content.gesture(
+                TapGesture().modifiers(.command).onEnded {
+                    withAnimation {
+                        AppIntents.toggleSelection(photo)
+                    }
+                }
+            ).onTapGesture {
+                withAnimation { AppIntents.selectPhotos([photo]) }
+            }
+            .simultaneousGesture(
+                TapGesture(count: 2).onEnded { open(photo) }
+            )
+            .draggable(PhotoDragItem(photo.id)) {
+                DragPreviewStack(count: state.photoSelection.count)
+            }
+        }
+    }
+#endif
+
+#if os(iOS) || os(iPadOS)
+    private struct MobileModifiers: ViewModifier {
+        @Environment(PresentationState.self) private var state
+
+        let photo: Photo
+        let open: (Photo) -> Void
+
+        func body(content: Content) -> some View {
+            content.onTapGesture {
+                if state.photoSelectionMode {
+                    AppIntents.toggleSelection(photo)
+                } else {
+                    open(photo)
+                }
+            }
+            .onLongPressGesture(minimumDuration: 0.3) {
+                withAnimation {
+                    AppIntents.enablePhotoSelectionMode()
+                    AppIntents.selectPhotos([photo])
+                }
+            }
+        }
+    }
+#endif

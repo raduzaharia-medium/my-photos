@@ -34,9 +34,10 @@ private struct SidebarList: View {
         }
         .listStyle(.sidebar)
         .toolbar { TagToolbar() }
-        .padding(12)
         #if os(macOS) || os(iPadOS)
-            .safeAreaBar(edge: .bottom) { SidebarFooter(state: state) }
+            .safeAreaBar(edge: .bottom) {
+                SidebarFooter(state: state).padding(12)
+            }
         #endif
         #if os(iOS)
             .scrollContentBackground(.hidden)

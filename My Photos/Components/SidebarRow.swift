@@ -27,7 +27,7 @@ struct SidebarRow: View {
                 }
             #endif
 
-            #if os(iOS)
+            #if os(iOS) || os(iPadOS)
                 Image(
                     systemName: isSelected ? "checkmark.circle.fill" : "circle"
                 )
