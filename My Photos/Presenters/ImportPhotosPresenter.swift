@@ -14,17 +14,20 @@ final class ImportPhotosPresenter: ObservableObject {
         withAnimation {
             fileImporter.pickSingleFolder { result in
                 switch result {
-                case .success(let urls):
-                    guard let folder = urls.first else { return }
-                    AppIntents.importPhotos(folder)
-                case .failure(let error):
-                    self.notifier.show(
-                        "Failed to import: \(error.localizedDescription)",
-                        .error
-                    )
+                case .success(let urls): self.callImport(urls: urls)
+                case .failure(let error): self.abortImport(error: error)
                 }
             }
         }
+    }
 
+    private func callImport(urls: [URL]) {
+        guard let folder = urls.first else { return }
+        PhotoIntents.import(folder)
+    }
+
+    @MainActor
+    private func abortImport(error: Error) {
+        notifier.show("Failed to import: \(error.localizedDescription)", .error)
     }
 }

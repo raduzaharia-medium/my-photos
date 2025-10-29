@@ -67,12 +67,6 @@ struct ContentView: View {
                 allowsMultipleSelection: fileImporter.multipleSelection,
                 onCompletion: fileImporter.action
             )
-            .setupHandlers(
-                modalPresenter: modalPresenter,
-                notifier: notifier,
-                fileImporter: fileImporter,
-                alerter: alerter,
-            )
             .setupTagHandlers(
                 modalPresenter: modalPresenter,
                 notifier: notifier,
@@ -89,14 +83,10 @@ struct ContentView: View {
                 presentationState: presentationState,
                 notifier: notifier,
                 fileImporter: fileImporter,
-                modalPresenter: modalPresenter
-            )
-            .setupPhotoLoadingHandlers(
-                presentationState: presentationState,
-                notifier: notifier,
+                modalPresenter: modalPresenter,
                 photoStore: photoStore,
-                tagStore: tagStore,
                 fileStore: fileStore,
+                tagStore: tagStore,
                 dateStore: dateStore,
                 placeStore: placeStore
             )

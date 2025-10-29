@@ -7,13 +7,96 @@ extension View {
         presentationState: PresentationState,
         notifier: NotificationService,
         fileImporter: FileImportService,
-        modalPresenter: ModalService
+        modalPresenter: ModalService,
+        photoStore: PhotoStore,
+        fileStore: FileStore,
+        tagStore: TagStore,
+        dateStore: DateStore,
+        placeStore: PlaceStore,
     ) -> some View {
         let importPhotosPresenter = ImportPhotosPresenter(
             fileImporter: fileImporter,
             notifier: notifier
         )
         let pickTagPresenter = PickTagPresenter(modalPresenter: modalPresenter)
+
+        let importPhotos: (NotificationCenter.Publisher.Output) -> Void = {
+            note in
+            guard let folder = note.object as? URL else {
+                notifier.show(
+                    "Could not import folder",
+                    .error
+                )
+                return
+            }
+
+            Task {
+                if let parsedPhotos = try? await fileStore.parseImageFiles(
+                    in: folder
+                ) {
+                    for parsedPhoto in parsedPhotos {
+                        let tags = tagStore.ensure(parsedPhoto.tags)
+                        let year = try? dateStore.ensureYear(
+                            parsedPhoto.dateTaken
+                        )
+                        let month = try? dateStore.ensureMonth(
+                            parsedPhoto.dateTaken
+                        )
+                        let day = try? dateStore.ensureDay(
+                            parsedPhoto.dateTaken
+                        )
+                        let country = try? placeStore.ensureCountry(
+                            parsedPhoto.country
+                        )
+                        let locality = try? placeStore.ensureLocality(
+                            parsedPhoto.country,
+                            parsedPhoto.locality
+                        )
+
+                        let photo = Photo(
+                            title: parsedPhoto.title,
+                            description: parsedPhoto.description,
+                            dateTaken: parsedPhoto.dateTaken,
+                            dateTakenYear: year,
+                            dateTakenMonth: month,
+                            dateTakenDay: day,
+                            location: parsedPhoto.location,
+                            country: country,
+                            locality: locality,
+                            tags: tags
+                        )
+
+                        try? photoStore.insert(photo)
+                    }
+
+                    notifier.show(
+                        "Imported \(folder.lastPathComponent)",
+                        .success
+                    )
+                } else {
+                    await MainActor.run {
+                        notifier.show(
+                            "Could not import \(folder.lastPathComponent)",
+                            .error
+                        )
+                    }
+                }
+            }
+        }
+        let tagPhotos: (NotificationCenter.Publisher.Output) -> Void = {
+            note in
+            guard let photos = note.object as? [Photo] else { return }
+            guard let tags = note.userInfo?["tags"] as? [SidebarItem] else {
+                return
+            }
+
+            do {
+                try photoStore.tagPhotos(photos, tags)
+                notifier.show("Photos tagged", .success)
+            } catch {
+                notifier.show("Failed to tag photos", .error)
+            }
+        }
 
         let showImporter: (NotificationCenter.Publisher.Output) -> Void = { _ in
             importPhotosPresenter.show()
@@ -80,6 +163,14 @@ extension View {
             .onReceive(
                 NotificationCenter.default.publisher(for: .requestTagPhotos),
                 perform: showTagger
+            )
+            .onReceive(
+                NotificationCenter.default.publisher(for: .importPhotos),
+                perform: importPhotos
+            )
+            .onReceive(
+                NotificationCenter.default.publisher(for: .tagPhotos),
+                perform: tagPhotos
             )
             .onReceive(
                 NotificationCenter.default.publisher(for: .clearPhotoSelection),
