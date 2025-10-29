@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension Notification.Name {
-    static let toggleSelectionMode = Notification.Name("toggleSelectionMode")
+    static let togglePhotoSelectionMode = Notification.Name("togglePhotoSelectionMode")
     static let enablePhotoSelectionMode = Notification.Name(
         "enablePhotoSelectionMode"
     )
@@ -9,31 +9,39 @@ extension Notification.Name {
         "disablePhotoSelectionMode"
     )
 
+    static let clearPhotoSelection = Notification.Name("clearPhotoSelection")
+    static let selectPhoto = Notification.Name("selectPhoto")
     static let selectPhotos = Notification.Name("selectPhotos")
-    static let toggleSelection = Notification.Name("toggleSelection")
+    static let togglePhotoSelection = Notification.Name("togglePhotoSelection")
 }
 
 enum PhotoIntents {
     static func toggleSelectionMode() {
-        NotificationCenter.default.post(name: .toggleSelectionMode, object: nil)
+        NotificationCenter.default.post(name: .togglePhotoSelectionMode, object: nil)
     }
-    static func enablePhotoSelectionMode() {
+    static func enableSelectionMode() {
         NotificationCenter.default.post(
             name: .enablePhotoSelectionMode,
             object: nil
         )
     }
-    static func disablePhotoSelectionMode() {
+    static func disableSelectionMode() {
         NotificationCenter.default.post(
             name: .disablePhotoSelectionMode,
             object: nil
         )
     }
 
-    static func selectPhotos(_ photos: [Photo]) {
+    static func clearSelection() {
+        NotificationCenter.default.post(name: .clearPhotoSelection, object: nil)
+    }
+    static func select(_ photo: Photo) {
+        NotificationCenter.default.post(name: .selectPhoto, object: photo)
+    }
+    static func select(_ photos: [Photo]) {
         NotificationCenter.default.post(name: .selectPhotos, object: photos)
     }
     static func toggleSelection(_ photo: Photo) {
-        NotificationCenter.default.post(name: .toggleSelection, object: photo)
+        NotificationCenter.default.post(name: .togglePhotoSelection, object: photo)
     }
 }

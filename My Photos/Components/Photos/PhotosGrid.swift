@@ -107,7 +107,7 @@ private struct PhotoViewer: View {
                     }
                 }
             ).onTapGesture {
-                withAnimation { PhotoIntents.selectPhotos([photo]) }
+                withAnimation { PhotoIntents.select(photo) }
             }
             .simultaneousGesture(
                 TapGesture(count: 2).onEnded { open(photo) }
@@ -136,8 +136,8 @@ private struct PhotoViewer: View {
             }
             .onLongPressGesture(minimumDuration: 0.3) {
                 withAnimation {
-                    PhotoIntents.enablePhotoSelectionMode()
-                    PhotoIntents.selectPhotos([photo])
+                    PhotoIntents.enableSelectionMode()
+                    PhotoIntents.select(photo)
                 }
             }
         }
