@@ -103,11 +103,11 @@ private struct PhotoViewer: View {
             content.gesture(
                 TapGesture().modifiers(.command).onEnded {
                     withAnimation {
-                        PhotoSelectionIntents.toggleSelection(photo)
+                        PhotoIntents.toggleSelection(photo)
                     }
                 }
             ).onTapGesture {
-                withAnimation { PhotoSelectionIntents.selectPhotos([photo]) }
+                withAnimation { PhotoIntents.selectPhotos([photo]) }
             }
             .simultaneousGesture(
                 TapGesture(count: 2).onEnded { open(photo) }
@@ -129,15 +129,15 @@ private struct PhotoViewer: View {
         func body(content: Content) -> some View {
             content.onTapGesture {
                 if state.photoSelectionMode {
-                    PhotoSelectionIntents.toggleSelection(photo)
+                    PhotoIntents.toggleSelection(photo)
                 } else {
                     open(photo)
                 }
             }
             .onLongPressGesture(minimumDuration: 0.3) {
                 withAnimation {
-                    PhotoSelectionIntents.enablePhotoSelectionMode()
-                    PhotoSelectionIntents.selectPhotos([photo])
+                    PhotoIntents.enablePhotoSelectionMode()
+                    PhotoIntents.selectPhotos([photo])
                 }
             }
         }

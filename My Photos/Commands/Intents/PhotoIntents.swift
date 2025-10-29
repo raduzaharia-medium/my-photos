@@ -13,7 +13,7 @@ extension Notification.Name {
     static let toggleSelection = Notification.Name("toggleSelection")
 }
 
-enum PhotoSelectionIntents {
+enum PhotoIntents {
     static func toggleSelectionMode() {
         NotificationCenter.default.post(name: .toggleSelectionMode, object: nil)
     }

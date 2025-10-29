@@ -20,8 +20,8 @@ struct PhotosGridToolbar: ToolbarContent {
             if state.photoSelectionMode {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done", role: .cancel) {
-                        PhotoSelectionIntents.selectPhotos([])
-                        PhotoSelectionIntents.disablePhotoSelectionMode()
+                        PhotoIntents.selectPhotos([])
+                        PhotoIntents.disablePhotoSelectionMode()
                     }
                     .accessibilityIdentifier("Done")
                     .keyboardShortcut(.cancelAction)
@@ -53,9 +53,9 @@ private struct MainButtons: View {
 
         Button {
             if allSelected {
-                PhotoSelectionIntents.selectPhotos([])
+                PhotoIntents.selectPhotos([])
             } else {
-                PhotoSelectionIntents.selectPhotos(photos)
+                PhotoIntents.selectPhotos(photos)
             }
         } label: {
             Image(systemName: selectionIcon)

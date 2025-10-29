@@ -3,7 +3,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 extension View {
-    func setupPhotoSelectionHandlers(presentationState: PresentationState)
+    func setupPhotoHandlers(presentationState: PresentationState)
         -> some View
     {
         let selectPhotos: (NotificationCenter.Publisher.Output) -> Void = {

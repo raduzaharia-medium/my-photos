@@ -46,7 +46,7 @@ struct LibraryCommands: Commands {
             Divider()
             
             Button("Switch selection mode") {
-                PhotoSelectionIntents.toggleSelectionMode()
+                PhotoIntents.toggleSelectionMode()
             }
         }
     }
