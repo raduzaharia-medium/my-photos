@@ -1,7 +1,7 @@
 import MapKit
 
 struct FileStore {
-    func parseImageFiles(in url: URL) async throws -> [ParsedPhoto] {
+    func parseImageFiles(in url: URL) throws -> [ParsedPhoto] {
         let didAccess = url.startAccessingSecurityScopedResource()
         defer {
             if didAccess { url.stopAccessingSecurityScopedResource() }
@@ -39,8 +39,8 @@ struct FileStore {
                 description: imageProps.description,
                 dateTaken: imageProps.dateTaken,
                 location: imageProps.location,
-                country: acdsee.country,
-                locality: acdsee.locality,
+                country: imageProps.country ?? acdsee.country,
+                locality: imageProps.city ?? acdsee.locality,
                 tags: acdsee.places
             )
             result.append(photo)

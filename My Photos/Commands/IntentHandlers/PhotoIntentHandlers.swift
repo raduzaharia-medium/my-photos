@@ -2,6 +2,8 @@ import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
 
+typealias NotificationOutput = NotificationCenter.Publisher.Output
+
 extension View {
     func setupPhotoHandlers(
         presentationState: PresentationState,
@@ -20,70 +22,44 @@ extension View {
         )
         let pickTagPresenter = PickTagPresenter(modalPresenter: modalPresenter)
 
-        let importPhotos: (NotificationCenter.Publisher.Output) -> Void = {
-            note in
+        let importPhotos: (NotificationOutput) -> Void = { note in
             guard let folder = note.object as? URL else {
-                notifier.show(
-                    "Could not import folder",
-                    .error
-                )
+                notifier.show("Could not import folder", .error)
+                return
+            }
+            guard let parsed = try? fileStore.parseImageFiles(in: folder) else {
+                notifier.show("Could not import folder", .error)
                 return
             }
 
-            Task {
-                if let parsedPhotos = try? await fileStore.parseImageFiles(
-                    in: folder
-                ) {
-                    for parsedPhoto in parsedPhotos {
-                        let tags = tagStore.ensure(parsedPhoto.tags)
-                        let year = try? dateStore.ensureYear(
-                            parsedPhoto.dateTaken
-                        )
-                        let month = try? dateStore.ensureMonth(
-                            parsedPhoto.dateTaken
-                        )
-                        let day = try? dateStore.ensureDay(
-                            parsedPhoto.dateTaken
-                        )
-                        let country = try? placeStore.ensureCountry(
-                            parsedPhoto.country
-                        )
-                        let locality = try? placeStore.ensureLocality(
-                            parsedPhoto.country,
-                            parsedPhoto.locality
-                        )
+            for item in parsed {
+                let tags = tagStore.ensure(item.tags)
+                let year = try? dateStore.ensureYear(item.dateTaken)
+                let month = try? dateStore.ensureMonth(item.dateTaken)
+                let day = try? dateStore.ensureDay(item.dateTaken)
+                let country = try? placeStore.ensureCountry(item.country)
+                let locality =
+                    try? placeStore.ensureLocality(item.country, item.locality)
 
-                        let photo = Photo(
-                            title: parsedPhoto.title,
-                            description: parsedPhoto.description,
-                            dateTaken: parsedPhoto.dateTaken,
-                            dateTakenYear: year,
-                            dateTakenMonth: month,
-                            dateTakenDay: day,
-                            location: parsedPhoto.location,
-                            country: country,
-                            locality: locality,
-                            tags: tags
-                        )
+                let photo = Photo(
+                    title: item.title,
+                    description: item.description,
+                    dateTaken: item.dateTaken,
+                    dateTakenYear: year,
+                    dateTakenMonth: month,
+                    dateTakenDay: day,
+                    location: item.location,
+                    country: country,
+                    locality: locality,
+                    tags: tags
+                )
 
-                        try? photoStore.insert(photo)
-                    }
-
-                    notifier.show(
-                        "Imported \(folder.lastPathComponent)",
-                        .success
-                    )
-                } else {
-                    await MainActor.run {
-                        notifier.show(
-                            "Could not import \(folder.lastPathComponent)",
-                            .error
-                        )
-                    }
-                }
+                try? photoStore.insert(photo)
             }
+
+            notifier.show("Imported \(folder.lastPathComponent)", .success)
         }
-        let tagPhotos: (NotificationCenter.Publisher.Output) -> Void = {
+        let tagPhotos: (NotificationOutput) -> Void = {
             note in
             guard let photos = note.object as? [Photo] else { return }
             guard let tags = note.userInfo?["tags"] as? [SidebarItem] else {
@@ -98,19 +74,19 @@ extension View {
             }
         }
 
-        let showImporter: (NotificationCenter.Publisher.Output) -> Void = { _ in
+        let showImporter: (NotificationOutput) -> Void = { _ in
             importPhotosPresenter.show()
         }
-        let showTagger: (NotificationCenter.Publisher.Output) -> Void = {
+        let showTagger: (NotificationOutput) -> Void = {
             note in
             guard let photos = note.object as? [Photo] else { return }
             pickTagPresenter.show(photos)
         }
-        let clearSelection: (NotificationCenter.Publisher.Output) -> Void = {
+        let clearSelection: (NotificationOutput) -> Void = {
             _ in
             presentationState.photoSelection.removeAll()
         }
-        let select: (NotificationCenter.Publisher.Output) -> Void = {
+        let select: (NotificationOutput) -> Void = {
             note in
             guard let photo = note.object as? Photo else { return }
 
@@ -118,7 +94,7 @@ extension View {
                 presentationState.photoSelection = Set([photo])
             }
         }
-        let selectMany: (NotificationCenter.Publisher.Output) -> Void = {
+        let selectMany: (NotificationOutput) -> Void = {
             note in
             guard let photos = note.object as? [Photo] else { return }
 
@@ -126,23 +102,20 @@ extension View {
                 presentationState.photoSelection = Set(photos)
             }
         }
-        let enablePhotoSelectionMode:
-            (NotificationCenter.Publisher.Output) -> Void = { _ in
+        let enablePhotoSelectionMode: (NotificationOutput) -> Void = { _ in
+            presentationState.photoSelectionMode = true
+        }
+        let disablePhotoSelectionMode: (NotificationOutput) -> Void = { _ in
+            presentationState.photoSelectionMode = false
+        }
+        let togglePhotoSelectionMode: (NotificationOutput) -> Void = { _ in
+            if presentationState.photoSelectionMode {
+                presentationState.photoSelectionMode = false
+            } else {
                 presentationState.photoSelectionMode = true
             }
-        let disablePhotoSelectionMode:
-            (NotificationCenter.Publisher.Output) -> Void = { _ in
-                presentationState.photoSelectionMode = false
-            }
-        let togglePhotoSelectionMode:
-            (NotificationCenter.Publisher.Output) -> Void = { _ in
-                if presentationState.photoSelectionMode {
-                    presentationState.photoSelectionMode = false
-                } else {
-                    presentationState.photoSelectionMode = true
-                }
-            }
-        let toggleSelection: (NotificationCenter.Publisher.Output) -> Void = {
+        }
+        let toggleSelection: (NotificationOutput) -> Void = {
             note in
             guard let photo = note.object as? Photo else { return }
 

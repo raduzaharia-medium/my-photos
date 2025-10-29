@@ -24,6 +24,20 @@ struct ImageProps {
     private var gpsLonKey: CFString { kCGImagePropertyGPSLongitude }
     private var gpsLonRefKey: CFString { kCGImagePropertyGPSLongitudeRef }
 
+    private var iptcCountryKeyNew: CFString {
+        kCGImagePropertyIPTCExtLocationCountryName
+    }
+    private var iptcCountryKey: CFString {
+        kCGImagePropertyIPTCCountryPrimaryLocationName
+    }
+    private var xmpCountryKey: CFString {
+        "Iptc4xmpCore:CountryName" as CFString
+    }
+
+    private var iptcCityKeyNew: CFString { kCGImagePropertyIPTCExtLocationCity }
+    private var iptcCityKey: CFString { kCGImagePropertyIPTCCity }
+    private var xmpCityKey: CFString { "Iptc4xmpCore:City" as CFString }
+
     private let props: [CFString: Any]
 
     init(_ props: [CFString: Any]) { self.props = props }
@@ -51,17 +65,35 @@ struct ImageProps {
         guard let title = titleString else { return nil }
         return title
     }
-    
+
     var location: GeoCoordinate? {
         guard let gpsLat = parseDouble(gps?[gpsLatKey]) else { return nil }
         guard let gpsLatRef = gps?[gpsLatRefKey] as? String else { return nil }
         guard let gpsLon = parseDouble(gps?[gpsLonKey]) else { return nil }
         guard let gpsLonRef = gps?[gpsLonRefKey] as? String else { return nil }
 
-        let latitude = (gpsLatRef.uppercased() == "S") ? -abs(gpsLat) : abs(gpsLat)
-        let longitude = (gpsLonRef.uppercased() == "W") ? -abs(gpsLon) : abs(gpsLon)
-        
+        let latitude =
+            (gpsLatRef.uppercased() == "S") ? -abs(gpsLat) : abs(gpsLat)
+        let longitude =
+            (gpsLonRef.uppercased() == "W") ? -abs(gpsLon) : abs(gpsLon)
+
         return GeoCoordinate(latitude, longitude)
+    }
+
+    var country: String? {
+        let iptcCountry = iptc?[iptcCountryKey] as? String
+        let iptcCountryNew = iptc?[iptcCountryKeyNew] as? String
+        let xmpCountry = xmp?[xmpCountryKey] as? String
+
+        return iptcCountryNew ?? iptcCountry ?? xmpCountry
+    }
+
+    var city: String? {
+        let iptcCity = iptc?[iptcCityKey] as? String
+        let iptcCityNew = iptc?[iptcCityKeyNew] as? String
+        let xmpCity = xmp?[xmpCityKey] as? String
+
+        return iptcCityNew ?? iptcCity ?? xmpCity
     }
 
     private var titleString: String? {
