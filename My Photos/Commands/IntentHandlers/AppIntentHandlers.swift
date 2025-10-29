@@ -12,9 +12,8 @@ extension View {
         dateStore: DateStore,
         placeStore: PlaceStore
     ) -> some View {
-        return self.onReceive(
-            NotificationCenter.default.publisher(for: .importPhotos)
-        ) { note in
+        let importPhotos: (NotificationCenter.Publisher.Output) -> Void = {
+            note in
             guard let folder = note.object as? URL else {
                 notifier.show(
                     "Could not import folder",
@@ -75,9 +74,9 @@ extension View {
                     }
                 }
             }
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .tagSelectedPhotos)
-        ) { note in
+        }
+        let tagSelectedPhotos: (NotificationCenter.Publisher.Output) -> Void = {
+            note in
             guard let photos = note.object as? [Photo] else { return }
             guard let tags = note.userInfo?["tags"] as? [SidebarItem] else {
                 return
@@ -89,38 +88,18 @@ extension View {
             } catch {
                 notifier.show("Failed to tag photos", .error)
             }
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .selectPhotos)
-        ) { note in
-            guard let photos = note.object as? [Photo] else { return }
-
-            withAnimation {
-                presentationState.photoSelection = Set(photos)
-            }
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .enablePhotoSelectionMode)
-        ) {
-            _ in
-            presentationState.photoSelectionMode = true
-        }.onReceive(
-            NotificationCenter.default.publisher(for: .disablePhotoSelectionMode)
-        ) {
-            _ in
-            presentationState.photoSelectionMode = false
         }
-        .onReceive(
-            NotificationCenter.default.publisher(for: .toggleSelection)
-        ) { note in
-            guard let photo = note.object as? Photo else { return }
 
-            withAnimation {
-                if presentationState.isSelected(photo) {
-                    presentationState.photoSelection.remove(photo)
-                } else {
-                    presentationState.photoSelection.insert(photo)
-                }
-            }
-        }
+        return
+            self
+            .onReceive(
+                NotificationCenter.default.publisher(for: .importPhotos),
+                perform: importPhotos
+            )
+            .onReceive(
+                NotificationCenter.default.publisher(for: .tagSelectedPhotos),
+                perform: tagSelectedPhotos
+            )
     }
 
     func setupHandlers(

@@ -16,7 +16,7 @@ final class PickTagPresenter: ObservableObject {
                     photos: photos,
                     onSave: { photos, tags in
                         AppIntents.tagSelectedPhotos(photos, tags)
-                        AppIntents.toggleSelectionMode()
+                        PhotoSelectionIntents.toggleSelectionMode()
 
                         self.modalPresenter.dismiss()
                     },
