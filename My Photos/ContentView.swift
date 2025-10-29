@@ -85,7 +85,12 @@ struct ContentView: View {
                 confirmer: confirmer,
                 albumStore: albumStore
             )
-            .setupPhotoHandlers(presentationState: presentationState)
+            .setupPhotoHandlers(
+                presentationState: presentationState,
+                notifier: notifier,
+                fileImporter: fileImporter,
+                modalPresenter: modalPresenter
+            )
             .setupPhotoLoadingHandlers(
                 presentationState: presentationState,
                 notifier: notifier,

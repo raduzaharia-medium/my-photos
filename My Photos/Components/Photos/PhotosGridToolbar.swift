@@ -45,7 +45,7 @@ private struct MainButtons: View {
 
     var body: some View {
         Button {
-            AppIntents.requestTagPhotos(Array(state.photoSelection))
+            PhotoIntents.requestTag(Array(state.photoSelection))
         } label: {
             Image(systemName: "tag")
         }.controlSize(.regular)

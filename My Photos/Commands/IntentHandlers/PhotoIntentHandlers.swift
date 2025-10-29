@@ -3,9 +3,26 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 extension View {
-    func setupPhotoHandlers(presentationState: PresentationState)
-        -> some View
-    {
+    func setupPhotoHandlers(
+        presentationState: PresentationState,
+        notifier: NotificationService,
+        fileImporter: FileImportService,
+        modalPresenter: ModalService
+    ) -> some View {
+        let importPhotosPresenter = ImportPhotosPresenter(
+            fileImporter: fileImporter,
+            notifier: notifier
+        )
+        let pickTagPresenter = PickTagPresenter(modalPresenter: modalPresenter)
+
+        let showImporter: (NotificationCenter.Publisher.Output) -> Void = { _ in
+            importPhotosPresenter.show()
+        }
+        let showTagger: (NotificationCenter.Publisher.Output) -> Void = {
+            note in
+            guard let photos = note.object as? [Photo] else { return }
+            pickTagPresenter.show(photos)
+        }
         let clearSelection: (NotificationCenter.Publisher.Output) -> Void = {
             _ in
             presentationState.photoSelection.removeAll()
@@ -34,13 +51,14 @@ extension View {
             (NotificationCenter.Publisher.Output) -> Void = { _ in
                 presentationState.photoSelectionMode = false
             }
-        let togglePhotoSelectionMode: (NotificationCenter.Publisher.Output) -> Void = { _ in
-            if presentationState.photoSelectionMode {
-                presentationState.photoSelectionMode = false
-            } else {
-                presentationState.photoSelectionMode = true
+        let togglePhotoSelectionMode:
+            (NotificationCenter.Publisher.Output) -> Void = { _ in
+                if presentationState.photoSelectionMode {
+                    presentationState.photoSelectionMode = false
+                } else {
+                    presentationState.photoSelectionMode = true
+                }
             }
-        }
         let toggleSelection: (NotificationCenter.Publisher.Output) -> Void = {
             note in
             guard let photo = note.object as? Photo else { return }
@@ -55,7 +73,14 @@ extension View {
         }
 
         return
-            self
+            self.onReceive(
+                NotificationCenter.default.publisher(for: .requestImportPhotos),
+                perform: showImporter
+            )
+            .onReceive(
+                NotificationCenter.default.publisher(for: .requestTagPhotos),
+                perform: showTagger
+            )
             .onReceive(
                 NotificationCenter.default.publisher(for: .clearPhotoSelection),
                 perform: clearSelection

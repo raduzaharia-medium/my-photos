@@ -1,6 +1,9 @@
 import SwiftUI
 
 extension Notification.Name {
+    static let requestImportPhotos = Notification.Name("requestImportPhotos")
+    static let requestTagPhotos = Notification.Name("requestTagPhotos")
+
     static let togglePhotoSelectionMode = Notification.Name("togglePhotoSelectionMode")
     static let enablePhotoSelectionMode = Notification.Name(
         "enablePhotoSelectionMode"
@@ -16,6 +19,13 @@ extension Notification.Name {
 }
 
 enum PhotoIntents {
+    static func requestImport() {
+        NotificationCenter.default.post(name: .requestImportPhotos, object: nil)
+    }
+    static func requestTag(_ photos: [Photo]) {
+        NotificationCenter.default.post(name: .requestTagPhotos, object: photos)
+    }
+
     static func toggleSelectionMode() {
         NotificationCenter.default.post(name: .togglePhotoSelectionMode, object: nil)
     }

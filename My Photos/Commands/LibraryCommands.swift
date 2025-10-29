@@ -6,7 +6,7 @@ struct LibraryCommands: Commands {
 
     var body: some Commands {
         CommandMenu("Library") {
-            Button("Import Folder…") { AppIntents.requestImportPhotos() }
+            Button("Import Folder…") { PhotoIntents.requestImport() }
                 .keyboardShortcut("I", modifiers: [.command, .shift])
 
             Divider()
