@@ -23,45 +23,52 @@ extension View {
         )
         let pickTagPresenter = PickTagPresenter(modalPresenter: modalPresenter)
 
-        let importPhotos: (NotificationOutput) -> Void = { note in
-            guard let folder = note.object as? URL else {
-                notifier.show("Could not import folder", .error)
-                return
+        #if os(macOS)
+            let importPhotos: (NotificationOutput) -> Void = { note in
+                guard let folder = note.object as? URL else {
+                    notifier.show("Could not import folder", .error)
+                    return
+                }
+                guard let parsed = try? fileStore.parseImageFiles(in: folder)
+                else {
+                    notifier.show("Could not import folder", .error)
+                    return
+                }
+
+                for item in parsed {
+                    let tags = tagStore.ensure(item.tags)
+                    let year = try? dateStore.ensureYear(item.dateTaken)
+                    let month = try? dateStore.ensureMonth(item.dateTaken)
+                    let day = try? dateStore.ensureDay(item.dateTaken)
+                    let country = try? placeStore.ensureCountry(item.country)
+                    let locality =
+                        try? placeStore.ensureLocality(
+                            item.country,
+                            item.locality
+                        )
+                    let albums = albumStore.ensure(item.albums)
+
+                    let photo = Photo(
+                        title: item.title,
+                        description: item.description,
+                        dateTaken: item.dateTaken,
+                        dateTakenYear: year,
+                        dateTakenMonth: month,
+                        dateTakenDay: day,
+                        location: item.location,
+                        country: country,
+                        locality: locality,
+                        albums: albums,
+                        tags: tags,
+                    )
+
+                    try? photoStore.insert(photo)
+                }
+
+                notifier.show("Imported \(folder.lastPathComponent)", .success)
             }
-            guard let parsed = try? fileStore.parseImageFiles(in: folder) else {
-                notifier.show("Could not import folder", .error)
-                return
-            }
+        #endif
 
-            for item in parsed {
-                let tags = tagStore.ensure(item.tags)
-                let year = try? dateStore.ensureYear(item.dateTaken)
-                let month = try? dateStore.ensureMonth(item.dateTaken)
-                let day = try? dateStore.ensureDay(item.dateTaken)
-                let country = try? placeStore.ensureCountry(item.country)
-                let locality =
-                    try? placeStore.ensureLocality(item.country, item.locality)
-                let albums = albumStore.ensure(item.albums)
-
-                let photo = Photo(
-                    title: item.title,
-                    description: item.description,
-                    dateTaken: item.dateTaken,
-                    dateTakenYear: year,
-                    dateTakenMonth: month,
-                    dateTakenDay: day,
-                    location: item.location,
-                    country: country,
-                    locality: locality,
-                    albums: albums,
-                    tags: tags,
-                )
-
-                try? photoStore.insert(photo)
-            }
-
-            notifier.show("Imported \(folder.lastPathComponent)", .success)
-        }
         let tagPhotos: (NotificationOutput) -> Void = {
             note in
             guard let photos = note.object as? [Photo] else { return }
@@ -140,10 +147,12 @@ extension View {
                 NotificationCenter.default.publisher(for: .requestTagPhotos),
                 perform: showTagger
             )
-            .onReceive(
-                NotificationCenter.default.publisher(for: .importPhotos),
-                perform: importPhotos
-            )
+            #if os(macOS)
+                .onReceive(
+                    NotificationCenter.default.publisher(for: .importPhotos),
+                    perform: importPhotos
+                )
+            #endif
             .onReceive(
                 NotificationCenter.default.publisher(for: .tagPhotos),
                 perform: tagPhotos

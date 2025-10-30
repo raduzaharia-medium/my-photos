@@ -27,9 +27,7 @@ struct ACDSeeCategories {
 
             return doc
         }
-    #endif
 
-    #if os(macOS)
         var placesXml: XMLDocument? {
             guard let categoriesXml else { return nil }
 
@@ -44,9 +42,7 @@ struct ACDSeeCategories {
 
             return XMLDocument(rootElement: node)
         }
-    #endif
 
-    #if os(macOS)
         var albumsXml: XMLDocument? {
             guard let categoriesXml else { return nil }
 
@@ -69,28 +65,26 @@ struct ACDSeeCategories {
             return categoriesXml.buildTags()
 
         }
-    #endif
 
-    #if os(macOS)
         var places: [ParsedTag] {
             guard let placesXml else { return [] }
             return placesXml.buildTags()
         }
-    #endif
 
-    #if os(macOS)
         var albums: [String] {
             guard let albumsXml else { return [] }
             return albumsXml.buildFlatTags()
         }
     #endif
 
-    var country: String? {
-        return places.first?.name
-    }
-    var locality: String? {
-        return places.first?.children.first?.name
-    }
+    #if os(macOS)
+        var country: String? {
+            return places.first?.name
+        }
+        var locality: String? {
+            return places.first?.children.first?.name
+        }
+    #endif
 
     private var categoriesTag: CGImageMetadataTag? {
         guard let meta else { return nil }
@@ -144,7 +138,7 @@ struct ACDSeeCategories {
                     !seen.contains(name)
                 {
                     seen.insert(name)
-                    flat.append(name) 
+                    flat.append(name)
                 }
                 for case let child as XMLElement in node.children ?? [] {
                     visit(child)
