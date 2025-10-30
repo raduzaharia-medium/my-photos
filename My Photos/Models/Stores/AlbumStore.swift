@@ -8,6 +8,15 @@ final class AlbumStore {
         self.context = context
     }
 
+    func get(_ album: String) -> Album? {
+        let key = "\(album)"
+        let descriptor = FetchDescriptor<Album>(
+            predicate: #Predicate { $0.key == key }
+        )
+
+        return (try? context.fetch(descriptor))?.first
+    }
+
     @discardableResult
     func create(name: String) throws -> Album {
         let album = Album(name)
@@ -51,5 +60,33 @@ final class AlbumStore {
         }
 
         try context.save()
+    }
+
+    func ensure(_ album: String?) throws -> Album? {
+        guard let album else { return nil }
+        let ensured = try findOrCreate(album)
+
+        return ensured
+    }
+
+    func ensure(_ albums: [String]) -> [Album] {
+        var result: [Album] = []
+
+        for album in albums {
+            if let ensured = try? ensure(album) {
+                result.append(ensured)
+            }
+        }
+
+        return result
+    }
+
+    private func findOrCreate(_ album: String) throws -> Album {
+        if let existing = get(album) { return existing }
+        let newNode = Album(album)
+
+        context.insert(newNode)
+        try context.save()
+        return newNode
     }
 }

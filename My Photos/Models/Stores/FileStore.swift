@@ -33,7 +33,7 @@ struct FileStore {
             //                    print(request.description)
             //                }
             //            }
-            
+                        
             let photo = ParsedPhoto(
                 title: imageProps.title ?? imageFile.lastPathComponent,
                 description: imageProps.description,
@@ -41,7 +41,8 @@ struct FileStore {
                 location: imageProps.location,
                 country: imageProps.country ?? acdsee.country,
                 locality: imageProps.city ?? acdsee.locality,
-                tags: acdsee.places
+                tags: acdsee.categories,
+                albums: acdsee.albums
             )
             result.append(photo)
         }

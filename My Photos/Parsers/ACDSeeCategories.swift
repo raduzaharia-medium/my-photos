@@ -11,7 +11,7 @@ struct ACDSeeCategories {
 
     init(_ meta: CGImageMetadata?) { self.meta = meta }
 
-    var categories: String? {
+    var categoriesString: String? {
         guard let tag = categoriesTag else { return nil }
         guard let result = CGImageMetadataTagCopyValue(tag) else { return nil }
 
@@ -20,11 +20,11 @@ struct ACDSeeCategories {
 
     #if os(macOS)
         var categoriesXml: XMLDocument? {
-            guard let categories else { return nil }
+            guard let categories = categoriesString else { return nil }
             guard let doc = try? XMLDocument(xmlString: categories) else {
                 return nil
             }
-            
+
             return doc
         }
     #endif
@@ -46,14 +46,44 @@ struct ACDSeeCategories {
         }
     #endif
 
-    var places: [ParsedTag] {
-        #if os(macOS)
+    #if os(macOS)
+        var albumsXml: XMLDocument? {
+            guard let categoriesXml else { return nil }
+
+            let xpath = "//Category[normalize-space(text())='Albums']"
+            let nodes =
+                try? categoriesXml.nodes(forXPath: xpath) as? [XMLElement]
+            guard let nodes else { return nil }
+
+            guard let node = nodes.first else { return nil }
+
+            node.detach()
+
+            return XMLDocument(rootElement: node)
+        }
+    #endif
+
+    #if os(macOS)
+        var categories: [ParsedTag] {
+            guard let categoriesXml else { return [] }
+            return categoriesXml.buildTags()
+
+        }
+    #endif
+
+    #if os(macOS)
+        var places: [ParsedTag] {
             guard let placesXml else { return [] }
             return placesXml.buildTags()
-        #else
-            return []
-        #endif
-    }
+        }
+    #endif
+
+    #if os(macOS)
+        var albums: [String] {
+            guard let albumsXml else { return [] }
+            return albumsXml.buildFlatTags()
+        }
+    #endif
 
     var country: String? {
         return places.first?.name
@@ -102,6 +132,30 @@ struct ACDSeeCategories {
                 }
             }
             return tops
+        }
+        func buildFlatTags() -> [String] {
+            guard let root = rootElement() else { return [] }
+
+            var seen = Set<String>()
+            var flat: [String] = []
+
+            func visit(_ node: XMLElement) {
+                if let name = node.categoryLabel(), !name.isEmpty,
+                    !seen.contains(name)
+                {
+                    seen.insert(name)
+                    flat.append(name) 
+                }
+                for case let child as XMLElement in node.children ?? [] {
+                    visit(child)
+                }
+            }
+
+            for case let child as XMLElement in root.children ?? [] {
+                visit(child)
+            }
+
+            return flat
         }
     }
 #endif
