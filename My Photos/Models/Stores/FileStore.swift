@@ -12,10 +12,13 @@ struct FileStore {
 
         for imageFile in imageFiles {
             let props = Metadata.props(in: imageFile)
+            let meta = Metadata.metadata(in: imageFile)
             let tags = Metadata.tags(in: imageFile)
-            let imageProps = ImageProps(props)
+            let imageProps = ImageProps(props, meta)
             let acdsee = ACDSeeCategories(tags)
-
+            
+            print(imageProps.album)
+            
             //            if let location {
             //                if let request = MKReverseGeocodingRequest(
             //                    location: CLLocation(
