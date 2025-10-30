@@ -3,28 +3,28 @@ import ImageIO
 
 struct ACDSeeCategories {
     private let namespace = "http://ns.acdsee.com/iptc/1.0/"
-    private let tags: [CGImageMetadataTag]
+    private var acdSeeCategoriesKey: CFString {
+        "acdsee:categories" as CFString
+    }
 
-    init(_ tags: [CGImageMetadataTag]) { self.tags = tags }
+    private let meta: CGImageMetadata?
 
-    var xml: String? {
-        let xml = tags.first(where: { tag in
-            let ns = CGImageMetadataTagCopyNamespace(tag) as String?
-            let name = CGImageMetadataTagCopyName(tag) as String?
+    init(_ meta: CGImageMetadata?) { self.meta = meta }
 
-            return ns == namespace && name == "categories"
-        })
-        .flatMap(tagToString)
+    var categories: String? {
+        guard let tag = categoriesTag else { return nil }
+        guard let result = CGImageMetadataTagCopyValue(tag) else { return nil }
 
-        guard let xml else { return nil }
-        return xml
+        return result as? String
     }
 
     #if os(macOS)
         var categoriesXml: XMLDocument? {
-            guard let xml else { return nil }
-            guard let doc = try? XMLDocument(xmlString: xml) else { return nil }
-
+            guard let categories else { return nil }
+            guard let doc = try? XMLDocument(xmlString: categories) else {
+                return nil
+            }
+            
             return doc
         }
     #endif
@@ -60,6 +60,11 @@ struct ACDSeeCategories {
     }
     var locality: String? {
         return places.first?.children.first?.name
+    }
+
+    private var categoriesTag: CGImageMetadataTag? {
+        guard let meta else { return nil }
+        return CGImageMetadataCopyTagWithPath(meta, nil, acdSeeCategoriesKey)
     }
 
     private func tagToString(_ tag: CGImageMetadataTag) -> String? {

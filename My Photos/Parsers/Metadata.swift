@@ -28,13 +28,4 @@ struct Metadata {
        
         return metadata
     }
-
-    static func tags(in url: URL) -> [CGImageMetadataTag] {
-        guard let metadata = metadata(in: url) else { return [] }
-
-        let tags = CGImageMetadataCopyTags(metadata) as? [CGImageMetadataTag]
-        guard let tags else { return [] }
-       
-        return tags
-    }
 }
