@@ -1,4 +1,4 @@
-struct Regions: Equatable, Codable {
+struct ParsedRegions: Equatable, Codable {
     public let appliedToDimensions: AppliedToDimensions
     public let regionList: [Region]
 }

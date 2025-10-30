@@ -28,11 +28,11 @@ struct ACDSeeRegions {
 
     init(_ meta: CGImageMetadata?) { self.meta = meta }
 
-    var regions: Regions? {
+    var regions: ParsedRegions? {
         guard let appliedToDimensions else { return nil }
         guard let regionList else { return nil }
 
-        return Regions(
+        return ParsedRegions(
             appliedToDimensions: appliedToDimensions,
             regionList: regionList
         )
