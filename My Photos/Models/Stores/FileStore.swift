@@ -15,7 +15,8 @@ struct FileStore {
                 let props = Metadata.props(in: imageFile)
                 let meta = Metadata.metadata(in: imageFile)
                 let imageProps = ImageProps(props, meta)
-                let acdsee = ACDSeeCategories(meta)
+                let acdseeCategories = ACDSeeCategories(meta)
+                let acdseeRegions = ACDSeeRegions(meta)
 
                 //            if let location {
                 //                if let request = MKReverseGeocodingRequest(
@@ -35,15 +36,17 @@ struct FileStore {
                 //                }
                 //            }
 
+                print(acdseeRegions.regions)
+                
                 let photo = ParsedPhoto(
                     title: imageProps.title ?? imageFile.lastPathComponent,
                     description: imageProps.description,
                     dateTaken: imageProps.dateTaken,
                     location: imageProps.location,
-                    country: imageProps.country ?? acdsee.country,
-                    locality: imageProps.city ?? acdsee.locality,
-                    tags: acdsee.categories,
-                    albums: acdsee.albums
+                    country: imageProps.country ?? acdseeCategories.country,
+                    locality: imageProps.city ?? acdseeCategories.locality,
+                    tags: acdseeCategories.categories,
+                    albums: acdseeCategories.albums
                 )
                 result.append(photo)
             }

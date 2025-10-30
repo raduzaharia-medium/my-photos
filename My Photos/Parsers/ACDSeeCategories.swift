@@ -2,7 +2,6 @@ import Foundation
 import ImageIO
 
 struct ACDSeeCategories {
-    private let namespace = "http://ns.acdsee.com/iptc/1.0/"
     private var acdSeeCategoriesKey: CFString {
         "acdsee:categories" as CFString
     }
