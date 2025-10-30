@@ -9,4 +9,5 @@ struct ParsedPhoto {
     let locality: String?
     let tags: [ParsedTag]
     let albums: [String]
+    let regions: ParsedRegions?
 }

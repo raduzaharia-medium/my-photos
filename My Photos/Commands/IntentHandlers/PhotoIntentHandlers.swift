@@ -15,7 +15,8 @@ extension View {
         tagStore: TagStore,
         dateStore: DateStore,
         placeStore: PlaceStore,
-        albumStore: AlbumStore
+        albumStore: AlbumStore,
+        personStore: PersonStore
     ) -> some View {
         let importPhotosPresenter = ImportPhotosPresenter(
             fileImporter: fileImporter,
@@ -47,6 +48,8 @@ extension View {
                             item.locality
                         )
                     let albums = albumStore.ensure(item.albums)
+                    let names = item.regions?.regionList.map(\.name) ?? []
+                    let people = personStore.ensure(names)
 
                     let photo = Photo(
                         title: item.title,
@@ -59,6 +62,7 @@ extension View {
                         country: country,
                         locality: locality,
                         albums: albums,
+                        people: people,
                         tags: tags,
                     )
 

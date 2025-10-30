@@ -7,6 +7,15 @@ final class PersonStore {
     init(context: ModelContext) {
         self.context = context
     }
+    
+    func get(_ name: String) -> Person? {
+        let key = "\(name)"
+        let descriptor = FetchDescriptor<Person>(
+            predicate: #Predicate { $0.key == key }
+        )
+
+        return (try? context.fetch(descriptor))?.first
+    }
 
     @discardableResult
     func create(name: String) throws -> Person {
@@ -51,5 +60,33 @@ final class PersonStore {
         }
 
         try context.save()
+    }
+    
+    func ensure(_ name: String?) throws -> Person? {
+        guard let name else { return nil }
+        let ensured = try findOrCreate(name)
+
+        return ensured
+    }
+
+    func ensure(_ names: [String]) -> [Person] {
+        var result: [Person] = []
+
+        for name in names {
+            if let ensured = try? ensure(name) {
+                result.append(ensured)
+            }
+        }
+
+        return result
+    }
+
+    private func findOrCreate(_ name: String) throws -> Person {
+        if let existing = get(name) { return existing }
+        let newNode = Person(name)
+
+        context.insert(newNode)
+        try context.save()
+        return newNode
     }
 }

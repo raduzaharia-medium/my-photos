@@ -89,7 +89,8 @@ struct ContentView: View {
                 tagStore: tagStore,
                 dateStore: dateStore,
                 placeStore: placeStore,
-                albumStore: albumStore
+                albumStore: albumStore,
+                personStore: personStore
             )
             .setupPersonHandlers(
                 modalPresenter: modalPresenter,
