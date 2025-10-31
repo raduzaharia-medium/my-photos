@@ -63,6 +63,7 @@ struct My_PhotosApp: App {
 
         context.insert(
             Photo(
+                path: URL(fileURLWithPath: "/home/photos/beach.jpg"),
                 title: "On the beach",
                 dateTaken: formatter.date(from: "2022-01-09") ?? Date(),
                 dateTakenYear: year2022,
@@ -75,6 +76,7 @@ struct My_PhotosApp: App {
         )
         context.insert(
             Photo(
+                path: URL(fileURLWithPath: "/home/photos/on-the-sea.jpg"),
                 title: "On the sea",
                 dateTaken: formatter.date(from: "2022-01-10") ?? Date(),
                 dateTakenYear: year2022,
@@ -87,6 +89,7 @@ struct My_PhotosApp: App {
         )
         context.insert(
             Photo(
+                path: URL(fileURLWithPath: "/home/photos/on-the-hill.jpg"),
                 title: "On the hill",
                 dateTaken: formatter.date(from: "2022-02-15") ?? Date(),
                 dateTakenYear: year2022,
@@ -97,6 +100,7 @@ struct My_PhotosApp: App {
         )
         context.insert(
             Photo(
+                path: URL(fileURLWithPath: "/home/photos/somewhere-else.jpg"),
                 title: "Somewhere else",
                 dateTaken: formatter.date(from: "2022-03-22") ?? Date(),
                 dateTakenYear: year2022,
@@ -107,6 +111,7 @@ struct My_PhotosApp: App {
         )
         context.insert(
             Photo(
+                path: URL(fileURLWithPath: "/home/photos/we-don-t-know.jpg"),
                 title: "We don't know",
                 dateTaken: formatter.date(from: "2022-03-25") ?? Date(),
                 dateTakenYear: year2022,

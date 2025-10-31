@@ -14,13 +14,16 @@ struct GeoCoordinate: Codable, Hashable {
 @Model
 final class Photo: Identifiable {
     @Attribute(.unique) var id: UUID
+    @Attribute(.unique) var key: String
     var title: String
     var caption: String?
     var dateTaken: Date?
     var location: GeoCoordinate?
+    var path: URL
+    var thumbnailFileName: String
 
     @Relationship(inverse: \Tag.photos) var tags: [Tag]
-    
+
     @Relationship var dateTakenYear: DateTakenYear?
     @Relationship var dateTakenMonth: DateTakenMonth?
     @Relationship var dateTakenDay: DateTakenDay?
@@ -39,6 +42,7 @@ final class Photo: Identifiable {
 
     public init(
         id: UUID = .init(),
+        path: URL,
         title: String,
         description: String? = nil,
         dateTaken: Date?,
@@ -53,7 +57,10 @@ final class Photo: Identifiable {
         events: [Event] = [],
         tags: [Tag] = [],
     ) {
+        let key = path.stablePhotoKey_FNV1a
+        
         self.id = id
+        self.path = path
         self.title = title
         self.caption = description
         self.dateTaken = dateTaken
@@ -67,8 +74,10 @@ final class Photo: Identifiable {
         self.people = people
         self.events = events
         self.tags = tags
+        self.key = key
+        self.thumbnailFileName = "\(key).jpg"
     }
-    
+
     func addAlbum(_ album: Album) {
         if !self.albums.contains(where: { $0.id == album.id }) {
             self.albums.append(album)
@@ -88,5 +97,19 @@ final class Photo: Identifiable {
         if !self.tags.contains(where: { $0.id == tag.id }) {
             self.tags.append(tag)
         }
+    }
+}
+
+extension URL {
+    var stablePhotoKey_FNV1a: String {
+        let s = self.standardizedFileURL.path
+        var h: UInt64 = 1_469_598_103_934_665_603
+
+        for b in s.utf8 {
+            h ^= UInt64(b)
+            h &*= 1_099_511_628_211
+        }
+
+        return String(h, radix: 36, uppercase: false)
     }
 }

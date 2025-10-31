@@ -35,8 +35,9 @@ struct FileStore {
                 //                    print(request.description)
                 //                }
                 //            }
-                
+
                 let photo = ParsedPhoto(
+                    path: imageFile,
                     title: imageProps.title ?? imageFile.lastPathComponent,
                     description: imageProps.description,
                     dateTaken: imageProps.dateTaken,

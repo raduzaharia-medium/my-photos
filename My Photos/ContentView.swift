@@ -19,12 +19,14 @@ struct ContentView: View {
     private var placeStore: PlaceStore { PlaceStore(context: context) }
     private var eventStore: EventStore { EventStore(context: context) }
     private var fileStore: FileStore { FileStore() }
+    private var thumbnailStore: ThumbnailStore? { try? ThumbnailStore() }
 
     var body: some View {
         MainView()
             .animation(.default, value: presentationState.photoFilter)
             .animation(.default, value: presentationState.photoSelection)
             .animation(.default, value: presentationState.photoSource)
+            .environment(\.thumbnailStore, thumbnailStore)
             .notification(
                 isPresented: $notifier.isVisible,
                 message: notifier.message,

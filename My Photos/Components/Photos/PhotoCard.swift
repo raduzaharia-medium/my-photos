@@ -44,7 +44,9 @@ enum PhotoCardVariant: Hashable {
 }
 
 struct PhotoCard: View {
-    @Environment(PresentationState.self) private var presentationState
+    #if os(iOS)
+        @Environment(PresentationState.self) private var presentationState
+    #endif
 
     #if os(macOS) || os(iPadOS)
         @Environment(\.controlActiveState) private var controlActiveState
@@ -76,9 +78,10 @@ struct PhotoCard: View {
                 )
             }
             .overlay {
-                Text(photo.title)
+                ThumbnailImageView(photo: photo)
+                    .clipped()
+                    .cornerRadius(variant.tokens.cornerRadius)
                     .padding(variant.tokens.padding)
-
             }
 
             #if os(iOS)
@@ -126,6 +129,64 @@ extension View {
             transform(self)
         } else {
             self
+        }
+    }
+}
+
+private struct ThumbnailImageView: View {
+    @Environment(\.thumbnailStore) private var thumbnailStore
+    @State private var image: Image?
+    @State private var isLoading = false
+
+    let photo: Photo
+
+    var body: some View {
+        Group {
+            if let image {
+                image
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                ZStack {
+                    Color.gray.opacity(0.1)
+                    Image(systemName: "photo")
+                        .foregroundStyle(.secondary)
+                }
+                .task(id: photo.id) {
+                    await loadThumbnail()
+                }
+            }
+        }
+    }
+
+    @MainActor
+    private func loadThumbnail() async {
+        guard !isLoading else { return }
+
+        isLoading = true
+        defer { isLoading = false }
+
+        guard let store = thumbnailStore else { return }
+        do {
+            if let data = try await thumbnailStore?.get(
+                for: photo.thumbnailFileName,
+                photoPath: photo.path
+            ) {
+                #if os(iOS) || os(tvOS) || os(visionOS)
+                    if let uiImage = UIImage(data: data) {
+                        image = Image(uiImage: uiImage)
+                    }
+                #elseif os(macOS)
+                    if let nsImage = NSImage(data: data) {
+                        image = Image(nsImage: nsImage)
+                    }
+                #endif
+            }
+        } catch {
+            // Optionally log the error in DEBUG
+            #if DEBUG
+                print("[ThumbnailImageView] Failed to load thumbnail: \(error)")
+            #endif
         }
     }
 }

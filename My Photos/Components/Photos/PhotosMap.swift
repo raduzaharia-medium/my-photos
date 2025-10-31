@@ -16,7 +16,8 @@ struct PhotosMap: View {
                             longitude: loc.longitude
                         )
                     ) {
-                        PhotoCard(photo, variant: .pin)
+                        Text(photo.key)
+                       // PhotoCard(photo, variant: .pin)
                     }
                 }
             }
