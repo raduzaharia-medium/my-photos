@@ -8,6 +8,11 @@ struct FileStore {
                 if didAccess { url.stopAccessingSecurityScopedResource() }
             }
 
+            let bookmark = try url.bookmarkData(
+                options: [.withSecurityScope],
+                includingResourceValuesForKeys: nil,
+                relativeTo: nil
+            )
             let imageFiles = try getImageFiles(in: url)
             var result: [ParsedPhoto] = []
 
@@ -18,26 +23,10 @@ struct FileStore {
                 let acdseeCategories = ACDSeeCategories(meta)
                 let acdseeRegions = ACDSeeRegions(meta)
 
-                //            if let location {
-                //                if let request = MKReverseGeocodingRequest(
-                //                    location: CLLocation(
-                //                        latitude: location.latitude,
-                //                        longitude: location.longitude
-                //                    )
-                //                ) {
-                //                    let items = try await request.mapItems
-                //                    if let item = items.first {
-                //                        let placemark = item.addressRepresentations?.description
-                //                        print("Resolved place: \(placemark)")
-                //                    } else {
-                //                        print("No reverse geocoding results.")
-                //                    }
-                //                    print(request.description)
-                //                }
-                //            }
-
                 let photo = ParsedPhoto(
-                    path: imageFile,
+                    fileName: imageFile.lastPathComponent,
+                    path: imageFile.path.replacingOccurrences(of: url.path + "/", with: ""),
+                    bookmark: bookmark,
                     title: imageProps.title ?? imageFile.lastPathComponent,
                     description: imageProps.description,
                     dateTaken: imageProps.dateTaken,
@@ -60,23 +49,29 @@ struct FileStore {
             let enumerator = FileManager.default.enumerator(
                 at: url,
                 includingPropertiesForKeys: [
-                    .isRegularFileKey, .contentTypeKey,
-                ]
+                    .isRegularFileKey, .contentTypeKey, .isSymbolicLinkKey,
+                    .isReadableKey,
+                ],
+                options: [.skipsPackageDescendants, .skipsHiddenFiles],
+                errorHandler: nil
             )
         else { return [] }
 
         let result = enumerator.compactMap { $0 as? URL }
             .filter { url in
-                guard
-                    let values = try? url.resourceValues(forKeys: [
-                        .isRegularFileKey, .contentTypeKey,
-                    ])
+                let values = try? url.resourceValues(forKeys: [
+                    .isRegularFileKey, .contentTypeKey, .isSymbolicLinkKey,
+                    .isReadableKey,
+                ])
+                guard let values, values.isSymbolicLink != true,
+                    values.isRegularFile == true,
+                    values.isReadable == true,
+                    values.contentType?.conforms(to: .image) == true
                 else {
                     return false
                 }
 
-                return values.isRegularFile == true
-                    && values.contentType?.conforms(to: .image) == true
+                return true
             }
 
         return result

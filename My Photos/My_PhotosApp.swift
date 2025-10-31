@@ -63,7 +63,8 @@ struct My_PhotosApp: App {
 
         context.insert(
             Photo(
-                path: URL(fileURLWithPath: "/home/photos/beach.jpg"),
+                fileName: "beach.jpg",
+                path: "/path/to/beach.jpg",
                 title: "On the beach",
                 dateTaken: formatter.date(from: "2022-01-09") ?? Date(),
                 dateTakenYear: year2022,
@@ -76,7 +77,8 @@ struct My_PhotosApp: App {
         )
         context.insert(
             Photo(
-                path: URL(fileURLWithPath: "/home/photos/on-the-sea.jpg"),
+                fileName: "on-the-sea.jpg",
+                path: "/path/to/on-the-sea.jpg",
                 title: "On the sea",
                 dateTaken: formatter.date(from: "2022-01-10") ?? Date(),
                 dateTakenYear: year2022,
@@ -89,7 +91,8 @@ struct My_PhotosApp: App {
         )
         context.insert(
             Photo(
-                path: URL(fileURLWithPath: "/home/photos/on-the-hill.jpg"),
+                fileName: "on-the-hill.jpg",
+                path: "/path/to/on-the-hill.jpg",
                 title: "On the hill",
                 dateTaken: formatter.date(from: "2022-02-15") ?? Date(),
                 dateTakenYear: year2022,
@@ -100,7 +103,8 @@ struct My_PhotosApp: App {
         )
         context.insert(
             Photo(
-                path: URL(fileURLWithPath: "/home/photos/somewhere-else.jpg"),
+                fileName: "somewhere-else.jpg",
+                path: "/path/to/somewhere-else.jpg",
                 title: "Somewhere else",
                 dateTaken: formatter.date(from: "2022-03-22") ?? Date(),
                 dateTakenYear: year2022,
@@ -111,7 +115,8 @@ struct My_PhotosApp: App {
         )
         context.insert(
             Photo(
-                path: URL(fileURLWithPath: "/home/photos/we-don-t-know.jpg"),
+                fileName: "we-don-t-know.jpg",
+                path: "/path/to/we-don-t-know.jpg",
                 title: "We don't know",
                 dateTaken: formatter.date(from: "2022-03-25") ?? Date(),
                 dateTakenYear: year2022,

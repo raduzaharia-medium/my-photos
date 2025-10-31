@@ -52,7 +52,9 @@ extension View {
                     let people = personStore.ensure(names)
 
                     let photo = Photo(
+                        fileName: item.fileName,
                         path: item.path,
+                        bookmark: item.bookmark,
                         title: item.title,
                         description: item.description,
                         dateTaken: item.dateTaken,

@@ -1,7 +1,9 @@
 import Foundation
 
 struct ParsedPhoto {
-    let path: URL
+    let fileName: String
+    let path: String
+    let bookmark: Data?
     let title: String
     let description: String?
     let dateTaken: Date?

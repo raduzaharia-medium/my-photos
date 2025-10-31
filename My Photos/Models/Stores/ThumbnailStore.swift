@@ -32,34 +32,60 @@ final class ThumbnailStore: Sendable {
         directory.appendingPathComponent(photo.thumbnailFileName)
     }
 
-    func get(for thumbnailFileName: String, photoPath: URL) async throws
+    func get(for thumbnailFileName: String, bookmark: Data?, path: String)
+        async throws
         -> Data?
     {
+        guard let bookmark = bookmark else {
+            throw NSError(
+                domain: "ThumbnailStore",
+                code: 10,
+                userInfo: [
+                    NSLocalizedDescriptionKey: "No bookmark stored for photo"
+                ]
+            )
+        }
+        var isStale = false
+        let folderURL = try URL(
+            resolvingBookmarkData: bookmark,
+            options: [.withSecurityScope],
+            relativeTo: nil,
+            bookmarkDataIsStale: &isStale
+        )
+
+        if isStale {
+            let fresh = try folderURL.bookmarkData(
+                options: [.withSecurityScope],
+                includingResourceValuesForKeys: nil,
+                relativeTo: nil
+            )
+            // photo.bookmark = fresh
+        }
+
+        let folderAccess = folderURL.startAccessingSecurityScopedResource()
+        defer {
+            if folderAccess { folderURL.stopAccessingSecurityScopedResource() }
+        }
+
+        let sourceURL = folderURL.appendingPathComponent(path)
         let targetURL = url(for: thumbnailFileName)
+        
         if FileManager.default.fileExists(atPath: targetURL.path) {
             return try Data(contentsOf: targetURL)
         }
 
         // Generate and persist the thumbnail
-        let data = try await generate(from: photoPath)
+        let data = try await generate(from: sourceURL)
         try data.write(to: targetURL, options: [.atomic])
+        
         return data
     }
     func get(for photo: Photo) async throws -> Data? {
-        let needsAccess = photo.path.startAccessingSecurityScopedResource()
-        defer {
-            if needsAccess { photo.path.stopAccessingSecurityScopedResource() }
-        }
-
-        let targetURL = url(for: photo)
-        if FileManager.default.fileExists(atPath: targetURL.path) {
-            return try Data(contentsOf: targetURL)
-        }
-
-        // Generate and persist the thumbnail
-        let data = try await generate(from: photo.path)
-        try data.write(to: targetURL, options: [.atomic])
-        return data
+        return try await get(
+            for: photo.thumbnailFileName,
+            bookmark: photo.bookmark,
+            path: photo.path
+        )
     }
 
     private func generate(from originalURL: URL) async throws
@@ -79,8 +105,6 @@ final class ThumbnailStore: Sendable {
         let path = originalURL.path
         let isFileURL = originalURL.isFileURL
         let exists = FileManager.default.fileExists(atPath: path)
-        print("Thumb input URL:", originalURL)
-        print("isFileURL:", isFileURL, "exists:", exists)
 
         guard let src = CGImageSourceCreateWithURL(originalURL as CFURL, nil)
         else {
@@ -110,7 +134,7 @@ final class ThumbnailStore: Sendable {
         guard
             let data = rep.representation(
                 using: .jpeg,
-                properties: [.compressionFactor: 0.8]
+                properties: [.compressionFactor: 0.6]
             )
         else {
             throw NSError(

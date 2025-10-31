@@ -19,7 +19,9 @@ final class Photo: Identifiable {
     var caption: String?
     var dateTaken: Date?
     var location: GeoCoordinate?
-    var path: URL
+    var fileName: String
+    var path: String
+    var bookmark: Data?
     var thumbnailFileName: String
 
     @Relationship(inverse: \Tag.photos) var tags: [Tag]
@@ -42,7 +44,9 @@ final class Photo: Identifiable {
 
     public init(
         id: UUID = .init(),
-        path: URL,
+        fileName: String,
+        path: String,
+        bookmark: Data? = nil,
         title: String,
         description: String? = nil,
         dateTaken: Date?,
@@ -57,10 +61,12 @@ final class Photo: Identifiable {
         events: [Event] = [],
         tags: [Tag] = [],
     ) {
-        let key = path.stablePhotoKey_FNV1a
+        let key = fileName.stablePhotoKey_FNV1a
         
         self.id = id
+        self.fileName = fileName
         self.path = path
+        self.bookmark = bookmark
         self.title = title
         self.caption = description
         self.dateTaken = dateTaken
@@ -100,12 +106,11 @@ final class Photo: Identifiable {
     }
 }
 
-extension URL {
+extension String {
     var stablePhotoKey_FNV1a: String {
-        let s = self.standardizedFileURL.path
         var h: UInt64 = 1_469_598_103_934_665_603
 
-        for b in s.utf8 {
+        for b in self.utf8 {
             h ^= UInt64(b)
             h &*= 1_099_511_628_211
         }
