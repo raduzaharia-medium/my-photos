@@ -52,13 +52,23 @@ struct PhotoCard: View {
             }
             .overlay {
                 GeometryReader { proxy in
-                    ThumbnailImageView(photo: photo)
-                        .frame(
-                            width: proxy.size.width,
-                            height: proxy.size.height
-                        )
-                        .clipped(antialiased: true)
-                        .cornerRadius(variant.tokens.cornerRadius)
+                    if variant == .detail {
+                        FullImage(photo: photo)
+                            .frame(
+                                width: proxy.size.width,
+                                height: proxy.size.height
+                            )
+                            .clipped(antialiased: true)
+                            .cornerRadius(variant.tokens.cornerRadius)
+                    } else {
+                        ThumbnailImage(photo: photo)
+                            .frame(
+                                width: proxy.size.width,
+                                height: proxy.size.height
+                            )
+                            .clipped(antialiased: true)
+                            .cornerRadius(variant.tokens.cornerRadius)
+                    }
                 }
             }
 
@@ -107,61 +117,6 @@ extension View {
             transform(self)
         } else {
             self
-        }
-    }
-}
-
-private struct ThumbnailImageView: View {
-    @Environment(\.thumbnailStore) private var thumbnailStore
-    @State private var image: Image?
-    @State private var isLoading = false
-
-    let photo: Photo
-
-    var body: some View {
-        Group {
-            if let image {
-                image
-                    .resizable()
-                    .scaledToFill()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipped()
-            } else {
-                ZStack {
-                    Color.gray.opacity(0.1)
-                    Image(systemName: "photo")
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .task(id: photo.id) {
-                    await loadThumbnail()
-                }
-            }
-        }
-    }
-
-    @MainActor
-    private func loadThumbnail() async {
-        guard !isLoading else { return }
-
-        isLoading = true
-        defer { isLoading = false }
-
-        guard let store = thumbnailStore else { return }
-        if let data = try? await store.get(
-            for: photo.thumbnailFileName,
-            bookmark: photo.bookmark,
-            path: photo.path
-        ) {
-            #if os(iOS) || os(tvOS) || os(visionOS)
-                if let uiImage = UIImage(data: data) {
-                    image = Image(uiImage: uiImage)
-                }
-            #elseif os(macOS)
-                if let nsImage = NSImage(data: data) {
-                    image = Image(nsImage: nsImage)
-                }
-            #endif
         }
     }
 }
