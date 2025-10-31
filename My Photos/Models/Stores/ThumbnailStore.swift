@@ -28,39 +28,14 @@ final class ThumbnailStore: Sendable {
     func url(for thumbnailFileName: String) -> URL {
         directory.appendingPathComponent(thumbnailFileName)
     }
-    func url(for photo: Photo) -> URL {
-        directory.appendingPathComponent(photo.thumbnailFileName)
-    }
+    func url(for photo: Photo) -> URL { url(for: photo.thumbnailFileName) }
 
-    func get(for thumbnailFileName: String, bookmark: Data?, path: String)
-        async throws
+    func get(for thumbnail: String, bookmark: Data?, path: String) async throws
         -> Data?
     {
-        guard let bookmark = bookmark else {
-            throw NSError(
-                domain: "ThumbnailStore",
-                code: 10,
-                userInfo: [
-                    NSLocalizedDescriptionKey: "No bookmark stored for photo"
-                ]
-            )
-        }
-        var isStale = false
-        let folderURL = try URL(
-            resolvingBookmarkData: bookmark,
-            options: [.withSecurityScope],
-            relativeTo: nil,
-            bookmarkDataIsStale: &isStale
-        )
-
-        if isStale {
-            let fresh = try folderURL.bookmarkData(
-                options: [.withSecurityScope],
-                includingResourceValuesForKeys: nil,
-                relativeTo: nil
-            )
-            // photo.bookmark = fresh
-        }
+        if let ex = getExisting(from: thumbnail) { return ex }
+        guard let bookmark = bookmark else { throw Error.missingBookmark }
+        guard let folderURL = resolve(bookmark) else { throw Error.urlResolve }
 
         let folderAccess = folderURL.startAccessingSecurityScopedResource()
         defer {
@@ -68,16 +43,10 @@ final class ThumbnailStore: Sendable {
         }
 
         let sourceURL = folderURL.appendingPathComponent(path)
-        let targetURL = url(for: thumbnailFileName)
-        
-        if FileManager.default.fileExists(atPath: targetURL.path) {
-            return try Data(contentsOf: targetURL)
-        }
-
-        // Generate and persist the thumbnail
+        let targetURL = url(for: thumbnail)
         let data = try await generate(from: sourceURL)
+
         try data.write(to: targetURL, options: [.atomic])
-        
         return data
     }
     func get(for photo: Photo) async throws -> Data? {
@@ -88,63 +57,44 @@ final class ThumbnailStore: Sendable {
         )
     }
 
-    private func generate(from originalURL: URL) async throws
-        -> Data
-    {
-        let needsAccess = originalURL.startAccessingSecurityScopedResource()
-        defer {
-            if needsAccess { originalURL.stopAccessingSecurityScopedResource() }
-        }
+    private func getExisting(from thumbnailFileName: String) -> Data? {
+        let targetURL = url(for: thumbnailFileName)
+        let fileExists = FileManager.default.fileExists(atPath: targetURL.path)
 
-        let options: [CFString: Any] = [
-            kCGImageSourceCreateThumbnailFromImageAlways: true,
-            kCGImageSourceThumbnailMaxPixelSize: 320,
-            kCGImageSourceCreateThumbnailWithTransform: true,
-        ]
+        guard fileExists else { return nil }
+        return try? Data(contentsOf: targetURL)
+    }
+    private func resolve(_ bookmark: Data) -> URL? {
+        var isStale = false
 
-        let path = originalURL.path
-        let isFileURL = originalURL.isFileURL
-        let exists = FileManager.default.fileExists(atPath: path)
+        return try? URL(
+            resolvingBookmarkData: bookmark,
+            options: [.withSecurityScope],
+            relativeTo: nil,
+            bookmarkDataIsStale: &isStale
+        )
+    }
+    private func generate(from originalURL: URL) async throws -> Data {
+        let options =
+            [
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceThumbnailMaxPixelSize: 320,
+                kCGImageSourceCreateThumbnailWithTransform: true,
+            ] as CFDictionary
 
-        guard let src = CGImageSourceCreateWithURL(originalURL as CFURL, nil)
-        else {
-            throw NSError(
-                domain: "ThumbnailStore",
-                code: 1,
-                userInfo: [
-                    NSLocalizedDescriptionKey: "Failed to create thumbnail file"
-                ]
-            )
-        }
+        let src = CGImageSourceCreateWithURL(originalURL as CFURL, nil)
+        guard let src else { throw Error.imageSource }
 
-        let opt = options as CFDictionary
-        let cgImage = CGImageSourceCreateThumbnailAtIndex(src, 0, opt)
-        guard let cgImage else {
-            throw NSError(
-                domain: "ThumbnailStore",
-                code: 1,
-                userInfo: [
-                    NSLocalizedDescriptionKey:
-                        "Failed to create thumbnail image"
-                ]
-            )
-        }
+        let cgImage = CGImageSourceCreateThumbnailAtIndex(src, 0, options)
+        guard let cgImage else { throw Error.thumbnail }
 
         let rep = NSBitmapImageRep(cgImage: cgImage)
-        guard
-            let data = rep.representation(
-                using: .jpeg,
-                properties: [.compressionFactor: 0.6]
-            )
-        else {
-            throw NSError(
-                domain: "ThumbnailStore",
-                code: 3,
-                userInfo: [
-                    NSLocalizedDescriptionKey: "Failed to encode JPEG (macOS)"
-                ]
-            )
-        }
+        let data = rep.representation(
+            using: .jpeg,
+            properties: [.compressionFactor: 0.6]
+        )
+        guard let data else { throw Error.jpeg }
+
         return data
     }
 }
@@ -157,5 +107,23 @@ extension EnvironmentValues {
     var thumbnailStore: ThumbnailStore? {
         get { self[ThumbnailStoreKey.self] }
         set { self[ThumbnailStoreKey.self] = newValue }
+    }
+}
+
+private enum Error: LocalizedError {
+    case missingBookmark
+    case urlResolve
+    case imageSource
+    case thumbnail
+    case jpeg
+
+    var errorDescription: String? {
+        switch self {
+        case .missingBookmark: return "No bookmark stored for photo"
+        case .urlResolve: return "Failed to resolve URL"
+        case .imageSource: return "Failed to create thumbnail source"
+        case .thumbnail: return "Failed to create thumbnail image"
+        case .jpeg: return "Failed to encode JPEG"
+        }
     }
 }
