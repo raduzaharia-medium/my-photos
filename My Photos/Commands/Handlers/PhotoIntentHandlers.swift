@@ -37,6 +37,13 @@ extension View {
                 }
 
                 for item in parsed {
+                    // I have to check if the file was already imported
+                    if let existing = try? photoStore.get(by: item.fullPath),
+                        existing.lastModifiedDate == item.lastModifiedDate
+                    {
+                        continue
+                    }
+
                     let tags = tagStore.ensure(item.tags)
                     let year = try? dateStore.ensureYear(item.dateTaken)
                     let month = try? dateStore.ensureMonth(item.dateTaken)
