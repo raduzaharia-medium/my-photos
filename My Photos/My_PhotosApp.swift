@@ -65,6 +65,7 @@ struct My_PhotosApp: App {
             Photo(
                 fileName: "beach.jpg",
                 path: "/path/to/beach.jpg",
+                fullPath: "/path/to/beach.jpg",
                 title: "On the beach",
                 dateTaken: formatter.date(from: "2022-01-09") ?? Date(),
                 dateTakenYear: year2022,
@@ -79,6 +80,7 @@ struct My_PhotosApp: App {
             Photo(
                 fileName: "on-the-sea.jpg",
                 path: "/path/to/on-the-sea.jpg",
+                fullPath: "/path/to/on-the-sea.jpg",
                 title: "On the sea",
                 dateTaken: formatter.date(from: "2022-01-10") ?? Date(),
                 dateTakenYear: year2022,
@@ -93,6 +95,7 @@ struct My_PhotosApp: App {
             Photo(
                 fileName: "on-the-hill.jpg",
                 path: "/path/to/on-the-hill.jpg",
+                fullPath: "/path/to/on-the-hill.jpg",
                 title: "On the hill",
                 dateTaken: formatter.date(from: "2022-02-15") ?? Date(),
                 dateTakenYear: year2022,
@@ -105,6 +108,7 @@ struct My_PhotosApp: App {
             Photo(
                 fileName: "somewhere-else.jpg",
                 path: "/path/to/somewhere-else.jpg",
+                fullPath: "/path/to/somewhere-else.jpg",
                 title: "Somewhere else",
                 dateTaken: formatter.date(from: "2022-03-22") ?? Date(),
                 dateTakenYear: year2022,
@@ -117,6 +121,7 @@ struct My_PhotosApp: App {
             Photo(
                 fileName: "we-don-t-know.jpg",
                 path: "/path/to/we-don-t-know.jpg",
+                fullPath: "/path/to/we-don-t-know.jpg",
                 title: "We don't know",
                 dateTaken: formatter.date(from: "2022-03-25") ?? Date(),
                 dateTakenYear: year2022,

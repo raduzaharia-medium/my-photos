@@ -22,10 +22,19 @@ struct FileStore {
                 let imageProps = ImageProps(props, meta)
                 let acdseeCategories = ACDSeeCategories(meta)
                 let acdseeRegions = ACDSeeRegions(meta)
+                let resourceValues = try imageFile.resourceValues(forKeys: [
+                    .creationDateKey, .contentModificationDateKey,
+                ])
 
                 let photo = ParsedPhoto(
                     fileName: imageFile.lastPathComponent,
-                    path: imageFile.path.replacingOccurrences(of: url.path + "/", with: ""),
+                    path: imageFile.path.replacingOccurrences(
+                        of: url.path + "/",
+                        with: ""
+                    ),
+                    fullPath: imageFile.absoluteString,
+                    creationDate: resourceValues.creationDate,
+                    lastModifiedDate: resourceValues.contentModificationDate,
                     bookmark: bookmark,
                     title: imageProps.title ?? imageFile.lastPathComponent,
                     description: imageProps.description,
@@ -37,6 +46,7 @@ struct FileStore {
                     albums: acdseeCategories.albums,
                     regions: acdseeRegions.regions
                 )
+
                 result.append(photo)
             }
 

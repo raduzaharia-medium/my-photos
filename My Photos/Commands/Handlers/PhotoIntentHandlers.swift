@@ -54,6 +54,9 @@ extension View {
                     let photo = Photo(
                         fileName: item.fileName,
                         path: item.path,
+                        fullPath: item.fullPath,
+                        creationDate: item.creationDate,
+                        lastModifiedDate: item.lastModifiedDate,
                         bookmark: item.bookmark,
                         title: item.title,
                         description: item.description,

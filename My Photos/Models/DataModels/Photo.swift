@@ -21,6 +21,9 @@ final class Photo: Identifiable {
     var location: GeoCoordinate?
     var fileName: String
     var path: String
+    @Attribute(.unique) var fullPath: String
+    var creationDate: Date?
+    var lastModifiedDate: Date?
     var bookmark: Data?
     var thumbnailFileName: String
 
@@ -46,6 +49,9 @@ final class Photo: Identifiable {
         id: UUID = .init(),
         fileName: String,
         path: String,
+        fullPath: String,
+        creationDate: Date? = nil,
+        lastModifiedDate: Date? = nil,
         bookmark: Data? = nil,
         title: String,
         description: String? = nil,
@@ -62,10 +68,13 @@ final class Photo: Identifiable {
         tags: [Tag] = [],
     ) {
         let key = fileName.stablePhotoKey_FNV1a
-        
+
         self.id = id
         self.fileName = fileName
         self.path = path
+        self.fullPath = fullPath
+        self.creationDate = creationDate
+        self.lastModifiedDate = lastModifiedDate
         self.bookmark = bookmark
         self.title = title
         self.caption = description
