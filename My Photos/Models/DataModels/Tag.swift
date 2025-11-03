@@ -22,7 +22,7 @@ final class Tag: Identifiable, Hashable {
     }
     
     static func key(_ parent: Tag?, _ name: String) -> String {
-        "\(parent?.name ?? "root")-\(name)"
+        "\(parent?.key ?? "root")-\(name)"
     }
 }
 
