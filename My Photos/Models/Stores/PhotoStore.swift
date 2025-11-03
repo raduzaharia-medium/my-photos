@@ -7,7 +7,7 @@ final class PhotoStore {
     init(context: ModelContext) {
         self.context = context
     }
-    
+
     func get(by fullPath: String) throws -> Photo? {
         let descriptor = FetchDescriptor<Photo>(
             predicate: #Predicate { $0.fullPath == fullPath }

@@ -26,6 +26,17 @@ extension View {
             notifier: notifier
         )
         let pickTagPresenter = PickTagPresenter(modalPresenter: modalPresenter)
+        let photoImporter = PhotoImportService(
+            photoStore: photoStore,
+            yearStore: yearStore,
+            monthStore: monthStore,
+            dayStore: dayStore,
+            tagStore: tagStore,
+            countryStore: countryStore,
+            localityStore: localityStore,
+            albumStore: albumStore,
+            personStore: personStore
+        )
 
         #if os(macOS)
             let importPhotos: (NotificationOutput) -> Void = { note in
@@ -39,68 +50,15 @@ extension View {
                     return
                 }
 
+                var success = 0
                 for item in parsed {
-                    // I have to check if the file was already imported
-                    if let existing = try? photoStore.get(by: item.fullPath),
-                        existing.lastModifiedDate == item.lastModifiedDate
-                    {
-                        continue
-                    }
-
-                    var year: DateTakenYear? = nil
-                    var month: DateTakenMonth? = nil
-                    var day: DateTakenDay? = nil
-
-                    if let dateTaken = item.dateTaken {
-                        year = try? yearStore.ensure(
-                            Calendar.current.component(.year, from: dateTaken)
-                        )
-                        month = try? monthStore.ensure(
-                            year,
-                            Calendar.current.component(.month, from: dateTaken)
-                        )
-                        day = try? dayStore.ensure(
-                            month,
-                            Calendar.current.component(.day, from: dateTaken)
-                        )
-                    }
-
-                    let tags = tagStore.ensure(item.tags)
-                    let flatTags = tags.flatMap { $0.flatten() }                   
-                    let country = try? countryStore.ensure(item.country)
-                    let locality = try? localityStore.ensure(
-                        country,
-                        item.locality
-                    )
-                    let albums = albumStore.ensure(item.albums)
-                    let names = item.regions?.regionList.map(\.name) ?? []
-                    let people = personStore.ensure(names)
-
-                    let photo = Photo(
-                        fileName: item.fileName,
-                        path: item.path,
-                        fullPath: item.fullPath,
-                        creationDate: item.creationDate,
-                        lastModifiedDate: item.lastModifiedDate,
-                        bookmark: item.bookmark,
-                        title: item.title,
-                        description: item.description,
-                        dateTaken: item.dateTaken,
-                        dateTakenYear: year,
-                        dateTakenMonth: month,
-                        dateTakenDay: day,
-                        location: item.location,
-                        country: country,
-                        locality: locality,
-                        albums: albums,
-                        people: people,
-                        tags: flatTags,
-                    )
-
-                    try? photoStore.insert(photo)
+                    if photoImporter.import(item) != nil { success += 1 }
                 }
 
-                notifier.show("Imported \(folder.lastPathComponent)", .success)
+                notifier.show(
+                    "Imported \(success) of \(parsed.count) photos from \(folder.lastPathComponent)",
+                    .success
+                )
             }
         #endif
 
