@@ -16,7 +16,8 @@ extension View {
         yearStore: YearStore,
         monthStore: MonthStore,
         dayStore: DayStore,
-        placeStore: PlaceStore,
+        countryStore: CountryStore,
+        localityStore: LocalityStore,
         albumStore: AlbumStore,
         personStore: PersonStore
     ) -> some View {
@@ -65,13 +66,12 @@ extension View {
                     }
 
                     let tags = tagStore.ensure(item.tags)
-
-                    let country = try? placeStore.ensureCountry(item.country)
-                    let locality =
-                        try? placeStore.ensureLocality(
-                            item.country,
-                            item.locality
-                        )
+                    let flatTags = tags.flatMap { $0.flatten() }                   
+                    let country = try? countryStore.ensure(item.country)
+                    let locality = try? localityStore.ensure(
+                        country,
+                        item.locality
+                    )
                     let albums = albumStore.ensure(item.albums)
                     let names = item.regions?.regionList.map(\.name) ?? []
                     let people = personStore.ensure(names)
@@ -94,7 +94,7 @@ extension View {
                         locality: locality,
                         albums: albums,
                         people: people,
-                        tags: tags,
+                        tags: flatTags,
                     )
 
                     try? photoStore.insert(photo)

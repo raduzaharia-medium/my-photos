@@ -20,7 +20,11 @@ final class Tag: Identifiable, Hashable {
     func descendant(of root: Tag) -> Bool {
         parent == root || parent?.descendant(of: root) == true
     }
-    
+
+    func flatten() -> [Tag] {
+        [self] + children.flatMap { $0.flatten() }
+    }
+
     static func key(_ parent: Tag?, _ name: String) -> String {
         "\(parent?.key ?? "root")-\(name)"
     }

@@ -18,7 +18,8 @@ struct ContentView: View {
     private var yearStore: YearStore { YearStore(context: context) }
     private var monthStore: MonthStore { MonthStore(context: context) }
     private var dayStore: DayStore { DayStore(context: context) }
-    private var placeStore: PlaceStore { PlaceStore(context: context) }
+    private var countryStore: CountryStore { CountryStore(context: context) }
+    private var localityStore: LocalityStore { LocalityStore(context: context) }
     private var eventStore: EventStore { EventStore(context: context) }
     private var fileStore: FileStore { FileStore() }
     private var thumbnailStore: ThumbnailStore? { try? ThumbnailStore() }
@@ -96,7 +97,8 @@ struct ContentView: View {
                 yearStore: yearStore,
                 monthStore: monthStore,
                 dayStore: dayStore,
-                placeStore: placeStore,
+                countryStore: countryStore,
+                localityStore: localityStore,
                 albumStore: albumStore,
                 personStore: personStore
             )
