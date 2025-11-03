@@ -1,4 +1,4 @@
-struct ParsedTag {
+struct ParsedTag: Sendable {
     let name: String
     var children: [ParsedTag] = []
     

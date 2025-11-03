@@ -21,11 +21,14 @@ extension View {
         albumStore: AlbumStore,
         personStore: PersonStore
     ) -> some View {
-        let importPhotosPresenter = ImportPhotosPresenter(
+        let pickFolderPresenter = PickFolderPresenter(
             fileImporter: fileImporter,
             notifier: notifier
         )
         let pickTagPresenter = PickTagPresenter(modalPresenter: modalPresenter)
+        let importPhotosPresenter = ImportPhotosPresenter(
+            modalPresenter: modalPresenter
+        )
         let photoImporter = PhotoImportService(
             photoStore: photoStore,
             yearStore: yearStore,
@@ -50,15 +53,7 @@ extension View {
                     return
                 }
 
-                var success = 0
-                for item in parsed {
-                    if photoImporter.import(item) != nil { success += 1 }
-                }
-
-                notifier.show(
-                    "Imported \(success) of \(parsed.count) photos from \(folder.lastPathComponent)",
-                    .success
-                )
+                importPhotosPresenter.show(parsed, photoImporter)
             }
         #endif
 
@@ -78,7 +73,7 @@ extension View {
         }
 
         let showImporter: (NotificationOutput) -> Void = { _ in
-            importPhotosPresenter.show()
+            pickFolderPresenter.show()
         }
         let showTagger: (NotificationOutput) -> Void = {
             note in

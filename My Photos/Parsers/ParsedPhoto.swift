@@ -1,6 +1,6 @@
 import Foundation
 
-struct ParsedPhoto {
+struct ParsedPhoto: Sendable {
     let fileName: String
     let path: String
     let fullPath: String

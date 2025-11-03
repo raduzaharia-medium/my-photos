@@ -33,10 +33,10 @@ final class PhotoImportService {
         self.personStore = personStore
     }
 
-    func `import`(_ parsed: ParsedPhoto) -> Photo? {
+    func `import`(_ parsed: ParsedPhoto) -> Bool {
         let existing = try? photoStore.get(by: parsed.fullPath)
         let notChanged = existing?.lastModifiedDate == parsed.lastModifiedDate
-        guard notChanged == false else { return nil }
+        guard notChanged == false else { return false }
 
         var year: DateTakenYear? = nil
         var month: DateTakenMonth? = nil
@@ -86,6 +86,6 @@ final class PhotoImportService {
         )
 
         try? photoStore.insert(photo)
-        return photo
+        return true
     }
 }
