@@ -11,12 +11,14 @@ final class Event: Identifiable, Equatable {
 
     init(_ name: String) {
         self.name = name
-        self.key = name
+        self.key = Event.key(name)
     }
 
     static func == (left: Event, right: Event) -> Bool {
         left.key == right.key
     }
+    
+    static func key(_ name: String) -> String { name }
 }
 
 extension Event {

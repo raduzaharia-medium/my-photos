@@ -29,7 +29,7 @@ extension View {
             guard let name = note.object as? String else { return }
 
             do {
-                try albumStore.create(name: name)
+                try albumStore.create(name)
                 notifier.show("Album created", .success)
             } catch {
                 notifier.show("Could not create album", .error)

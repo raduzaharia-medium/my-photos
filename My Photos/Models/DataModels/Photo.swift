@@ -67,7 +67,7 @@ final class Photo: Identifiable {
         events: [Event] = [],
         tags: [Tag] = [],
     ) {
-        let key = fileName.stablePhotoKey_FNV1a
+        let key = Photo.key(fileName)
 
         self.id = id
         self.fileName = fileName
@@ -112,6 +112,10 @@ final class Photo: Identifiable {
         if !self.tags.contains(where: { $0.id == tag.id }) {
             self.tags.append(tag)
         }
+    }
+
+    static func key(_ fileName: String) -> String {
+        fileName.stablePhotoKey_FNV1a
     }
 }
 

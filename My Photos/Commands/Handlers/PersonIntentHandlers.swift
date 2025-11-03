@@ -29,7 +29,7 @@ extension View {
             guard let name = note.object as? String else { return }
 
             do {
-                try personStore.create(name: name)
+                try personStore.create(name)
                 notifier.show("Person created", .success)
             } catch {
                 notifier.show("Could not create person", .error)

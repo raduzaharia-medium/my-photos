@@ -29,7 +29,7 @@ extension View {
             guard let name = note.object as? String else { return }
 
             do {
-                try eventStore.create(name: name)
+                try eventStore.create(name)
                 notifier.show("Event created", .success)
             } catch {
                 notifier.show("Could not create event", .error)

@@ -1,11 +1,6 @@
 import SwiftData
 import SwiftUI
 
-enum StoreError: Error {
-    case notFound
-    case saveFailed(underlying: Error)
-}
-
 final class TagStore {
     private let context: ModelContext
 
@@ -13,55 +8,87 @@ final class TagStore {
         self.context = context
     }
 
-    func getTags() -> [Tag] {
-        let descriptor = FetchDescriptor<Tag>(
-            sortBy: [
-                SortDescriptor(\Tag.name, order: .forward)
-            ]
-        )
+    func get() -> [Tag] {
+        let sort = SortDescriptor(\Tag.key)
+        let descriptor = FetchDescriptor<Tag>(sortBy: [sort])
 
-        if let fetched = try? context.fetch(descriptor) { return fetched }
-        return []
+        guard let results = try? context.fetch(descriptor) else { return [] }
+        return results
+    }
+    func get(_ name: String) -> Tag? {
+        let predicate = #Predicate<Tag> { $0.name == name }
+        let descriptor = FetchDescriptor<Tag>(predicate: predicate)
+
+        guard let results = try? context.fetch(descriptor) else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        return fetched
+    }
+    func get(_ id: UUID) -> Tag? {
+        let predicate = #Predicate<Tag> { $0.id == id }
+        let descriptor = FetchDescriptor<Tag>(predicate: predicate)
+
+        guard let results = try? context.fetch(descriptor) else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        return fetched
     }
 
-    func getTag(named name: String) -> Tag? {
-        let tags = getTags().filter { $0.name == name }
-        return tags.first
+    func findOrCreate(_ name: String, _ parent: Tag? = nil) throws -> Tag {
+        if let existing = get(name) { return existing }
+        return try create(name, parent)
     }
 
     @discardableResult
-    func create(name: String, parent: Tag? = nil) throws -> Tag {
-        let tag = Tag(name: name, parent: parent)
+    func create(_ name: String, _ parent: Tag? = nil) throws -> Tag {
+        let newItem = Tag(name: name, parent: parent)
 
-        context.insert(tag)
-        try context.save()
-
-        return tag
+        try insert(newItem)
+        return newItem
     }
 
-    func insert(_ tag: Tag) throws {
-        context.insert(tag)
+    func insert(_ item: Tag) throws {
+        context.insert(item)
         try context.save()
     }
-
-    func insert(_ tags: [Tag]) throws {
-        for tag in tags {
-            context.insert(tag)
+    func insert(_ items: [Tag]) throws {
+        for item in items {
+            context.insert(item)
         }
 
         try context.save()
     }
 
-    func insertIfMissing(_ tag: Tag) throws {
-        let tags = getTags().filter { $0.name == tag.name }
-        if !tags.isEmpty { return }
+    @discardableResult
+    func update(_ item: Tag, _ name: String, _ parent: Tag? = nil) throws -> Tag
+    {
+        item.name = name
+        item.parent = parent
+        item.key = Tag.key(parent, name)
 
-        context.insert(tag)
+        try context.save()
+        return item
+    }
+    @discardableResult
+    func update(_ id: UUID, _ name: String?, _ parent: Tag? = nil) throws -> Tag? {
+        guard let tag = get(id) else { return nil }
+        return try update(tag, name ?? tag.name, parent)
+    }
+
+    func delete(_ item: Tag) throws {
+        context.delete(item)
+        try context.save()
+    }
+    func delete(_ items: [Tag]) throws {
+        guard !items.isEmpty else { return }
+
+        for item in items { context.delete(item) }
+        try context.save()
     }
 
     @discardableResult
     func ensure(_ incoming: ParsedTag) -> Tag {
-        if let existing = getTag(named: incoming.name) {
+        if let existing = get(incoming.name) {
             for child in incoming.children {
                 let ensuredChild = ensure(child)
 
@@ -90,82 +117,5 @@ final class TagStore {
     func ensure(_ incoming: [ParsedTag]) -> [Tag] {
         let resolved: [Tag] = incoming.map { t in ensure(t) }
         return resolved
-    }
-
-    func createIfMissing(name: String) throws -> Tag {
-        let tags = getTags().filter { $0.name == name }
-        if !tags.isEmpty {
-            return tags.first!
-        }
-
-        let tag = Tag(name: name)
-
-        context.insert(tag)
-        try context.save()
-
-        return tag
-    }
-
-    @discardableResult
-    func update(_ tag: Tag, name: String, parent: Tag? = nil) throws -> Tag {
-        guard let tag = context.model(for: tag.id) as? Tag else {
-            throw StoreError.notFound
-        }
-
-        tag.name = name
-        tag.parent = parent
-        tag.key = "\(parent?.name ?? "root")-\(tag.name)"
-
-        try context.save()
-        return tag
-    }
-
-    @discardableResult
-    func updateByID(_ tagID: UUID, name: String?, parent: Tag? = nil) throws
-        -> Tag
-    {
-        let predicate = #Predicate<Tag> { $0.id == tagID }
-        let descriptor = FetchDescriptor<Tag>(predicate: predicate)
-        guard let tag = try? context.fetch(descriptor).first else {
-            throw StoreError.notFound
-        }
-
-        tag.name = name ?? tag.name
-        tag.parent = parent
-        tag.key = "\(parent?.name ?? "root")-\(tag.name)"
-
-        try context.save()
-        return tag
-    }
-
-    func upsert(_ tag: Tag?, name: String) throws -> Tag {
-        if let tag {
-            try update(tag, name: name)
-        } else {
-            try create(name: name)
-        }
-    }
-
-    func delete(_ tag: Tag) throws {
-        guard let tag = context.model(for: tag.id) as? Tag else {
-            throw StoreError.notFound
-        }
-
-        context.delete(tag)
-        try context.save()
-    }
-
-    func delete(_ tags: [Tag]) throws {
-        guard !tags.isEmpty else { return }
-
-        for tag in tags {
-            guard let tag = context.model(for: tag.id) as? Tag else {
-                throw StoreError.notFound
-            }
-
-            context.delete(tag)
-        }
-
-        try context.save()
     }
 }

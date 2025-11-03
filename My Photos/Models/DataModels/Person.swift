@@ -11,12 +11,14 @@ final class Person: Identifiable, Equatable {
 
     init(_ name: String) {
         self.name = name
-        self.key = name
+        self.key = Person.key(name)
     }
 
     static func == (left: Person, right: Person) -> Bool {
         left.key == right.key
     }
+    
+    static func key(_ name: String) -> String { name }
 }
 
 extension Person {

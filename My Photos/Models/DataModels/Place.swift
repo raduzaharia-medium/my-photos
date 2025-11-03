@@ -13,12 +13,14 @@ final class PlaceCountry: Identifiable, Equatable {
 
     init(_ country: String) {
         self.country = country
-        self.key = country
+        self.key = PlaceCountry.key(country)
     }
 
     static func == (left: PlaceCountry, right: PlaceCountry) -> Bool {
         left.key == right.key
     }
+
+    static func key(_ country: String) -> String { country }
 }
 
 @Model
@@ -34,18 +36,25 @@ final class PlaceLocality: Identifiable, Equatable {
     init(_ country: PlaceCountry, _ locality: String) {
         self.locality = locality
         self.country = country
-        self.key = "\(country.key)-\(locality)"
+        self.key = PlaceLocality.key(country, locality)
     }
 
     static func == (left: PlaceLocality, right: PlaceLocality) -> Bool {
         left.key == right.key
+    }
+
+    static func key(_ country: PlaceCountry, _ locality: String) -> String {
+        "\(country.key)-\(locality)"
+    }
+    static func key(_ country: String, _ locality: String) -> String {
+        "\(PlaceCountry.key(country))-\(locality)"
     }
 }
 
 enum Place: Hashable {
     case country(PlaceCountry)
     case locality(PlaceLocality)
-    
+
     static let icon: String = "mappin.and.ellipse"
 }
 

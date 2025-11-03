@@ -3,53 +3,105 @@ import SwiftUI
 
 final class EventStore {
     private let context: ModelContext
+    private var cache: [String: Event] = [:]
 
     init(context: ModelContext) {
         self.context = context
     }
 
-    @discardableResult
-    func create(name: String) throws -> Event {
-        let event = Event(name)
+    func get() -> [Event] {
+        let sort = SortDescriptor(\Event.key)
+        let descriptor = FetchDescriptor<Event>(sortBy: [sort])
 
-        context.insert(event)
-        try context.save()
+        guard let results = try? context.fetch(descriptor) else { return [] }
+        return results
+    }
+    func get(_ name: String) -> Event? {
+        let key = Event.key(name)
+        if let cached = cache[key] { return cached }
 
-        return event
+        let predicate = #Predicate<Event> { $0.key == key }
+        let descriptor = FetchDescriptor<Event>(predicate: predicate)
+
+        guard let results = try? context.fetch(descriptor) else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        cache[key] = fetched
+        return fetched
+    }
+
+    func findOrCreate(_ name: String) throws -> Event {
+        if let existing = get(name) { return existing }
+        return try create(name)
     }
 
     @discardableResult
-    func update(_ event: Event, name: String) throws -> Event {
-        guard let event = context.model(for: event.id) as? Event else {
-            throw StoreError.notFound
-        }
+    func create(_ name: String) throws -> Event {
+        let newItem = Event(name)
 
-        event.name = name
-        try context.save()
-
-        return event
+        try insert(newItem)
+        return newItem
     }
 
-    func delete(_ event: Event) throws {
-        guard let event = context.model(for: event.id) as? Event else {
-            throw StoreError.notFound
+    func insert(_ item: Event) throws {
+        context.insert(item)
+        try context.save()
+        cache[item.key] = item
+    }
+    func insert(_ items: [Event]) throws {
+        for item in items {
+            context.insert(item)
+            cache[item.key] = item
         }
 
-        context.delete(event)
         try context.save()
     }
 
-    func delete(_ events: [Event]) throws {
-        guard !events.isEmpty else { return }
+    @discardableResult
+    func update(_ item: Event, name: String) throws -> Event {
+        item.name = name
+        try context.save()
+        cache[item.key] = item
 
-        for event in events {
-            guard let event = context.model(for: event.id) as? Event else {
-                throw StoreError.notFound
-            }
+        try context.save()
+        return item
+    }
 
-            context.delete(event)
+    func delete(_ item: Event) throws {
+        cache[item.key] = nil
+        context.delete(item)
+
+        try context.save()
+    }
+    func delete(_ items: [Event]) throws {
+        guard !items.isEmpty else { return }
+
+        for item in items {
+            cache[item.key] = nil
+            context.delete(item)
         }
 
         try context.save()
+    }
+
+    func ensure(_ name: String?) throws -> Event? {
+        guard let name else { return nil }
+        let ensured = try findOrCreate(name)
+
+        return ensured
+    }
+    func ensure(_ names: [String]) -> [Event] {
+        var result: [Event] = []
+        result.reserveCapacity(names.count)
+
+        for name in names {
+            if let ensured = try? ensure(name) { result.append(ensured) }
+        }
+
+        return result
+    }
+
+    func clearCache() {
+        cache.removeAll()
     }
 }

@@ -13,12 +13,16 @@ final class Tag: Identifiable, Hashable {
 
     public init(name: String, parent: Tag? = nil) {
         self.name = name
-        self.key = "\(parent?.name ?? "root")-\(name)"
+        self.key = Tag.key(parent, name)
         self.parent = parent
     }
 
     func descendant(of root: Tag) -> Bool {
         parent == root || parent?.descendant(of: root) == true
+    }
+    
+    static func key(_ parent: Tag?, _ name: String) -> String {
+        "\(parent?.name ?? "root")-\(name)"
     }
 }
 

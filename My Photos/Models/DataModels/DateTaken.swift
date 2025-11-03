@@ -8,18 +8,19 @@ final class DateTakenYear: Identifiable, Equatable {
     @Attribute(.unique) var year: Int
 
     @Relationship(deleteRule: .cascade, inverse: \DateTakenMonth.year)
-    var months: [DateTakenMonth] =
-        []
+    var months: [DateTakenMonth] = []
     @Relationship(inverse: \Photo.dateTakenYear) var photos: [Photo] = []
 
     init(_ year: Int) {
         self.year = year
-        self.key = "\(year)"
+        self.key = DateTakenYear.key(year)
     }
 
     static func == (left: DateTakenYear, right: DateTakenYear) -> Bool {
         left.key == right.key
     }
+
+    static func key(_ year: Int) -> String { "\(year)" }
 }
 
 @Model
@@ -39,11 +40,18 @@ final class DateTakenMonth: Identifiable, Equatable {
 
         self.month = month
         self.year = year
-        self.key = "\(year.key)-\(String(format: "%02d", month))"
+        self.key = DateTakenMonth.key(year, month)
     }
 
     static func == (left: DateTakenMonth, right: DateTakenMonth) -> Bool {
         left.key == right.key
+    }
+
+    static func key(_ year: DateTakenYear, _ month: Int) -> String {
+        "\(year.key)-\(String(format: "%02d", month))"
+    }
+    static func key(_ year: Int, _ month: Int) -> String {
+        "\(DateTakenYear.key(year))-\(String(format: "%02d", month))"
     }
 }
 
@@ -60,11 +68,18 @@ final class DateTakenDay: Identifiable, Equatable {
     init(_ month: DateTakenMonth, _ day: Int) {
         self.day = day
         self.month = month
-        self.key = "\(month.key)-\(String(format: "%02d", day))"
+        self.key = DateTakenDay.key(month, day)
     }
 
     static func == (left: DateTakenDay, right: DateTakenDay) -> Bool {
         left.key == right.key
+    }
+
+    static func key(_ month: DateTakenMonth, _ day: Int) -> String {
+        "\(month.key)-\(String(format: "%02d", day))"
+    }
+    static func key(_ year: Int, _ month: Int, _ day: Int) -> String {
+        "\(DateTakenMonth.key(year, month))-\(String(format: "%02d", day))"
     }
 }
 

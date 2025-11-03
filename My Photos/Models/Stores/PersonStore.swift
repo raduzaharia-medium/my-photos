@@ -3,90 +3,105 @@ import SwiftUI
 
 final class PersonStore {
     private let context: ModelContext
+    private var cache: [String: Person] = [:]
 
     init(context: ModelContext) {
         self.context = context
     }
-    
+
+    func get() -> [Person] {
+        let sort = SortDescriptor(\Person.key)
+        let descriptor = FetchDescriptor<Person>(sortBy: [sort])
+
+        guard let results = try? context.fetch(descriptor) else { return [] }
+        return results
+    }
     func get(_ name: String) -> Person? {
-        let key = "\(name)"
-        let descriptor = FetchDescriptor<Person>(
-            predicate: #Predicate { $0.key == key }
-        )
+        let key = Person.key(name)
+        if let cached = cache[key] { return cached }
 
-        return (try? context.fetch(descriptor))?.first
+        let predicate = #Predicate<Person> { $0.key == key }
+        let descriptor = FetchDescriptor<Person>(predicate: predicate)
+
+        guard let results = try? context.fetch(descriptor) else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        cache[key] = fetched
+        return fetched
+    }
+
+    func findOrCreate(_ name: String) throws -> Person {
+        if let existing = get(name) { return existing }
+        return try create(name)
     }
 
     @discardableResult
-    func create(name: String) throws -> Person {
-        let person = Person(name)
+    func create(_ name: String) throws -> Person {
+        let newItem = Person(name)
 
-        context.insert(person)
+        try insert(newItem)
+        return newItem
+    }
+
+    func insert(_ item: Person) throws {
+        context.insert(item)
         try context.save()
+        cache[item.key] = item
+    }
+    func insert(_ items: [Person]) throws {
+        for item in items {
+            context.insert(item)
+            cache[item.key] = item
+        }
 
-        return person
+        try context.save()
     }
 
     @discardableResult
-    func update(_ person: Person, name: String) throws -> Person {
-        guard let person = context.model(for: person.id) as? Person else {
-            throw StoreError.notFound
-        }
-
-        person.name = name
+    func update(_ item: Person, name: String) throws -> Person {
+        item.name = name
         try context.save()
+        cache[item.key] = item
 
-        return person
+        try context.save()
+        return item
     }
 
-    func delete(_ person: Person) throws {
-        guard let person = context.model(for: person.id) as? Person else {
-            throw StoreError.notFound
-        }
+    func delete(_ item: Person) throws {
+        cache[item.key] = nil
+        context.delete(item)
 
-        context.delete(person)
         try context.save()
     }
+    func delete(_ items: [Person]) throws {
+        guard !items.isEmpty else { return }
 
-    func delete(_ people: [Person]) throws {
-        guard !people.isEmpty else { return }
-
-        for person in people {
-            guard let person = context.model(for: person.id) as? Person else {
-                throw StoreError.notFound
-            }
-
-            context.delete(person)
+        for item in items {
+            cache[item.key] = nil
+            context.delete(item)
         }
 
         try context.save()
     }
-    
+
     func ensure(_ name: String?) throws -> Person? {
         guard let name else { return nil }
         let ensured = try findOrCreate(name)
 
         return ensured
     }
-
     func ensure(_ names: [String]) -> [Person] {
         var result: [Person] = []
+        result.reserveCapacity(names.count)
 
         for name in names {
-            if let ensured = try? ensure(name) {
-                result.append(ensured)
-            }
+            if let ensured = try? ensure(name) { result.append(ensured) }
         }
 
         return result
     }
 
-    private func findOrCreate(_ name: String) throws -> Person {
-        if let existing = get(name) { return existing }
-        let newNode = Person(name)
-
-        context.insert(newNode)
-        try context.save()
-        return newNode
+    func clearCache() {
+        cache.removeAll()
     }
 }

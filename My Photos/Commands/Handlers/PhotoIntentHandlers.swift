@@ -13,7 +13,9 @@ extension View {
         photoStore: PhotoStore,
         fileStore: FileStore,
         tagStore: TagStore,
-        dateStore: DateStore,
+        yearStore: YearStore,
+        monthStore: MonthStore,
+        dayStore: DayStore,
         placeStore: PlaceStore,
         albumStore: AlbumStore,
         personStore: PersonStore
@@ -44,10 +46,26 @@ extension View {
                         continue
                     }
 
+                    var year: DateTakenYear? = nil
+                    var month: DateTakenMonth? = nil
+                    var day: DateTakenDay? = nil
+
+                    if let dateTaken = item.dateTaken {
+                        year = try? yearStore.ensure(
+                            Calendar.current.component(.year, from: dateTaken)
+                        )
+                        month = try? monthStore.ensure(
+                            year,
+                            Calendar.current.component(.month, from: dateTaken)
+                        )
+                        day = try? dayStore.ensure(
+                            month,
+                            Calendar.current.component(.day, from: dateTaken)
+                        )
+                    }
+
                     let tags = tagStore.ensure(item.tags)
-                    let year = try? dateStore.ensureYear(item.dateTaken)
-                    let month = try? dateStore.ensureMonth(item.dateTaken)
-                    let day = try? dateStore.ensureDay(item.dateTaken)
+
                     let country = try? placeStore.ensureCountry(item.country)
                     let locality =
                         try? placeStore.ensureLocality(

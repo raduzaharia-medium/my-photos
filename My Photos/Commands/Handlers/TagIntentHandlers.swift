@@ -20,7 +20,7 @@ extension View {
             let parent = note.userInfo?["parent"] as? Tag
 
             do {
-                try tagStore.update(tag, name: name, parent: parent)
+                try tagStore.update(tag, name, parent)
                 notifier.show("Tag updated", .success)
             } catch {
                 notifier.show("Could not update tag", .error)
@@ -32,7 +32,7 @@ extension View {
             let parent = note.userInfo?["parent"] as? Tag
 
             do {
-                try tagStore.updateByID(tagID, name: name, parent: parent)
+                try tagStore.update(tagID, name, parent)
                 notifier.show("Tag updated", .success)
             } catch {
                 notifier.show("Could not update tag", .error)
@@ -43,7 +43,7 @@ extension View {
             let parent = note.userInfo?["parent"] as? Tag
 
             do {
-                try tagStore.create(name: name, parent: parent)
+                try tagStore.create(name, parent)
                 notifier.show("Tag created", .success)
             } catch {
                 notifier.show("Could not create tag", .error)

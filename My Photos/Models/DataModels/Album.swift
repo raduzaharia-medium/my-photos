@@ -11,12 +11,14 @@ final class Album: Identifiable, Equatable {
 
     init(_ name: String) {
         self.name = name
-        self.key = name
+        self.key = Album.key(name)
     }
 
     static func == (left: Album, right: Album) -> Bool {
         left.key == right.key
     }
+
+    static func key(_ name: String) -> String { name }
 }
 
 extension Album {
