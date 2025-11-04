@@ -1,32 +1,25 @@
 import SwiftData
 import SwiftUI
 
-final class CountryStore {
-    private let context: ModelContext
-    private var cache: [String: PlaceCountry] = [:]
-
-    init(context: ModelContext) {
-        self.context = context
-    }
-
+@ModelActor
+actor CountryStore {
     func get() -> [PlaceCountry] {
         let sort = SortDescriptor(\PlaceCountry.key)
         let descriptor = FetchDescriptor<PlaceCountry>(sortBy: [sort])
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return [] }
+        guard let results else { return [] }
         return results
     }
     func get(_ name: String) -> PlaceCountry? {
         let key = PlaceCountry.key(name)
-        if let cached = cache[key] { return cached }
-
         let predicate = #Predicate<PlaceCountry> { item in item.key == key }
         let descriptor = FetchDescriptor<PlaceCountry>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return nil }
+        guard let results else { return nil }
         guard let fetched = results.first else { return nil }
 
-        cache[key] = fetched
         return fetched
     }
 
@@ -44,54 +37,40 @@ final class CountryStore {
     }
 
     func insert(_ item: PlaceCountry) throws {
-        context.insert(item)
-        try context.save()
-        cache[item.key] = item
+        modelContext.insert(item)
+        try modelContext.save()
     }
     func insert(_ items: [PlaceCountry]) throws {
-        for item in items {
-            context.insert(item)
-            cache[item.key] = item
-        }
-
-        try context.save()
+        for item in items { modelContext.insert(item) }
+        try modelContext.save()
     }
 
     @discardableResult
     func update(_ item: PlaceCountry, name: String) throws -> PlaceCountry {
         item.country = name
-        try context.save()
-        cache[item.key] = item
-
-        try context.save()
+        try modelContext.save()
         return item
     }
 
     func delete(_ item: PlaceCountry) throws {
-        cache[item.key] = nil
-        context.delete(item)
-
-        try context.save()
+        modelContext.delete(item)
+        try modelContext.save()
     }
     func delete(_ items: [PlaceCountry]) throws {
         guard !items.isEmpty else { return }
 
-        for item in items {
-            cache[item.key] = nil
-            context.delete(item)
-        }
-
-        try context.save()
+        for item in items { modelContext.delete(item) }
+        try modelContext.save()
     }
 
-    func ensure(_ name: String?) throws -> PlaceCountry? {
+    func ensure(_ name: String?) throws -> UUID? {
         guard let name else { return nil }
         let ensured = try findOrCreate(name)
 
-        return ensured
+        return ensured.id
     }
-    func ensure(_ names: [String]) -> [PlaceCountry] {
-        var result: [PlaceCountry] = []
+    func ensure(_ names: [String]) -> [UUID] {
+        var result: [UUID] = []
         result.reserveCapacity(names.count)
 
         for name in names {
@@ -99,9 +78,5 @@ final class CountryStore {
         }
 
         return result
-    }
-
-    func clearCache() {
-        cache.removeAll()
     }
 }

@@ -14,43 +14,43 @@ extension View {
         )
         let deleteEventPresenter = DeleteEventPresenter(confirmer: confirmer)
 
-        let edit: (NotificationCenter.Publisher.Output) -> Void = { note in
+        let edit: (NotificationCenter.Publisher.Output) async -> Void = { note in
             guard let event = note.object as? Event else { return }
             guard let name = note.userInfo?["name"] as? String else { return }
 
             do {
-                try eventStore.update(event, name: name)
+                try await eventStore.update(event.id, name: name)
                 notifier.show("Event updated", .success)
             } catch {
                 notifier.show("Could not update event", .error)
             }
         }
-        let create: (NotificationCenter.Publisher.Output) -> Void = { note in
+        let create: (NotificationCenter.Publisher.Output) async -> Void = { note in
             guard let name = note.object as? String else { return }
 
             do {
-                try eventStore.create(name)
+                try await eventStore.create(name)
                 notifier.show("Event created", .success)
             } catch {
                 notifier.show("Could not create event", .error)
             }
         }
-        let delete: (NotificationCenter.Publisher.Output) -> Void = { note in
+        let delete: (NotificationCenter.Publisher.Output) async -> Void = { note in
             guard let event = note.object as? Event else { return }
 
             do {
-                try eventStore.delete(event)
+                try await eventStore.delete(event.id)
                 notifier.show("Event deleted", .success)
             } catch {
                 notifier.show("Could not delete event", .error)
             }
         }
-        let deleteMany: (NotificationCenter.Publisher.Output) -> Void = {
+        let deleteMany: (NotificationCenter.Publisher.Output) async -> Void = {
             note in
             guard let events = note.object as? [Event] else { return }
 
             do {
-                try eventStore.delete(events)
+                try await eventStore.delete(events.map(\.id))
                 notifier.show("Events deleted", .success)
             } catch {
                 notifier.show("Could not delete events", .error)
@@ -79,21 +79,25 @@ extension View {
         return
             self
             .onReceive(
-                NotificationCenter.default.publisher(for: .editEvent),
-                perform: edit
-            )
+                NotificationCenter.default.publisher(for: .editEvent)
+            ) { note in
+                Task { await edit(note) }
+            }
             .onReceive(
-                NotificationCenter.default.publisher(for: .createEvent),
-                perform: create
-            )
+                NotificationCenter.default.publisher(for: .createEvent)
+            ) { note in
+                Task { await create(note) }
+            }
             .onReceive(
-                NotificationCenter.default.publisher(for: .deleteEvent),
-                perform: delete
-            )
+                NotificationCenter.default.publisher(for: .deleteEvent)
+            ) { note in
+                Task { await delete(note) }
+            }
             .onReceive(
-                NotificationCenter.default.publisher(for: .deleteEvents),
-                perform: deleteMany
-            )
+                NotificationCenter.default.publisher(for: .deleteEvents)
+            ) { note in
+                Task { await deleteMany(note) }
+            }
             .onReceive(
                 NotificationCenter.default.publisher(for: .requestCreateEvent),
                 perform: showCreator

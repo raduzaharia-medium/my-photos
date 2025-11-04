@@ -1,25 +1,19 @@
 import Foundation
 import SwiftUI
+import SwiftData
 import UniformTypeIdentifiers
 
 typealias NotificationOutput = NotificationCenter.Publisher.Output
 
 extension View {
     func setupPhotoHandlers(
+        context: ModelContext,
         presentationState: PresentationState,
         notifier: NotificationService,
         fileImporter: FileImportService,
         modalPresenter: ModalService,
         photoStore: PhotoStore,
         fileStore: FileStore,
-        tagStore: TagStore,
-        yearStore: YearStore,
-        monthStore: MonthStore,
-        dayStore: DayStore,
-        countryStore: CountryStore,
-        localityStore: LocalityStore,
-        albumStore: AlbumStore,
-        personStore: PersonStore
     ) -> some View {
         let pickFolderPresenter = PickFolderPresenter(
             fileImporter: fileImporter,
@@ -29,17 +23,7 @@ extension View {
         let importPhotosPresenter = ImportPhotosPresenter(
             modalPresenter: modalPresenter
         )
-        let photoImporter = PhotoImportService(
-            photoStore: photoStore,
-            yearStore: yearStore,
-            monthStore: monthStore,
-            dayStore: dayStore,
-            tagStore: tagStore,
-            countryStore: countryStore,
-            localityStore: localityStore,
-            albumStore: albumStore,
-            personStore: personStore
-        )
+        let photoImporter = PhotoImportRunner(modelContainer: context.container)
 
         #if os(macOS)
             let importPhotos: (NotificationOutput) -> Void = { note in
@@ -65,7 +49,7 @@ extension View {
             }
 
             do {
-                try photoStore.tagPhotos(photos, tags)
+                // try photoStore.tagPhotos(photos, tags)
                 notifier.show("Photos tagged", .success)
             } catch {
                 notifier.show("Failed to tag photos", .error)

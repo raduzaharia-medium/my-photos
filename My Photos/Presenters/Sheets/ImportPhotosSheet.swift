@@ -7,12 +7,12 @@ struct ImportPhotosSheet: View {
     @State private var importTask: Task<Void, Never>? = nil
 
     let parsed: [ParsedPhoto]
-    let photoImporter: PhotoImportService
+    let photoImporter: PhotoImportRunner
 
     private var total: Int { parsed.count }
     private var progress: Double { Double(completed) / Double(total) }
 
-    init(_ parsed: [ParsedPhoto], _ photoImporter: PhotoImportService) {
+    init(_ parsed: [ParsedPhoto], _ photoImporter: PhotoImportRunner) {
         self.parsed = parsed
         self.photoImporter = photoImporter
     }
@@ -47,7 +47,7 @@ struct ImportPhotosSheet: View {
                 for photo in parsed {
                     if Task.isCancelled { break }
 
-                    photoImporter.import(photo)                  
+                    await photoImporter.import(photo)                  
                     await MainActor.run { completed += 1 }
                 }
                 await MainActor.run {

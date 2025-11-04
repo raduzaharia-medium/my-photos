@@ -1,31 +1,26 @@
 import SwiftData
 import SwiftUI
 
-final class PhotoStore {
-    private let context: ModelContext
-
-    init(context: ModelContext) {
-        self.context = context
-    }
-
+@ModelActor
+actor PhotoStore {
     func get(by fullPath: String) throws -> Photo? {
         let descriptor = FetchDescriptor<Photo>(
             predicate: #Predicate { $0.fullPath == fullPath }
         )
 
-        return (try? context.fetch(descriptor))?.first
+        return (try? modelContext.fetch(descriptor))?.first
     }
 
     func insert(_ photo: Photo) throws {
-        context.insert(photo)
-        try context.save()
+        modelContext.insert(photo)
+        try modelContext.save()
     }
     func insert(_ photos: [Photo]) throws {
         for photo in photos {
-            context.insert(photo)
+            modelContext.insert(photo)
         }
 
-        try context.save()
+        try modelContext.save()
     }
 
     func tagPhotos(_ photos: [Photo], _ tags: [SidebarItem]) throws {
@@ -42,14 +37,14 @@ final class PhotoStore {
             }
         }
 
-        try context.save()
+        try modelContext.save()
     }
 
     private func photosForCountry(key: String) -> Set<Photo> {
         let descriptor = FetchDescriptor<PlaceCountry>(
             predicate: #Predicate { $0.key == key }
         )
-        if let model = try? context.fetch(descriptor).first {
+        if let model = try? modelContext.fetch(descriptor).first {
             return Set(model.photos)
         }
         return []
@@ -59,7 +54,7 @@ final class PhotoStore {
         let descriptor = FetchDescriptor<PlaceLocality>(
             predicate: #Predicate { $0.key == key }
         )
-        if let model = try? context.fetch(descriptor).first {
+        if let model = try? modelContext.fetch(descriptor).first {
             return Set(model.photos)
         }
         return []

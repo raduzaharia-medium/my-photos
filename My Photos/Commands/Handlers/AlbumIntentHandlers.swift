@@ -14,43 +14,43 @@ extension View {
         )
         let deleteAlbumPresenter = DeleteAlbumPresenter(confirmer: confirmer)
 
-        let edit: (NotificationCenter.Publisher.Output) -> Void = { note in
+        let edit: (NotificationCenter.Publisher.Output) async -> Void = { note in
             guard let album = note.object as? Album else { return }
             guard let name = note.userInfo?["name"] as? String else { return }
 
             do {
-                try albumStore.update(album, name: name)
+                try await albumStore.update(album.id, name: name)
                 notifier.show("Album updated", .success)
             } catch {
                 notifier.show("Could not update album", .error)
             }
         }
-        let create: (NotificationCenter.Publisher.Output) -> Void = { note in
+        let create: (NotificationCenter.Publisher.Output) async -> Void = { note in
             guard let name = note.object as? String else { return }
 
             do {
-                try albumStore.create(name)
+                try await albumStore.create(name)
                 notifier.show("Album created", .success)
             } catch {
                 notifier.show("Could not create album", .error)
             }
         }
-        let delete: (NotificationCenter.Publisher.Output) -> Void = { note in
+        let delete: (NotificationCenter.Publisher.Output) async -> Void = { note in
             guard let album = note.object as? Album else { return }
 
             do {
-                try albumStore.delete(album)
+                try await albumStore.delete(album.id)
                 notifier.show("Album deleted", .success)
             } catch {
                 notifier.show("Could not delete album", .error)
             }
         }
-        let deleteMany: (NotificationCenter.Publisher.Output) -> Void = {
+        let deleteMany: (NotificationCenter.Publisher.Output) async -> Void = {
             note in
             guard let albums = note.object as? [Album] else { return }
 
             do {
-                try albumStore.delete(albums)
+                try await albumStore.delete(albums.map(\.id))
                 notifier.show("Albums deleted", .success)
             } catch {
                 notifier.show("Could not delete albums", .error)
@@ -79,21 +79,25 @@ extension View {
         return
             self
             .onReceive(
-                NotificationCenter.default.publisher(for: .editAlbum),
-                perform: edit
-            )
+                NotificationCenter.default.publisher(for: .editAlbum)
+            ) { note in
+                Task { await edit(note) }
+            }
             .onReceive(
-                NotificationCenter.default.publisher(for: .createAlbum),
-                perform: create
-            )
+                NotificationCenter.default.publisher(for: .createAlbum)
+            ) { note in
+                Task { await create(note) }
+            }
             .onReceive(
-                NotificationCenter.default.publisher(for: .deleteAlbum),
-                perform: delete
-            )
+                NotificationCenter.default.publisher(for: .deleteAlbum)
+            ) { note in
+                Task { await delete(note) }
+            }
             .onReceive(
-                NotificationCenter.default.publisher(for: .deleteAlbums),
-                perform: deleteMany
-            )
+                NotificationCenter.default.publisher(for: .deleteAlbums)
+            ) { note in
+                Task { await deleteMany(note) }
+            }
             .onReceive(
                 NotificationCenter.default.publisher(for: .requestCreateAlbum),
                 perform: showCreator

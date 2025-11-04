@@ -1,32 +1,25 @@
 import SwiftData
 import SwiftUI
 
-final class LocalityStore {
-    private let context: ModelContext
-    private var cache: [String: PlaceLocality] = [:]
-
-    init(context: ModelContext) {
-        self.context = context
-    }
-
+@ModelActor
+actor LocalityStore {
     func get() -> [PlaceLocality] {
         let sort = SortDescriptor(\PlaceLocality.key)
         let descriptor = FetchDescriptor<PlaceLocality>(sortBy: [sort])
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return [] }
+        guard let results else { return [] }
         return results
     }
     func get(_ parent: PlaceCountry, _ name: String) -> PlaceLocality? {
         let key = PlaceLocality.key(parent, name)
-        if let cached = cache[key] { return cached }
-
         let predicate = #Predicate<PlaceLocality> { $0.key == key }
         let descriptor = FetchDescriptor<PlaceLocality>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return nil }
+        guard let results else { return nil }
         guard let fetched = results.first else { return nil }
 
-        cache[key] = fetched
         return fetched
     }
 
@@ -48,17 +41,12 @@ final class LocalityStore {
     }
 
     func insert(_ item: PlaceLocality) throws {
-        context.insert(item)
-        try context.save()
-        cache[item.key] = item
+        modelContext.insert(item)
+        try modelContext.save()
     }
     func insert(_ items: [PlaceLocality]) throws {
-        for item in items {
-            context.insert(item)
-            cache[item.key] = item
-        }
-
-        try context.save()
+        for item in items { modelContext.insert(item) }
+        try modelContext.save()
     }
 
     @discardableResult
@@ -66,55 +54,53 @@ final class LocalityStore {
         -> PlaceLocality
     {
         item.locality = name
-        try context.save()
-        cache[item.key] = item
-
-        try context.save()
+        try modelContext.save()
         return item
     }
 
     func delete(_ item: PlaceLocality) throws {
-        cache[item.key] = nil
-        context.delete(item)
-
-        try context.save()
+        modelContext.delete(item)
+        try modelContext.save()
     }
     func delete(_ items: [PlaceLocality]) throws {
         guard !items.isEmpty else { return }
 
-        for item in items {
-            cache[item.key] = nil
-            context.delete(item)
-        }
-
-        try context.save()
+        for item in items { modelContext.delete(item) }
+        try modelContext.save()
     }
 
-    func ensure(_ parent: PlaceCountry?, _ name: String?) throws
-        -> PlaceLocality?
-    {
-        guard let parent else { return nil }
+    func ensure(_ parentId: UUID?, _ name: String?) throws -> UUID? {
+        guard let parentId else { return nil }
+        guard let parent = getParent(parentId) else { return nil }
         guard let name else { return nil }
         let ensured = try findOrCreate(parent, name)
 
-        return ensured
+        return ensured.id
     }
-    func ensure(_ parent: PlaceCountry?, _ names: [String]) -> [PlaceLocality] {
-        guard let parent else { return [] }
+    func ensure(_ parentId: UUID?, _ names: [String]) -> [UUID] {
+        guard let parentId else { return [] }
 
-        var result: [PlaceLocality] = []
+        var result: [UUID] = []
         result.reserveCapacity(names.count)
 
         for name in names {
-            if let ensured = try? ensure(parent, name) {
+            if let ensured = try? ensure(parentId, name) {
                 result.append(ensured)
             }
         }
 
         return result
     }
+    
+    private func getParent(_ id: UUID) -> PlaceCountry? {
+        let predicate = #Predicate<PlaceCountry> { $0.id == id }
+        let descriptor = FetchDescriptor<PlaceCountry>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
 
-    func clearCache() {
-        cache.removeAll()
+        guard let results else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        return fetched
     }
+
 }

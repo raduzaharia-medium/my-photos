@@ -1,35 +1,28 @@
 import SwiftData
 import SwiftUI
 
-final class YearStore {
-    private let context: ModelContext
-    private var cache: [String: DateTakenYear] = [:]
-
-    init(context: ModelContext) {
-        self.context = context
-    }
-
+@ModelActor
+actor YearStore {
     func get() -> [DateTakenYear] {
         let sort = SortDescriptor(\DateTakenYear.key)
         let descriptor = FetchDescriptor<DateTakenYear>(sortBy: [sort])
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return [] }
+        guard let results else { return [] }
         return results
     }
     func get(_ year: Int) -> DateTakenYear? {
         let key = DateTakenYear.key(year)
-        if let cached = cache[key] { return cached }
-
         let predicate = #Predicate<DateTakenYear> { $0.key == key }
         let descriptor = FetchDescriptor<DateTakenYear>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return nil }
+        guard let results else { return nil }
         guard let fetched = results.first else { return nil }
 
-        cache[key] = fetched
         return fetched
     }
-    
+
     func findOrCreate(_ year: Int) throws -> DateTakenYear {
         if let existing = get(year) { return existing }
         return try create(year)
@@ -37,62 +30,46 @@ final class YearStore {
 
     func create(_ year: Int) throws -> DateTakenYear {
         let newItem = DateTakenYear(year)
-        
+
         try insert(newItem)
         return newItem
     }
-    
+
     func insert(_ item: DateTakenYear) throws {
-        context.insert(item)
-        try context.save()
-        cache[item.key] = item
+        modelContext.insert(item)
+        try modelContext.save()
     }
     func insert(_ items: [DateTakenYear]) throws {
-        for item in items {
-            context.insert(item)
-            cache[item.key] = item
-        }
-
-        try context.save()
+        for item in items { modelContext.insert(item) }
+        try modelContext.save()
     }
 
     @discardableResult
-    func update(_ item: DateTakenYear, year: Int) throws
-        -> DateTakenYear
-    {
+    func update(_ item: DateTakenYear, year: Int) throws -> DateTakenYear {
         item.year = year
-        try context.save()
-        cache[item.key] = item
-
-        try context.save()
+        try modelContext.save()
         return item
     }
 
     func delete(_ item: DateTakenYear) throws {
-        cache[item.key] = nil
-        context.delete(item)
-
-        try context.save()
+        modelContext.delete(item)
+        try modelContext.save()
     }
     func delete(_ items: [DateTakenYear]) throws {
         guard !items.isEmpty else { return }
 
-        for item in items {
-            cache[item.key] = nil
-            context.delete(item)
-        }
-
-        try context.save()
+        for item in items { modelContext.delete(item) }
+        try modelContext.save()
     }
 
-    func ensure(_ year: Int?) throws -> DateTakenYear? {
+    func ensure(_ year: Int?) throws -> UUID? {
         guard let year else { return nil }
         let ensured = try findOrCreate(year)
 
-        return ensured
+        return ensured.id
     }
-    func ensure(_ years: [Int]) -> [DateTakenYear] {
-        var result: [DateTakenYear] = []
+    func ensure(_ years: [Int]) -> [UUID] {
+        var result: [UUID] = []
         result.reserveCapacity(years.count)
 
         for year in years {
@@ -100,9 +77,5 @@ final class YearStore {
         }
 
         return result
-    }
-
-    func clearCache() {
-        cache.removeAll()
     }
 }

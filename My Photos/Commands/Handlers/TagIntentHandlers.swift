@@ -14,57 +14,45 @@ extension View {
         )
         let deleteTagPresenter = DeleteTagPresenter(confirmer: confirmer)
 
-        let edit: (NotificationCenter.Publisher.Output) -> Void = { note in
+        let edit: (NotificationCenter.Publisher.Output) async -> Void = { note in
             guard let tag = note.object as? Tag else { return }
             guard let name = note.userInfo?["name"] as? String else { return }
             let parent = note.userInfo?["parent"] as? Tag
 
             do {
-                try tagStore.update(tag, name, parent)
+                try await tagStore.update(tag.id, name, parent?.id)
                 notifier.show("Tag updated", .success)
             } catch {
                 notifier.show("Could not update tag", .error)
             }
         }
-        let editByID: (NotificationCenter.Publisher.Output) -> Void = { note in
-            guard let tagID = note.object as? UUID else { return }
-            let name = note.userInfo?["name"] as? String
-            let parent = note.userInfo?["parent"] as? Tag
-
-            do {
-                try tagStore.update(tagID, name, parent)
-                notifier.show("Tag updated", .success)
-            } catch {
-                notifier.show("Could not update tag", .error)
-            }
-        }
-        let create: (NotificationCenter.Publisher.Output) -> Void = { note in
+        let create: (NotificationCenter.Publisher.Output) async -> Void = { note in
             guard let name = note.object as? String else { return }
             let parent = note.userInfo?["parent"] as? Tag
 
             do {
-                try tagStore.create(name, parent)
+                try await tagStore.create(name, parent?.id)
                 notifier.show("Tag created", .success)
             } catch {
                 notifier.show("Could not create tag", .error)
             }
         }
-        let delete: (NotificationCenter.Publisher.Output) -> Void = { note in
+        let delete: (NotificationCenter.Publisher.Output) async -> Void = { note in
             guard let tag = note.object as? Tag else { return }
 
             do {
-                try tagStore.delete(tag)
+                try await tagStore.delete(tag.id)
                 notifier.show("Tag deleted", .success)
             } catch {
                 notifier.show("Could not delete tag", .error)
             }
         }
-        let deleteMany: (NotificationCenter.Publisher.Output) -> Void = {
+        let deleteMany: (NotificationCenter.Publisher.Output) async -> Void = {
             note in
             guard let tags = note.object as? [Tag] else { return }
 
             do {
-                try tagStore.delete(tags)
+                try await tagStore.delete(tags.map(\.id))
                 notifier.show("Tags deleted", .success)
             } catch {
                 notifier.show("Could not delete tags", .error)
@@ -93,25 +81,25 @@ extension View {
         return
             self
             .onReceive(
-                NotificationCenter.default.publisher(for: .editTag),
-                perform: edit
-            )
+                NotificationCenter.default.publisher(for: .editTag)
+            ) { note in
+                Task { await edit(note) }
+            }
             .onReceive(
-                NotificationCenter.default.publisher(for: .editTagByID),
-                perform: editByID
-            )
+                NotificationCenter.default.publisher(for: .createTag)
+            ) { note in
+                Task { await create(note) }
+            }
             .onReceive(
-                NotificationCenter.default.publisher(for: .createTag),
-                perform: create
-            )
+                NotificationCenter.default.publisher(for: .deleteTag)
+            ) { note in
+                Task { await delete(note) }
+            }
             .onReceive(
-                NotificationCenter.default.publisher(for: .deleteTag),
-                perform: delete
-            )
-            .onReceive(
-                NotificationCenter.default.publisher(for: .deleteTags),
-                perform: deleteMany
-            )
+                NotificationCenter.default.publisher(for: .deleteTags)
+            ) { note in
+                Task { await deleteMany(note) }
+            }
             .onReceive(
                 NotificationCenter.default.publisher(for: .requestCreateTag),
                 perform: showTagCreator

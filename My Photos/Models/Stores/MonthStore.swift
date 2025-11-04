@@ -1,32 +1,25 @@
 import SwiftData
 import SwiftUI
 
-final class MonthStore {
-    private let context: ModelContext
-    private var cache: [String: DateTakenMonth] = [:]
-
-    init(context: ModelContext) {
-        self.context = context
-    }
-
+@ModelActor
+actor MonthStore {
     func get() -> [DateTakenMonth] {
         let sort = SortDescriptor(\DateTakenMonth.key)
         let descriptor = FetchDescriptor<DateTakenMonth>(sortBy: [sort])
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return [] }
+        guard let results else { return [] }
         return results
     }
     func get(_ parent: DateTakenYear, _ month: Int) -> DateTakenMonth? {
         let key = DateTakenMonth.key(parent, month)
-        if let cached = cache[key] { return cached }
-
         let predicate = #Predicate<DateTakenMonth> { $0.key == key }
         let descriptor = FetchDescriptor<DateTakenMonth>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return nil }
+        guard let results else { return nil }
         guard let fetched = results.first else { return nil }
 
-        cache[key] = fetched
         return fetched
     }
 
@@ -48,17 +41,12 @@ final class MonthStore {
     }
 
     func insert(_ item: DateTakenMonth) throws {
-        context.insert(item)
-        try context.save()
-        cache[item.key] = item
+        modelContext.insert(item)
+        try modelContext.save()
     }
     func insert(_ items: [DateTakenMonth]) throws {
-        for item in items {
-            context.insert(item)
-            cache[item.key] = item
-        }
-
-        try context.save()
+        for item in items { modelContext.insert(item) }
+        try modelContext.save()
     }
 
     @discardableResult
@@ -66,55 +54,52 @@ final class MonthStore {
         -> DateTakenMonth
     {
         item.month = month
-        try context.save()
-        cache[item.key] = item
-
-        try context.save()
+        try modelContext.save()
         return item
     }
 
     func delete(_ item: DateTakenMonth) throws {
-        cache[item.key] = nil
-        context.delete(item)
-
-        try context.save()
+        modelContext.delete(item)
+        try modelContext.save()
     }
     func delete(_ items: [DateTakenMonth]) throws {
         guard !items.isEmpty else { return }
 
-        for item in items {
-            cache[item.key] = nil
-            context.delete(item)
-        }
-
-        try context.save()
+        for item in items { modelContext.delete(item) }
+        try modelContext.save()
     }
 
-    func ensure(_ parent: DateTakenYear?, _ month: Int?) throws
-        -> DateTakenMonth?
-    {
-        guard let parent else { return nil }
+    func ensure(_ parentId: UUID?, _ month: Int?) throws -> UUID? {
+        guard let parentId else { return nil }
+        guard let parent = getParent(parentId) else { return nil }
         guard let month else { return nil }
         let ensured = try findOrCreate(parent, month)
 
-        return ensured
+        return ensured.id
     }
-    func ensure(_ parent: DateTakenYear?, _ months: [Int]) -> [DateTakenMonth] {
-        guard let parent else { return [] }
-        
-        var result: [DateTakenMonth] = []
+    func ensure(_ parentId: UUID?, _ months: [Int]) -> [UUID] {
+        guard let parentId else { return [] }
+
+        var result: [UUID] = []
         result.reserveCapacity(months.count)
 
         for month in months {
-            if let ensured = try? ensure(parent, month) {
+            if let ensured = try? ensure(parentId, month) {
                 result.append(ensured)
             }
         }
 
         return result
     }
+    
+    private func getParent(_ id: UUID) -> DateTakenYear? {
+        let predicate = #Predicate<DateTakenYear> { $0.id == id }
+        let descriptor = FetchDescriptor<DateTakenYear>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
 
-    func clearCache() {
-        cache.removeAll()
+        guard let results else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        return fetched
     }
 }

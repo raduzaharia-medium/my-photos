@@ -11,16 +11,36 @@ struct ContentView: View {
     @StateObject private var notifier = NotificationService()
     @StateObject private var confirmer = ConfirmationService()
 
-    private var tagStore: TagStore { TagStore(context: context) }
-    private var albumStore: AlbumStore { AlbumStore(context: context) }
-    private var personStore: PersonStore { PersonStore(context: context) }
-    private var photoStore: PhotoStore { PhotoStore(context: context) }
-    private var yearStore: YearStore { YearStore(context: context) }
-    private var monthStore: MonthStore { MonthStore(context: context) }
-    private var dayStore: DayStore { DayStore(context: context) }
-    private var countryStore: CountryStore { CountryStore(context: context) }
-    private var localityStore: LocalityStore { LocalityStore(context: context) }
-    private var eventStore: EventStore { EventStore(context: context) }
+    private var tagStore: TagStore {
+        TagStore(modelContainer: context.container)
+    }
+    private var albumStore: AlbumStore {
+        AlbumStore(modelContainer: context.container)
+    }
+    private var personStore: PersonStore {
+        PersonStore(modelContainer: context.container)
+    }
+    private var photoStore: PhotoStore {
+        PhotoStore(modelContainer: context.container)
+    }
+    private var yearStore: YearStore {
+        YearStore(modelContainer: context.container)
+    }
+    private var monthStore: MonthStore {
+        MonthStore(modelContainer: context.container)
+    }
+    private var dayStore: DayStore {
+        DayStore(modelContainer: context.container)
+    }
+    private var countryStore: CountryStore {
+        CountryStore(modelContainer: context.container)
+    }
+    private var localityStore: LocalityStore {
+        LocalityStore(modelContainer: context.container)
+    }
+    private var eventStore: EventStore {
+        EventStore(modelContainer: context.container)
+    }
     private var fileStore: FileStore { FileStore() }
     private var thumbnailStore: ThumbnailStore? { try? ThumbnailStore() }
     private var imageStore: ImageStore { ImageStore() }
@@ -87,20 +107,13 @@ struct ContentView: View {
                 albumStore: albumStore
             )
             .setupPhotoHandlers(
+                context: context,
                 presentationState: presentationState,
                 notifier: notifier,
                 fileImporter: fileImporter,
                 modalPresenter: modalPresenter,
                 photoStore: photoStore,
                 fileStore: fileStore,
-                tagStore: tagStore,
-                yearStore: yearStore,
-                monthStore: monthStore,
-                dayStore: dayStore,
-                countryStore: countryStore,
-                localityStore: localityStore,
-                albumStore: albumStore,
-                personStore: personStore
             )
             .setupPersonHandlers(
                 modalPresenter: modalPresenter,

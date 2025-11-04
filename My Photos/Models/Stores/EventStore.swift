@@ -1,87 +1,79 @@
 import SwiftData
 import SwiftUI
 
-final class EventStore {
-    private let context: ModelContext
-    private var cache: [String: Event] = [:]
-
-    init(context: ModelContext) {
-        self.context = context
-    }
-
+@ModelActor
+actor EventStore {
     func get() -> [Event] {
         let sort = SortDescriptor(\Event.key)
         let descriptor = FetchDescriptor<Event>(sortBy: [sort])
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return [] }
+        guard let results else { return [] }
         return results
+    }
+    func get(_ id: UUID) -> Event? {
+        let predicate = #Predicate<Event> { album in album.id == id }
+        let descriptor = FetchDescriptor<Event>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
+
+        guard let results else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        return fetched
     }
     func get(_ name: String) -> Event? {
         let key = Event.key(name)
-        if let cached = cache[key] { return cached }
-
         let predicate = #Predicate<Event> { $0.key == key }
         let descriptor = FetchDescriptor<Event>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return nil }
+        guard let results else { return nil }
         guard let fetched = results.first else { return nil }
 
-        cache[key] = fetched
         return fetched
     }
 
-    func findOrCreate(_ name: String) throws -> Event {
-        if let existing = get(name) { return existing }
-        return try create(name)
-    }
-
     @discardableResult
-    func create(_ name: String) throws -> Event {
-        let newItem = Event(name)
-
-        try insert(newItem)
-        return newItem
+    func create(_ name: String) throws -> UUID {
+        let newItem = try createInternal(name)
+        return newItem.id
     }
 
     func insert(_ item: Event) throws {
-        context.insert(item)
-        try context.save()
-        cache[item.key] = item
+        modelContext.insert(item)
+        try modelContext.save()
     }
     func insert(_ items: [Event]) throws {
-        for item in items {
-            context.insert(item)
-            cache[item.key] = item
-        }
-
-        try context.save()
+        for item in items { modelContext.insert(item) }
+        try modelContext.save()
     }
 
-    @discardableResult
-    func update(_ item: Event, name: String) throws -> Event {
+    func update(_ id: UUID, name: String) throws {
+        let item = get(id)
+        guard let item else { throw DataStoreError.invalidPredicate }
+
         item.name = name
-        try context.save()
-        cache[item.key] = item
-
-        try context.save()
-        return item
+        try modelContext.save()
     }
 
-    func delete(_ item: Event) throws {
-        cache[item.key] = nil
-        context.delete(item)
+    func delete(_ id: UUID) throws {
+        let item = get(id)
+        guard let item else { return }
 
-        try context.save()
+        modelContext.delete(item)
+        try modelContext.save()
     }
-    func delete(_ items: [Event]) throws {
-        guard !items.isEmpty else { return }
+    func delete(_ ids: [UUID]) throws {
+        guard !ids.isEmpty else { return }
 
-        for item in items {
-            cache[item.key] = nil
-            context.delete(item)
+        for item in ids {
+            let item = get(item)
+            guard let item else { continue }
+
+            modelContext.delete(item)
         }
-
-        try context.save()
+        
+        try modelContext.save()
     }
 
     func ensure(_ name: String?) throws -> Event? {
@@ -101,7 +93,15 @@ final class EventStore {
         return result
     }
 
-    func clearCache() {
-        cache.removeAll()
+    private func findOrCreate(_ name: String) throws -> Event {
+        if let existing = get(name) { return existing }
+        return try createInternal(name)
+    }
+
+    private func createInternal(_ name: String) throws -> Event {
+        let newItem = Event(name)
+
+        try insert(newItem)
+        return newItem
     }
 }

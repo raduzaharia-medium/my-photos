@@ -1,32 +1,25 @@
 import SwiftData
 import SwiftUI
 
-final class DayStore {
-    private let context: ModelContext
-    private var cache: [String: DateTakenDay] = [:]
-
-    init(context: ModelContext) {
-        self.context = context
-    }
-
+@ModelActor
+actor DayStore {
     func get() -> [DateTakenDay] {
         let sort = SortDescriptor(\DateTakenDay.key)
         let descriptor = FetchDescriptor<DateTakenDay>(sortBy: [sort])
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return [] }
+        guard let results else { return [] }
         return results
     }
     func get(_ parent: DateTakenMonth, _ day: Int) -> DateTakenDay? {
         let key = DateTakenDay.key(parent, day)
-        if let cached = cache[key] { return cached }
-
         let predicate = #Predicate<DateTakenDay> { $0.key == key }
         let descriptor = FetchDescriptor<DateTakenDay>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return nil }
+        guard let results else { return nil }
         guard let fetched = results.first else { return nil }
 
-        cache[key] = fetched
         return fetched
     }
 
@@ -46,61 +39,48 @@ final class DayStore {
     }
 
     func insert(_ item: DateTakenDay) throws {
-        context.insert(item)
-        try context.save()
-        cache[item.key] = item
+        modelContext.insert(item)
+        try modelContext.save()
     }
     func insert(_ items: [DateTakenDay]) throws {
-        for item in items {
-            context.insert(item)
-            cache[item.key] = item
-        }
-
-        try context.save()
+        for item in items { modelContext.insert(item) }
+        try modelContext.save()
     }
 
     @discardableResult
     func update(_ item: DateTakenDay, _ day: Int) throws -> DateTakenDay {
         item.day = day
-        try context.save()
-        cache[item.key] = item
-
-        try context.save()
+        try modelContext.save()
         return item
     }
 
     func delete(_ item: DateTakenDay) throws {
-        cache[item.key] = nil
-        context.delete(item)
-
-        try context.save()
+        modelContext.delete(item)
+        try modelContext.save()
     }
     func delete(_ items: [DateTakenDay]) throws {
         guard !items.isEmpty else { return }
 
-        for item in items {
-            cache[item.key] = nil
-            context.delete(item)
-        }
-
-        try context.save()
+        for item in items { modelContext.delete(item) }
+        try modelContext.save()
     }
 
-    func ensure(_ parent: DateTakenMonth?, _ day: Int?) throws -> DateTakenDay? {
-        guard let parent else { return nil }
+    func ensure(_ parentId: UUID?, _ day: Int?) throws -> UUID? {
+        guard let parentId else { return nil }
+        guard let parent = getParent(parentId) else { return nil }
         guard let day else { return nil }
-        let ensured = try findOrCreate(parent, day)
 
-        return ensured
+        let ensured = try findOrCreate(parent, day)
+        return ensured.id
     }
-    func ensure(_ parent: DateTakenMonth?, _ days: [Int]) -> [DateTakenDay] {
-        guard let parent else { return [] }
-        
-        var result: [DateTakenDay] = []
+    func ensure(_ parentId: UUID?, _ days: [Int]) -> [UUID] {
+        guard let parentId else { return [] }
+
+        var result: [UUID] = []
         result.reserveCapacity(days.count)
 
         for day in days {
-            if let ensured = try? ensure(parent, day) {
+            if let ensured = try? ensure(parentId, day) {
                 result.append(ensured)
             }
         }
@@ -108,7 +88,14 @@ final class DayStore {
         return result
     }
 
-    func clearCache() {
-        cache.removeAll()
+    private func getParent(_ id: UUID) -> DateTakenMonth? {
+        let predicate = #Predicate<DateTakenMonth> { $0.id == id }
+        let descriptor = FetchDescriptor<DateTakenMonth>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
+
+        guard let results else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        return fetched
     }
 }

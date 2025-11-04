@@ -1,97 +1,89 @@
 import SwiftData
 import SwiftUI
 
-final class PersonStore {
-    private let context: ModelContext
-    private var cache: [String: Person] = [:]
-
-    init(context: ModelContext) {
-        self.context = context
-    }
-
+@ModelActor
+actor PersonStore {
     func get() -> [Person] {
         let sort = SortDescriptor(\Person.key)
         let descriptor = FetchDescriptor<Person>(sortBy: [sort])
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return [] }
+        guard let results else { return [] }
         return results
+    }
+    func get(_ id: UUID) -> Person? {
+        let predicate = #Predicate<Person> { $0.id == id }
+        let descriptor = FetchDescriptor<Person>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
+
+        guard let results else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        return fetched
     }
     func get(_ name: String) -> Person? {
         let key = Person.key(name)
-        if let cached = cache[key] { return cached }
-
         let predicate = #Predicate<Person> { $0.key == key }
         let descriptor = FetchDescriptor<Person>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
 
-        guard let results = try? context.fetch(descriptor) else { return nil }
+        guard let results else { return nil }
         guard let fetched = results.first else { return nil }
 
-        cache[key] = fetched
         return fetched
     }
 
-    func findOrCreate(_ name: String) throws -> Person {
-        if let existing = get(name) { return existing }
-        return try create(name)
-    }
-
     @discardableResult
-    func create(_ name: String) throws -> Person {
-        let newItem = Person(name)
-
-        try insert(newItem)
-        return newItem
+    func create(_ name: String) throws -> UUID {
+        let newItem = try createInternal(name)
+        return newItem.id
     }
 
     func insert(_ item: Person) throws {
-        context.insert(item)
-        try context.save()
-        cache[item.key] = item
+        modelContext.insert(item)
+        try modelContext.save()
     }
     func insert(_ items: [Person]) throws {
-        for item in items {
-            context.insert(item)
-            cache[item.key] = item
-        }
-
-        try context.save()
+        for item in items { modelContext.insert(item) }
+        try modelContext.save()
     }
 
-    @discardableResult
-    func update(_ item: Person, name: String) throws -> Person {
+    func update(_ id: UUID, name: String) throws {
+        let item = get(id)
+        guard let item else { throw DataStoreError.invalidPredicate }
+
         item.name = name
-        try context.save()
-        cache[item.key] = item
-
-        try context.save()
-        return item
+        try modelContext.save()
     }
 
-    func delete(_ item: Person) throws {
-        cache[item.key] = nil
-        context.delete(item)
-
-        try context.save()
+    func delete(_ id: UUID) throws {
+        let item = get(id)
+        guard let item else { return }
+        
+        modelContext.delete(item)
+        try modelContext.save()
     }
-    func delete(_ items: [Person]) throws {
-        guard !items.isEmpty else { return }
+    func delete(_ ids: [UUID]) throws {
+        guard !ids.isEmpty else { return }
 
-        for item in items {
-            cache[item.key] = nil
-            context.delete(item)
+        for item in ids {
+            let item = get(item)
+            guard let item else { continue }
+            
+            modelContext.delete(item)
         }
-
-        try context.save()
+        
+        try modelContext.save()
     }
 
-    func ensure(_ name: String?) throws -> Person? {
+    func ensure(_ name: String?) throws -> UUID? {
         guard let name else { return nil }
         let ensured = try findOrCreate(name)
 
-        return ensured
+        return ensured.id
     }
-    func ensure(_ names: [String]) -> [Person] {
-        var result: [Person] = []
+    func ensure(_ names: [String]) -> [UUID] {
+        var result: [UUID] = []
         result.reserveCapacity(names.count)
 
         for name in names {
@@ -100,8 +92,17 @@ final class PersonStore {
 
         return result
     }
+    
+    private func createInternal(_ name: String) throws -> Person {
+        let newItem = Person(name)
 
-    func clearCache() {
-        cache.removeAll()
+        try insert(newItem)
+        return newItem
     }
+    
+    private func findOrCreate(_ name: String) throws -> Person {
+        if let existing = get(name) { return existing }
+        return try createInternal(name)
+    }
+
 }

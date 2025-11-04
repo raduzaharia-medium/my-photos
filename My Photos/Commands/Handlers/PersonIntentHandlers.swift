@@ -14,43 +14,46 @@ extension View {
         )
         let deletePersonPresenter = DeletePersonPresenter(confirmer: confirmer)
 
-        let edit: (NotificationCenter.Publisher.Output) -> Void = { note in
+        let edit: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
             guard let person = note.object as? Person else { return }
             guard let name = note.userInfo?["name"] as? String else { return }
 
             do {
-                try personStore.update(person, name: name)
+                try await personStore.update(person.id, name: name)
                 notifier.show("Person updated", .success)
             } catch {
                 notifier.show("Could not update person", .error)
             }
         }
-        let create: (NotificationCenter.Publisher.Output) -> Void = { note in
+        let create: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
             guard let name = note.object as? String else { return }
 
             do {
-                try personStore.create(name)
+                try await personStore.create(name)
                 notifier.show("Person created", .success)
             } catch {
                 notifier.show("Could not create person", .error)
             }
         }
-        let delete: (NotificationCenter.Publisher.Output) -> Void = { note in
+        let delete: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
             guard let person = note.object as? Person else { return }
 
             do {
-                try personStore.delete(person)
+                try await personStore.delete(person.id)
                 notifier.show("Person deleted", .success)
             } catch {
                 notifier.show("Could not delete person", .error)
             }
         }
-        let deleteMany: (NotificationCenter.Publisher.Output) -> Void = {
+        let deleteMany: (NotificationCenter.Publisher.Output) async -> Void = {
             note in
             guard let people = note.object as? [Person] else { return }
 
             do {
-                try personStore.delete(people)
+                try await personStore.delete(people.map(\.id))
                 notifier.show("People deleted", .success)
             } catch {
                 notifier.show("Could not delete people", .error)
@@ -78,22 +81,15 @@ extension View {
 
         return
             self
-            .onReceive(
-                NotificationCenter.default.publisher(for: .editPerson),
-                perform: edit
-            )
-            .onReceive(
-                NotificationCenter.default.publisher(for: .createPerson),
-                perform: create
-            )
-            .onReceive(
-                NotificationCenter.default.publisher(for: .deletePerson),
-                perform: delete
-            )
-            .onReceive(
-                NotificationCenter.default.publisher(for: .deletePeople),
-                perform: deleteMany
-            )
+            .onReceive(NotificationCenter.default.publisher(for: .editPerson)) {
+                note in Task { await edit(note) }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .createPerson))
+        { note in Task { await create(note) } }
+            .onReceive(NotificationCenter.default.publisher(for: .deletePerson))
+        { note in Task { await delete(note) } }
+            .onReceive(NotificationCenter.default.publisher(for: .deletePeople))
+        { note in Task { await deleteMany(note) } }
             .onReceive(
                 NotificationCenter.default.publisher(for: .requestCreatePerson),
                 perform: showCreator
