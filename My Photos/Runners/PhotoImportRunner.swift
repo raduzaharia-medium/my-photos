@@ -13,7 +13,7 @@ actor PhotoImportRunner {
     private lazy var albums = { AlbumStore(modelContainer: modelContainer) }()
     private lazy var people = { PersonStore(modelContainer: modelContainer) }()
 
-    func `import`(_ parsed: ParsedPhoto) async -> Bool {
+    func `import`(_ parsed: ParsedPhoto) async throws {
 //        let existing = try? await photos.get(by: parsed.fullPath)
 //        let notChanged = existing?.lastModifiedDate == parsed.lastModifiedDate
 //        guard notChanged == false else { return false }
@@ -27,14 +27,14 @@ actor PhotoImportRunner {
             let cMonth = Calendar.current.component(.month, from: dateTaken)
             let cDay = Calendar.current.component(.day, from: dateTaken)
 
-            year = try? await years.ensure(cYear)
-            month = try? await months.ensure(year, cMonth)
-            day = try? await days.ensure(month, cDay)
+            year = try await years.ensure(cYear)
+            month = try await months.ensure(year, cMonth)
+            day = try await days.ensure(month, cDay)
         }
 
         let tags = await tags.ensure(parsed.tags)
-        let country = try? await ctrs.ensure(parsed.country)
-        let locality = try? await locs.ensure(country, parsed.locality)
+        let country = try await ctrs.ensure(parsed.country)
+        let locality = try await locs.ensure(country, parsed.locality)
         let albums = await albums.ensure(parsed.albums)
         let names = parsed.regions?.regionList.map(\.name) ?? []
         let people = await people.ensure(names)
@@ -65,7 +65,6 @@ actor PhotoImportRunner {
         )
 
         // try? await photos.insert(snapshot)
-        return true
     }
 }
 

@@ -20,7 +20,8 @@ struct ImportPhotosSheet: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                ProgressView(value: progress).padding()
+                ProgressView(value: progress)
+                    .padding()
                 Text("Imported \(Int(completed)) of \(Int(total))")
                     .font(.callout)
                     .foregroundStyle(.secondary)
@@ -40,25 +41,20 @@ struct ImportPhotosSheet: View {
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .task {
-            // Reset progress
             completed = 0
             guard total > 0 else { return }
+
             importTask = Task {
                 for photo in parsed {
-                    if Task.isCancelled { break }
+                    if Task.isCancelled { return }
 
-                    await photoImporter.import(photo)                  
-                    await MainActor.run { completed += 1 }
+                    try? await photoImporter.import(photo)
+                    completed += 1
                 }
-                await MainActor.run {
-                    if completed >= total {
-                        dismiss()
-                    }
-                }
+
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                dismiss()
             }
-        }
-        .onDisappear {
-            importTask?.cancel()
         }
     }
 }
