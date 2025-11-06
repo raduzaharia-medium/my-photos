@@ -14,9 +14,9 @@ actor PhotoImportRunner {
     private lazy var people = { PersonStore(modelContainer: modelContainer) }()
 
     func `import`(_ parsed: ParsedPhoto) async throws {
-//        let existing = try? await photos.get(by: parsed.fullPath)
-//        let notChanged = existing?.lastModifiedDate == parsed.lastModifiedDate
-//        guard notChanged == false else { return false }
+        let modified = try? await photos.lastModifiedDate(parsed.fullPath)
+        let notChanged = modified == parsed.lastModifiedDate
+        guard modified == nil || notChanged == false else { return }
 
         var year: UUID? = nil
         var month: UUID? = nil
@@ -40,10 +40,10 @@ actor PhotoImportRunner {
         let people = await people.ensure(names)
 
         let snapshot = PhotoSnapshot(
-            id: nil, 
+            id: nil,
             key: Photo.key(parsed.fileName),
             title: parsed.title,
-            caption: nil, 
+            caption: nil,
             dateTaken: parsed.dateTaken,
             location: parsed.location,
             fileName: parsed.fileName,
@@ -52,7 +52,7 @@ actor PhotoImportRunner {
             creationDate: parsed.creationDate,
             lastModifiedDate: parsed.lastModifiedDate,
             bookmark: parsed.bookmark,
-            thumbnailFileName: nil, 
+            thumbnailFileName: nil,
             tags: tags,
             dateTakenYear: year,
             dateTakenMonth: month,
@@ -67,4 +67,3 @@ actor PhotoImportRunner {
         // try? await photos.insert(snapshot)
     }
 }
-

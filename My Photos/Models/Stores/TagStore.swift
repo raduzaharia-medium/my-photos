@@ -77,7 +77,7 @@ actor TagStore {
 
             modelContext.delete(item)
         }
-        
+
         try modelContext.save()
     }
 
@@ -94,10 +94,12 @@ actor TagStore {
         return resolved.flatMap(\.self)
     }
 
-    private func ensureInternal(_ incoming: ParsedTag) -> Tag {
+    private func ensureInternal(_ incoming: ParsedTag, _ parent: Tag? = nil)
+        -> Tag
+    {
         if let existing = get(incoming.name) {
             for child in incoming.children {
-                let ensuredChild = ensureInternal(child)
+                let ensuredChild = ensureInternal(child, existing)
 
                 if !existing.children.contains(where: { $0 === ensuredChild }) {
                     existing.children.append(ensuredChild)
@@ -106,17 +108,17 @@ actor TagStore {
 
             return existing
         } else {
-            let newNode = Tag(name: incoming.name)
+            let newNode = Tag(name: incoming.name, parent: parent)
 
             for child in incoming.children {
-                let ensuredChild = ensureInternal(child)
+                let ensuredChild = ensureInternal(child, newNode)
 
                 if !newNode.children.contains(where: { $0 === ensuredChild }) {
                     newNode.children.append(ensuredChild)
                 }
             }
 
-            modelContext.insert(newNode)
+            try? insert(newNode)
             return newNode
         }
     }
@@ -138,7 +140,7 @@ actor TagStore {
             try insert(newItem)
             return newItem
         }
-        
+
         let newItem = Tag(name: name)
 
         try insert(newItem)

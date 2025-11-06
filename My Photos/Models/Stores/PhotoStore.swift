@@ -11,6 +11,15 @@ actor PhotoStore {
         return (try? modelContext.fetch(descriptor))?.first
     }
 
+    func exists(_ fullPath: String) async throws -> Bool {
+        let existing = try? get(by: fullPath)
+        return existing != nil
+    }
+    func lastModifiedDate(_ fullPath: String) async throws -> Date? {
+        let existing = try? get(by: fullPath)
+        return existing?.lastModifiedDate ?? nil
+    }
+    
     func insert(_ photo: Photo) throws {
         modelContext.insert(photo)
         try modelContext.save()

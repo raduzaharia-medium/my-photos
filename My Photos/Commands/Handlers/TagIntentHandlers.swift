@@ -14,7 +14,8 @@ extension View {
         )
         let deleteTagPresenter = DeleteTagPresenter(confirmer: confirmer)
 
-        let edit: (NotificationCenter.Publisher.Output) async -> Void = { note in
+        let edit: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
             guard let tag = note.object as? Tag else { return }
             guard let name = note.userInfo?["name"] as? String else { return }
             let parent = note.userInfo?["parent"] as? Tag
@@ -26,7 +27,21 @@ extension View {
                 notifier.show("Could not update tag", .error)
             }
         }
-        let create: (NotificationCenter.Publisher.Output) async -> Void = { note in
+        let editById: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
+            guard let tagId = note.object as? UUID else { return }
+            let name = note.userInfo?["name"] as? String
+            let parent = note.userInfo?["parent"] as? Tag
+
+            do {
+                try await tagStore.update(tagId, name, parent?.id)
+                notifier.show("Tag updated", .success)
+            } catch {
+                notifier.show("Could not update tag", .error)
+            }
+        }
+        let create: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
             guard let name = note.object as? String else { return }
             let parent = note.userInfo?["parent"] as? Tag
 
@@ -37,7 +52,8 @@ extension View {
                 notifier.show("Could not create tag", .error)
             }
         }
-        let delete: (NotificationCenter.Publisher.Output) async -> Void = { note in
+        let delete: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
             guard let tag = note.object as? Tag else { return }
 
             do {
@@ -84,6 +100,11 @@ extension View {
                 NotificationCenter.default.publisher(for: .editTag)
             ) { note in
                 Task { await edit(note) }
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(for: .editTagByID)
+            ) { note in
+                Task { await editById(note) }
             }
             .onReceive(
                 NotificationCenter.default.publisher(for: .createTag)
