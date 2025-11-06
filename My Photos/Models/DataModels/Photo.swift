@@ -38,27 +38,6 @@ final class Photo: Identifiable, Hashable, Equatable {
     @Relationship var people: [Person]
     @Relationship var events: [Event]
 
-    private var caches: URL? {
-        try? FileManager.default.url(
-            for: .cachesDirectory,
-            in: .userDomainMask,
-            appropriateFor: nil,
-            create: true
-        )
-    }
-    private var thumbnails: URL? {
-        caches?.appendingPathComponent("Thumbnails", isDirectory: true)
-    }
-    var thumbnailUrl: URL? {
-        thumbnails?.appendingPathComponent(thumbnailFileName)
-    }
-    var isRecent: Bool {
-        guard let dateTaken else { return false }
-        let pastThreeMonths = Date().addingTimeInterval(-60 * 60 * 24 * 90)
-
-        return dateTaken >= pastThreeMonths
-    }
-
     public init(
         id: UUID = .init(),
         fileName: String,
@@ -134,6 +113,15 @@ final class Photo: Identifiable, Hashable, Equatable {
 
     static func key(_ fullPath: String) -> String {
         fullPath.stablePhotoKey_FNV1a
+    }
+}
+
+extension Photo {
+    var isRecent: Bool {
+        guard let dateTaken else { return false }
+        let pastThreeMonths = Date().addingTimeInterval(-60 * 60 * 24 * 90)
+
+        return dateTaken >= pastThreeMonths
     }
 }
 

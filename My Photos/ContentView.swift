@@ -42,7 +42,6 @@ struct ContentView: View {
         EventStore(modelContainer: context.container)
     }
     private var fileStore: FileStore { FileStore() }
-    private var thumbnailStore: ThumbnailStore? { try? ThumbnailStore() }
     private var imageStore: ImageStore { ImageStore() }
 
     var body: some View {
@@ -50,7 +49,6 @@ struct ContentView: View {
             .animation(.default, value: presentationState.photoFilter)
             .animation(.default, value: presentationState.photoSelection)
             .animation(.default, value: presentationState.photoSource)
-            .environment(\.thumbnailStore, thumbnailStore)
             .environment(\.imageStore, imageStore)
             .notification(
                 isPresented: $notifier.isVisible,

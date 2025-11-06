@@ -1,34 +1,22 @@
 import Foundation
 import SwiftUI
 
-final class ThumbnailStore: Sendable {
-    private let directory: URL
-
-    init(baseDirectory: FileManager.SearchPathDirectory = .cachesDirectory)
-        throws
-    {
-        let base = try FileManager.default.url(
-            for: baseDirectory,
+actor ThumbnailStore: Sendable {
+    private var caches: URL? {
+        try? FileManager.default.url(
+            for: .cachesDirectory,
             in: .userDomainMask,
             appropriateFor: nil,
             create: true
         )
-        let dir = base.appendingPathComponent("Thumbnails", isDirectory: true)
-
-        if !FileManager.default.fileExists(atPath: dir.path) {
-            try FileManager.default.createDirectory(
-                at: dir,
-                withIntermediateDirectories: true
-            )
-        }
-
-        self.directory = dir
+    }
+    private var thumbnails: URL? {
+        caches?.appendingPathComponent("Thumbnails", isDirectory: true)
     }
 
-    func url(for thumbnailFileName: String) -> URL {
-        directory.appendingPathComponent(thumbnailFileName)
+    func url(for thumbnailFileName: String) -> URL? {
+        thumbnails?.appendingPathComponent(thumbnailFileName)
     }
-    func url(for photo: Photo) -> URL { url(for: photo.thumbnailFileName) }
 
     func get(for thumbnail: String, bookmark: Data?, path: String) async throws
         -> Data?
@@ -43,22 +31,15 @@ final class ThumbnailStore: Sendable {
         }
 
         let sourceURL = folderURL.appendingPathComponent(path)
-        let targetURL = url(for: thumbnail)
+        guard let targetURL = url(for: thumbnail) else { return nil }
         let data = try await generate(from: sourceURL)
 
         try data.write(to: targetURL, options: [.atomic])
         return data
     }
-    func get(for photo: Photo) async throws -> Data? {
-        return try await get(
-            for: photo.thumbnailFileName,
-            bookmark: photo.bookmark,
-            path: photo.path
-        )
-    }
 
     private func getExisting(from thumbnailFileName: String) -> Data? {
-        let targetURL = url(for: thumbnailFileName)
+        guard let targetURL = url(for: thumbnailFileName) else { return nil }
         let fileExists = FileManager.default.fileExists(atPath: targetURL.path)
 
         guard fileExists else { return nil }
@@ -96,17 +77,6 @@ final class ThumbnailStore: Sendable {
         guard let data else { throw Error.jpeg }
 
         return data
-    }
-}
-
-private struct ThumbnailStoreKey: EnvironmentKey {
-    static let defaultValue: ThumbnailStore? = nil
-}
-
-extension EnvironmentValues {
-    var thumbnailStore: ThumbnailStore? {
-        get { self[ThumbnailStoreKey.self] }
-        set { self[ThumbnailStoreKey.self] = newValue }
     }
 }
 

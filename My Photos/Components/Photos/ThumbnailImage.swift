@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct ThumbnailImage: View {
-    @Environment(\.thumbnailStore) private var thumbnailStore
     @State private var image: Image?
     @State private var isLoading = false
     @State private var error = false
@@ -48,17 +47,13 @@ struct ThumbnailImage: View {
     @MainActor
     private func load() async {
         guard !isLoading else { return }
+        let thumbnailStore = ThumbnailStore()
 
         isLoading = true
         defer { isLoading = false }
 
-        guard let store = thumbnailStore else {
-            error = true
-            return
-        }
-
         guard
-            let data = try? await store.get(
+            let data = try? await thumbnailStore.get(
                 for: photo.thumbnailFileName,
                 bookmark: photo.bookmark,
                 path: photo.path
