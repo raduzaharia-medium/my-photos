@@ -2,7 +2,7 @@ import SwiftUI
 
 struct FiltersSection: View {
     @State private var selection: Filter = .all
-    
+
     var body: some View {
         Picker("", selection: $selection) {
             Image(systemName: Filter.all.icon)
@@ -19,11 +19,6 @@ struct FiltersSection: View {
                 .accessibilityLabel(Text(Filter.recent.name))
                 .tag(Filter.recent)
                 .help(Text("Show only recently taken photos"))
-
-            Image(systemName: Filter.edited.icon)
-                .accessibilityLabel(Text(Filter.edited.name))
-                .tag(Filter.edited)
-                .help(Text("Show only edited photos"))
         }.labelsHidden()
             .pickerStyle(.segmented)
             .padding(.horizontal)

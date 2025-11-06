@@ -49,8 +49,7 @@ private struct DateSectionDays: View {
     }
 
     var body: some View {
-        ForEach(days) {
-            day in
+        ForEach(days) { day in
             SidebarRow(.dateDay(day)).tag(day)
         }
     }

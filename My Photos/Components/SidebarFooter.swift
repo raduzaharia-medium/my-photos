@@ -33,11 +33,6 @@ struct SidebarFooter: View {
                     .tag(Filter.recent)
                     .help(Text("Show only recently taken photos"))
 
-                Image(systemName: Filter.edited.icon)
-                    .accessibilityLabel(Text(Filter.edited.name))
-                    .tag(Filter.edited)
-                    .help(Text("Show only edited photos"))
-
                 if !state.photoSelection.isEmpty {
                     Image(systemName: Filter.selected.icon)
                         .accessibilityLabel(Text(Filter.selected.name))
@@ -55,4 +50,3 @@ struct SidebarFooter: View {
         .animation(.default, value: state.photoSelection)
     }
 }
-

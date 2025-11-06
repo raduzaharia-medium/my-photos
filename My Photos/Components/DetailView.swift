@@ -18,7 +18,6 @@ struct DetailView: View {
 
         switch source {
         case .all: break
-        case .edited: break
         case .favorites: break
         case .recent: set = set.filter { photo in photo.isRecent }
         case .selected: set = set.filter { photo in state.isSelected(photo) }
