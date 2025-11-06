@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Event: Identifiable, Equatable {
+final class Event: Identifiable, Hashable, Equatable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
     @Attribute(.unique) var name: String

@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class PlaceCountry: Identifiable, Equatable {
+final class PlaceCountry: Identifiable, Hashable, Equatable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
     @Attribute(.unique) var country: String
@@ -24,7 +24,7 @@ final class PlaceCountry: Identifiable, Equatable {
 }
 
 @Model
-final class PlaceLocality: Identifiable, Equatable {
+final class PlaceLocality: Identifiable, Hashable, Equatable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
 

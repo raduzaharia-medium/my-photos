@@ -12,7 +12,7 @@ struct GeoCoordinate: Codable, Hashable {
 }
 
 @Model
-final class Photo: Identifiable {
+final class Photo: Identifiable, Hashable, Equatable {
     @Attribute(.unique) var id: UUID
     @Attribute(.unique) var key: String
     var title: String
@@ -67,7 +67,7 @@ final class Photo: Identifiable {
         events: [Event] = [],
         tags: [Tag] = [],
     ) {
-        let key = Photo.key(fileName)
+        let key = Photo.key(fullPath)
 
         self.id = id
         self.fileName = fileName
@@ -114,8 +114,12 @@ final class Photo: Identifiable {
         }
     }
 
-    static func key(_ fileName: String) -> String {
-        fileName.stablePhotoKey_FNV1a
+    static func == (left: Photo, right: Photo) -> Bool {
+        left.key == right.key
+    }
+
+    static func key(_ fullPath: String) -> String {
+        fullPath.stablePhotoKey_FNV1a
     }
 }
 

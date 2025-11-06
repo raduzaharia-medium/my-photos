@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class DateTakenYear: Identifiable, Equatable {
+final class DateTakenYear: Identifiable, Hashable, Equatable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
     @Attribute(.unique) var year: Int
@@ -24,7 +24,7 @@ final class DateTakenYear: Identifiable, Equatable {
 }
 
 @Model
-final class DateTakenMonth: Identifiable, Equatable {
+final class DateTakenMonth: Identifiable, Hashable, Equatable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
 
@@ -56,7 +56,7 @@ final class DateTakenMonth: Identifiable, Equatable {
 }
 
 @Model
-final class DateTakenDay: Identifiable, Equatable {
+final class DateTakenDay: Identifiable, Hashable, Equatable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
 

@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Tag: Identifiable, Hashable {
+final class Tag: Identifiable, Hashable, Equatable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
     @Attribute(.unique) var name: String
@@ -23,6 +23,10 @@ final class Tag: Identifiable, Hashable {
 
     func flatten() -> [Tag] {
         [self] + children.flatMap { $0.flatten() }
+    }
+    
+    static func == (left: Tag, right: Tag) -> Bool {
+        left.key == right.key
     }
 
     static func key(_ parent: Tag?, _ name: String) -> String {
