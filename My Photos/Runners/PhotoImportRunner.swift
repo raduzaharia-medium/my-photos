@@ -64,6 +64,6 @@ actor PhotoImportRunner {
             events: []
         )
 
-        // try? await photos.insert(snapshot)
+        try? await photos.insert(snapshot)
     }
 }

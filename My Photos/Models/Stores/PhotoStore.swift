@@ -19,7 +19,7 @@ actor PhotoStore {
         let existing = try? get(by: fullPath)
         return existing?.lastModifiedDate ?? nil
     }
-    
+
     func insert(_ photo: Photo) throws {
         modelContext.insert(photo)
         try modelContext.save()
@@ -29,6 +29,18 @@ actor PhotoStore {
             modelContext.insert(photo)
         }
 
+        try modelContext.save()
+    }
+    func insert(_ snapshot: PhotoSnapshot) throws {
+        let photo = Photo(
+            fileName: snapshot.fileName,
+            path: snapshot.path,
+            fullPath: snapshot.fullPath,
+            title: snapshot.title,
+            dateTaken: snapshot.dateTaken
+        )
+
+        modelContext.insert(photo)
         try modelContext.save()
     }
 
