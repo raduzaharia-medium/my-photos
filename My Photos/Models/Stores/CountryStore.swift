@@ -11,6 +11,18 @@ actor CountryStore {
         guard let results else { return [] }
         return results
     }
+    func get(_ id: UUID?) -> PlaceCountry? {
+        guard let id else { return nil }
+        
+        let predicate = #Predicate<PlaceCountry> { $0.id == id }
+        let descriptor = FetchDescriptor<PlaceCountry>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
+
+        guard let results else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        return fetched
+    }
     func get(_ name: String) -> PlaceCountry? {
         let key = PlaceCountry.key(name)
         let predicate = #Predicate<PlaceCountry> { item in item.key == key }

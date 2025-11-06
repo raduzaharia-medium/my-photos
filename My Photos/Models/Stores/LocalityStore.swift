@@ -11,6 +11,18 @@ actor LocalityStore {
         guard let results else { return [] }
         return results
     }
+    func get(_ id: UUID?) -> PlaceLocality? {
+        guard let id else { return nil }
+        
+        let predicate = #Predicate<PlaceLocality> { $0.id == id }
+        let descriptor = FetchDescriptor<PlaceLocality>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
+
+        guard let results else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        return fetched
+    }
     func get(_ parent: PlaceCountry, _ name: String) -> PlaceLocality? {
         let key = PlaceLocality.key(parent, name)
         let predicate = #Predicate<PlaceLocality> { $0.key == key }

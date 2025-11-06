@@ -11,6 +11,18 @@ actor MonthStore {
         guard let results else { return [] }
         return results
     }
+    func get(_ id: UUID?) -> DateTakenMonth? {
+        guard let id else { return nil }
+        
+        let predicate = #Predicate<DateTakenMonth> { $0.id == id }
+        let descriptor = FetchDescriptor<DateTakenMonth>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
+
+        guard let results else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        return fetched
+    }
     func get(_ parent: DateTakenYear, _ month: Int) -> DateTakenMonth? {
         let key = DateTakenMonth.key(parent, month)
         let predicate = #Predicate<DateTakenMonth> { $0.key == key }

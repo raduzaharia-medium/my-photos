@@ -11,6 +11,18 @@ actor DayStore {
         guard let results else { return [] }
         return results
     }
+    func get(_ id: UUID?) -> DateTakenDay? {
+        guard let id else { return nil }
+        
+        let predicate = #Predicate<DateTakenDay> { $0.id == id }
+        let descriptor = FetchDescriptor<DateTakenDay>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
+
+        guard let results else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        return fetched
+    }
     func get(_ parent: DateTakenMonth, _ day: Int) -> DateTakenDay? {
         let key = DateTakenDay.key(parent, day)
         let predicate = #Predicate<DateTakenDay> { $0.key == key }

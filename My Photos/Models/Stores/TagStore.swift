@@ -11,6 +11,25 @@ actor TagStore {
         guard let results else { return [] }
         return results
     }
+    func get(_ id: UUID?) -> Tag? {
+        guard let id else { return nil }
+        
+        let predicate = #Predicate<Tag> { $0.id == id }
+        let descriptor = FetchDescriptor<Tag>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
+
+        guard let results else { return nil }
+        guard let fetched = results.first else { return nil }
+
+        return fetched
+    }
+    func get(_ ids: [UUID]) -> [Tag] {
+        let predicate = #Predicate<Tag> { tag in ids.contains(tag.id) }
+        let descriptor = FetchDescriptor<Tag>(predicate: predicate)
+        let results = try? modelContext.fetch(descriptor)
+
+        return (try? modelContext.fetch(descriptor)) ?? []
+    }
     func get(_ name: String) -> Tag? {
         let predicate = #Predicate<Tag> { $0.name == name }
         let descriptor = FetchDescriptor<Tag>(predicate: predicate)
@@ -21,17 +40,7 @@ actor TagStore {
 
         return fetched
     }
-    func get(_ id: UUID) -> Tag? {
-        let predicate = #Predicate<Tag> { $0.id == id }
-        let descriptor = FetchDescriptor<Tag>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
-
-        guard let results else { return nil }
-        guard let fetched = results.first else { return nil }
-
-        return fetched
-    }
-
+    
     @discardableResult
     func create(_ name: String, _ parentId: UUID? = nil) throws -> UUID {
         let newItem = try createInternal(name, parentId)

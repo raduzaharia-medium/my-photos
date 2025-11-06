@@ -44,20 +44,18 @@ struct ThumbnailImage: View {
         }
     }
 
-    @MainActor
     private func load() async {
         guard !isLoading else { return }
-        let thumbnailStore = ThumbnailStore()
+        let thumbnail = Thumbnail(
+            thumbnailFileName: photo.thumbnailFileName,
+            bookmark: photo.bookmark,
+            photoPath: photo.path
+        )
 
         isLoading = true
         defer { isLoading = false }
 
-        guard
-            let data = try? await thumbnailStore.get(
-                for: photo.thumbnailFileName,
-                bookmark: photo.bookmark,
-                path: photo.path
-            )
+        guard let data = try? await thumbnail.get()
         else {
             error = true
             return
