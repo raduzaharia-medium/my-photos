@@ -2,19 +2,20 @@ import Combine
 import SwiftUI
 
 struct ImportPhotosSheet: View {
+    @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @State private var completed: Int = 0
     @State private var importTask: Task<Void, Never>? = nil
 
     let parsed: [ParsedPhoto]
-    let photoImporter: PhotoImportRunner
+
+    var photoStore: PhotoStore { PhotoStore(modelContainer: context.container) }
 
     private var total: Int { parsed.count }
     private var progress: Double { Double(completed) / Double(total) }
 
-    init(_ parsed: [ParsedPhoto], _ photoImporter: PhotoImportRunner) {
+    init(_ parsed: [ParsedPhoto]) {
         self.parsed = parsed
-        self.photoImporter = photoImporter
     }
 
     var body: some View {
@@ -48,7 +49,7 @@ struct ImportPhotosSheet: View {
                 for photo in parsed {
                     if Task.isCancelled { return }
 
-                    try? await photoImporter.import(photo)
+                    try? await photoStore.import(photo)
                     completed += 1
                 }
 

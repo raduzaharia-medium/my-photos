@@ -9,10 +9,10 @@ final class ImportPhotosPresenter: ObservableObject {
     }
 
     @MainActor
-    func show(_ parsed: [ParsedPhoto], _ photoImporter: PhotoImportRunner) {
+    func show(_ parsed: [ParsedPhoto]) {
         withAnimation {
             modalPresenter.show(onDismiss: {}) {
-                ImportPhotosSheet(parsed, photoImporter)
+                ImportPhotosSheet(parsed)
             }
         }
     }

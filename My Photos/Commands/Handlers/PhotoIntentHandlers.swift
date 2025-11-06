@@ -23,7 +23,6 @@ extension View {
         let importPhotosPresenter = ImportPhotosPresenter(
             modalPresenter: modalPresenter
         )
-        let photoImporter = PhotoImportRunner(modelContainer: context.container)
 
         #if os(macOS)
             let importPhotos: (NotificationOutput) -> Void = { note in
@@ -37,7 +36,7 @@ extension View {
                     return
                 }
 
-                importPhotosPresenter.show(parsed, photoImporter)
+                importPhotosPresenter.show(parsed)
             }
         #endif
 
