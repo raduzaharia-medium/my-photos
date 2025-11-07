@@ -3,15 +3,15 @@ import SwiftData
 
 extension PhotoStore {
     func insert(_ snapshot: PhotoSnapshot) async throws {
-        let dateTakenYear = getYear(snapshot.dateTakenYear)
-        let dateTakenMonth = getMonth(snapshot.dateTakenMonth)
-        let dateTakenDay = getDay(snapshot.dateTakenDay)
-        let country = getCountry(snapshot.country)
-        let locality = getLocality(snapshot.locality)
-        let albums = getAlbums(snapshot.albums)
-        let people = getPeople(snapshot.people)
-        let events = getEvents(snapshot.events)
-        let tags = getTags(snapshot.tags)
+        let dateTakenYear = try getYear(snapshot.dateTakenYear)
+        let dateTakenMonth = try getMonth(snapshot.dateTakenMonth)
+        let dateTakenDay = try getDay(snapshot.dateTakenDay)
+        let country = try getCountry(snapshot.country)
+        let locality = try getLocality(snapshot.locality)
+        let albums = try getAlbums(snapshot.albums)
+        let people = try getPeople(snapshot.people)
+        let events = try getEvents(snapshot.events)
+        let tags = try getTags(snapshot.tags)
 
         let photo = Photo(
             fileName: snapshot.fileName,
@@ -37,81 +37,69 @@ extension PhotoStore {
         modelContext.insert(photo)
         try modelContext.save()
     }
-    
-    private func getYear(_ id: UUID?) -> DateTakenYear? {
+
+    private func getYear(_ id: UUID?) throws -> DateTakenYear? {
         guard let id else { return nil }
 
         let predicate = #Predicate<DateTakenYear> { $0.id == id }
         let descriptor = FetchDescriptor<DateTakenYear>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
-    private func getMonth(_ id: UUID?) -> DateTakenMonth? {
+    private func getMonth(_ id: UUID?) throws -> DateTakenMonth? {
         guard let id else { return nil }
 
         let predicate = #Predicate<DateTakenMonth> { $0.id == id }
         let descriptor = FetchDescriptor<DateTakenMonth>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
-    private func getDay(_ id: UUID?) -> DateTakenDay? {
+    private func getDay(_ id: UUID?) throws -> DateTakenDay? {
         guard let id else { return nil }
 
         let predicate = #Predicate<DateTakenDay> { $0.id == id }
         let descriptor = FetchDescriptor<DateTakenDay>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
-    private func getCountry(_ id: UUID?) -> PlaceCountry? {
+    private func getCountry(_ id: UUID?) throws -> PlaceCountry? {
         guard let id else { return nil }
 
         let predicate = #Predicate<PlaceCountry> { $0.id == id }
         let descriptor = FetchDescriptor<PlaceCountry>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
-    private func getLocality(_ id: UUID?) -> PlaceLocality? {
+    private func getLocality(_ id: UUID?) throws -> PlaceLocality? {
         guard let id else { return nil }
 
         let predicate = #Predicate<PlaceLocality> { $0.id == id }
         let descriptor = FetchDescriptor<PlaceLocality>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
-    private func getTags(_ ids: [UUID]) -> [Tag] {
+    private func getTags(_ ids: [UUID]) throws -> [Tag] {
         let predicate = #Predicate<Tag> { tag in ids.contains(tag.id) }
         let descriptor = FetchDescriptor<Tag>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results ?? []
+        return try modelContext.fetch(descriptor)
     }
-    private func getAlbums(_ ids: [UUID]) -> [Album] {
+    private func getAlbums(_ ids: [UUID]) throws -> [Album] {
         let predicate = #Predicate<Album> { tag in ids.contains(tag.id) }
         let descriptor = FetchDescriptor<Album>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results ?? []
-
+        return try modelContext.fetch(descriptor)
     }
-    private func getPeople(_ ids: [UUID]) -> [Person] {
+    private func getPeople(_ ids: [UUID]) throws -> [Person] {
         let predicate = #Predicate<Person> { tag in ids.contains(tag.id) }
         let descriptor = FetchDescriptor<Person>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results ?? []
-
+        return try modelContext.fetch(descriptor)
     }
-    private func getEvents(_ ids: [UUID]) -> [Event] {
+    private func getEvents(_ ids: [UUID]) throws -> [Event] {
         let predicate = #Predicate<Event> { tag in ids.contains(tag.id) }
         let descriptor = FetchDescriptor<Event>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results ?? []
-
+        return try modelContext.fetch(descriptor)
     }
 }

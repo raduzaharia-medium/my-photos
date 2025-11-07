@@ -19,7 +19,7 @@ extension View {
             guard let name = note.userInfo?["name"] as? String else { return }
 
             do {
-                try await eventStore.update(event.id, name: name)
+                try await eventStore.update(event.id, name)
                 notifier.show("Event updated", .success)
             } catch {
                 notifier.show("Could not update event", .error)

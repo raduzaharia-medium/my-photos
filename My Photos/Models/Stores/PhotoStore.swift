@@ -3,14 +3,6 @@ import SwiftUI
 
 @ModelActor
 actor PhotoStore {
-    func get(by fullPath: String) throws -> Photo? {
-        let descriptor = FetchDescriptor<Photo>(
-            predicate: #Predicate { $0.fullPath == fullPath }
-        )
-
-        return (try? modelContext.fetch(descriptor))?.first
-    }
-
     func exists(_ fullPath: String) async throws -> Bool {
         let existing = try? get(by: fullPath)
         return existing != nil
@@ -18,18 +10,6 @@ actor PhotoStore {
     func lastModifiedDate(_ fullPath: String) async throws -> Date? {
         let existing = try? get(by: fullPath)
         return existing?.lastModifiedDate ?? nil
-    }
-
-    func insert(_ photo: Photo) throws {
-        modelContext.insert(photo)
-        try modelContext.save()
-    }
-    func insert(_ photos: [Photo]) throws {
-        for photo in photos {
-            modelContext.insert(photo)
-        }
-
-        try modelContext.save()
     }
 
     func `import`(_ parsed: ParsedPhoto) async throws {
@@ -56,5 +36,12 @@ actor PhotoStore {
         }
 
         try modelContext.save()
+    }
+    
+    private func get(by fullPath: String) throws -> Photo? {
+        let predicate = #Predicate<Photo> { $0.fullPath == fullPath }
+        let descriptor = FetchDescriptor<Photo>(predicate: predicate)
+
+        return (try modelContext.fetch(descriptor)).first
     }
 }

@@ -50,100 +50,89 @@ extension PhotoStore {
         )
     }
 
-    private func getYear(_ year: Int) -> DateTakenYear? {
+    private func getYear(_ year: Int) throws -> DateTakenYear? {
         let key = DateTakenYear.key(year)
         let predicate = #Predicate<DateTakenYear> { $0.key == key }
         let descriptor = FetchDescriptor<DateTakenYear>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
-    private func getYear(_ id: UUID?) -> DateTakenYear? {
+    private func getYear(_ id: UUID?) throws -> DateTakenYear? {
         guard let id else { return nil }
 
         let predicate = #Predicate<DateTakenYear> { $0.id == id }
         let descriptor = FetchDescriptor<DateTakenYear>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
     private func getMonth(_ parent: DateTakenYear, _ month: Int)
-        -> DateTakenMonth?
+        throws -> DateTakenMonth?
     {
         let key = DateTakenMonth.key(parent, month)
         let predicate = #Predicate<DateTakenMonth> { $0.key == key }
         let descriptor = FetchDescriptor<DateTakenMonth>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
-    private func getMonth(_ id: UUID) -> DateTakenMonth? {
+    private func getMonth(_ id: UUID) throws -> DateTakenMonth? {
         let predicate = #Predicate<DateTakenMonth> { $0.id == id }
         let descriptor = FetchDescriptor<DateTakenMonth>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
-    private func getDay(_ parent: DateTakenMonth, _ day: Int) -> DateTakenDay? {
+    private func getDay(_ parent: DateTakenMonth, _ day: Int) throws -> DateTakenDay? {
         let key = DateTakenDay.key(parent, day)
         let predicate = #Predicate<DateTakenDay> { $0.key == key }
         let descriptor = FetchDescriptor<DateTakenDay>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
-    private func getCountry(_ name: String) -> PlaceCountry? {
+    private func getCountry(_ name: String) throws -> PlaceCountry? {
         let key = PlaceCountry.key(name)
         let predicate = #Predicate<PlaceCountry> { item in item.key == key }
         let descriptor = FetchDescriptor<PlaceCountry>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
-    private func getCountry(_ id: UUID) -> PlaceCountry? {
+    private func getCountry(_ id: UUID) throws -> PlaceCountry? {
         let predicate = #Predicate<PlaceCountry> { $0.id == id }
         let descriptor = FetchDescriptor<PlaceCountry>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
     private func getLocality(_ parent: PlaceCountry, _ name: String)
-        -> PlaceLocality?
+        throws -> PlaceLocality?
     {
         let key = PlaceLocality.key(parent, name)
         let predicate = #Predicate<PlaceLocality> { $0.key == key }
         let descriptor = FetchDescriptor<PlaceLocality>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
 
-    private func getAlbum(_ name: String) -> Album? {
+    private func getAlbum(_ name: String) throws -> Album? {
         let key = Album.key(name)
         let predicate = #Predicate<Album> { album in album.key == key }
         let descriptor = FetchDescriptor<Album>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
-    private func getPerson(_ name: String) -> Person? {
+    private func getPerson(_ name: String) throws -> Person? {
         let key = Person.key(name)
         let predicate = #Predicate<Person> { $0.key == key }
         let descriptor = FetchDescriptor<Person>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
-    private func getTag(_ name: String) -> Tag? {
+    private func getTag(_ name: String) throws -> Tag? {
         let predicate = #Predicate<Tag> { $0.name == name }
         let descriptor = FetchDescriptor<Tag>(predicate: predicate)
-        let results = try? modelContext.fetch(descriptor)
 
-        return results?.first
+        return (try modelContext.fetch(descriptor)).first
     }
 
     private func findOrCreateYear(_ year: Int) throws -> DateTakenYear {
-        if let existing = getYear(year) { return existing }
+        if let existing = try getYear(year) { return existing }
         let item = DateTakenYear(year)
 
         modelContext.insert(item)
@@ -153,7 +142,7 @@ extension PhotoStore {
     private func findOrCreateMonth(_ parent: DateTakenYear, _ month: Int) throws
         -> DateTakenMonth
     {
-        if let existing = getMonth(parent, month) { return existing }
+        if let existing = try getMonth(parent, month) { return existing }
         let item = DateTakenMonth(parent, month)
 
         modelContext.insert(item)
@@ -163,7 +152,7 @@ extension PhotoStore {
     private func findOrCreateDay(_ parent: DateTakenMonth, _ day: Int) throws
         -> DateTakenDay
     {
-        if let existing = getDay(parent, day) { return existing }
+        if let existing = try getDay(parent, day) { return existing }
         let item = DateTakenDay(parent, day)
 
         modelContext.insert(item)
@@ -171,7 +160,7 @@ extension PhotoStore {
         return item
     }
     func findOrCreateCountry(_ name: String) throws -> PlaceCountry {
-        if let existing = getCountry(name) { return existing }
+        if let existing = try getCountry(name) { return existing }
         let item = PlaceCountry(name)
 
         modelContext.insert(item)
@@ -181,7 +170,7 @@ extension PhotoStore {
     func findOrCreateLocality(_ parent: PlaceCountry, _ name: String) throws
         -> PlaceLocality
     {
-        if let existing = getLocality(parent, name) { return existing }
+        if let existing = try getLocality(parent, name) { return existing }
         let item = PlaceLocality(parent, name)
 
         modelContext.insert(item)
@@ -189,7 +178,7 @@ extension PhotoStore {
         return item
     }
     private func findOrCreateAlbum(_ name: String) throws -> Album {
-        if let existing = getAlbum(name) { return existing }
+        if let existing = try getAlbum(name) { return existing }
         let item = Album(name)
 
         modelContext.insert(item)
@@ -197,7 +186,7 @@ extension PhotoStore {
         return item
     }
     private func findOrCreatePerson(_ name: String) throws -> Person {
-        if let existing = getPerson(name) { return existing }
+        if let existing = try getPerson(name) { return existing }
         let item = Person(name)
 
         modelContext.insert(item)
@@ -214,7 +203,7 @@ extension PhotoStore {
     private func ensureMonth(_ parentId: UUID?, _ month: Int?) throws -> UUID? {
         guard let parentId else { return nil }
         guard let month else { return nil }
-        guard let parent = getYear(parentId) else { return nil }
+        guard let parent = try getYear(parentId) else { return nil }
         let ensured = try findOrCreateMonth(parent, month)
 
         return ensured.id
@@ -222,7 +211,7 @@ extension PhotoStore {
     private func ensureDay(_ parentId: UUID?, _ day: Int?) throws -> UUID? {
         guard let parentId else { return nil }
         guard let day else { return nil }
-        guard let parent = getMonth(parentId) else { return nil }
+        guard let parent = try getMonth(parentId) else { return nil }
 
         let ensured = try findOrCreateDay(parent, day)
         return ensured.id
@@ -238,7 +227,7 @@ extension PhotoStore {
     {
         guard let parentId else { return nil }
         guard let name else { return nil }
-        guard let parent = getCountry(parentId) else { return nil }
+        guard let parent = try getCountry(parentId) else { return nil }
         let ensured = try findOrCreateLocality(parent, name)
 
         return ensured.id
@@ -269,7 +258,7 @@ extension PhotoStore {
     private func ensureTag(_ incoming: ParsedTag, _ parent: Tag? = nil)
         throws -> Tag
     {
-        if let existing = getTag(incoming.name) {
+        if let existing = try getTag(incoming.name) {
             for child in incoming.children {
                 let ensuredChild = try ensureTag(child, existing)
 
