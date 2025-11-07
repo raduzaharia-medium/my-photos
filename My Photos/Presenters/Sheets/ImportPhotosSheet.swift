@@ -12,8 +12,6 @@ struct ImportPhotosSheet: View {
 
     var photoStore: PhotoStore { PhotoStore(modelContainer: context.container) }
 
-    private var progress: Double { Double(completed) / Double(total) }
-
     init(_ folder: URL) {
         self.folder = folder
     }
@@ -21,8 +19,10 @@ struct ImportPhotosSheet: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                ProgressView(value: progress)
-                    .padding()
+                ProgressView(
+                    value: Double(completed),
+                    total: Double(max(total, 1))
+                ).padding()
                 Text("Imported \(Int(completed)) of \(Int(total))")
                     .font(.callout)
                     .foregroundStyle(.secondary)
@@ -42,24 +42,41 @@ struct ImportPhotosSheet: View {
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .task {
-            let parsed = try? await photoStore.parse(folder)
-            guard let parsed else { return }
-            guard parsed.count > 0 else { return }
+            let didAccess = folder.startAccessingSecurityScopedResource()
+            defer {
+                if didAccess { folder.stopAccessingSecurityScopedResource() }
+            }
 
+            let bookmark = try? folder.bookmarkData(
+                options: [.withSecurityScope],
+                includingResourceValuesForKeys: nil,
+                relativeTo: nil
+            )
+            guard let bookmark else { return }
+
+            let files = try? await photoStore.getPhotos(in: folder)
+            guard let files else { return }
+
+            total = files.count
             completed = 0
-            total = parsed.count
-
             importTask = Task {
-                for photo in parsed {
+                for file in files {
                     if Task.isCancelled { return }
 
-                    try? await photoStore.import(photo)
+                    let parsed = try? await photoStore.parse(
+                        folder,
+                        bookmark,
+                        file
+                    )
+                    guard let parsed else { continue }
+
+                    try? await photoStore.import(parsed)
                     completed += 1
                 }
-
-                try? await Task.sleep(nanoseconds: 2_000_000_000)
-                dismiss()
             }
+
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            dismiss()
         }
     }
 }
