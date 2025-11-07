@@ -4,18 +4,18 @@ import SwiftUI
 struct ImportPhotosSheet: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @State private var total: Int = 0
     @State private var completed: Int = 0
     @State private var importTask: Task<Void, Never>? = nil
 
-    let parsed: [ParsedPhoto]
+    let folder: URL
 
     var photoStore: PhotoStore { PhotoStore(modelContainer: context.container) }
 
-    private var total: Int { parsed.count }
     private var progress: Double { Double(completed) / Double(total) }
 
-    init(_ parsed: [ParsedPhoto]) {
-        self.parsed = parsed
+    init(_ folder: URL) {
+        self.folder = folder
     }
 
     var body: some View {
@@ -42,8 +42,12 @@ struct ImportPhotosSheet: View {
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .task {
+            let parsed = try? await photoStore.parse(folder)
+            guard let parsed else { return }
+            guard parsed.count > 0 else { return }
+
             completed = 0
-            guard total > 0 else { return }
+            total = parsed.count
 
             importTask = Task {
                 for photo in parsed {

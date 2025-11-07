@@ -41,7 +41,6 @@ struct ContentView: View {
     private var eventStore: EventStore {
         EventStore(modelContainer: context.container)
     }
-    private var fileStore: FileStore { FileStore() }
     private var imageStore: ImageStore { ImageStore() }
 
     var body: some View {
@@ -111,7 +110,6 @@ struct ContentView: View {
                 fileImporter: fileImporter,
                 modalPresenter: modalPresenter,
                 photoStore: photoStore,
-                fileStore: fileStore,
             )
             .setupPersonHandlers(
                 modalPresenter: modalPresenter,

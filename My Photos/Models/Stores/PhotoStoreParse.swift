@@ -1,8 +1,8 @@
-import MapKit
+import Foundation
 
-struct FileStore {
+extension PhotoStore {
     #if os(macOS)
-        func parseImageFiles(in url: URL) throws -> [ParsedPhoto] {
+        func parse(_ url: URL) throws -> [ParsedPhoto] {
             let didAccess = url.startAccessingSecurityScopedResource()
             defer {
                 if didAccess { url.stopAccessingSecurityScopedResource() }
@@ -54,34 +54,32 @@ struct FileStore {
         }
     #endif
 
+    private func getEnumerator(_ url: URL) -> FileManager
+        .DirectoryEnumerator?
+    {
+        return FileManager.default.enumerator(
+            at: url,
+            includingPropertiesForKeys: [
+                .isRegularFileKey, .contentTypeKey, .isSymbolicLinkKey,
+                .isReadableKey,
+            ],
+            options: [.skipsPackageDescendants, .skipsHiddenFiles],
+            errorHandler: nil
+        )
+    }
     private func getImageFiles(in url: URL) throws -> [URL] {
-        guard
-            let enumerator = FileManager.default.enumerator(
-                at: url,
-                includingPropertiesForKeys: [
-                    .isRegularFileKey, .contentTypeKey, .isSymbolicLinkKey,
-                    .isReadableKey,
-                ],
-                options: [.skipsPackageDescendants, .skipsHiddenFiles],
-                errorHandler: nil
-            )
-        else { return [] }
+        guard let enumerator = getEnumerator(url) else { return [] }
 
-        let result = enumerator.compactMap { $0 as? URL }
+        let result = try enumerator.compactMap { $0 as? URL }
             .filter { url in
-                let values = try? url.resourceValues(forKeys: [
+                let values = try url.resourceValues(forKeys: [
                     .isRegularFileKey, .contentTypeKey, .isSymbolicLinkKey,
                     .isReadableKey,
                 ])
-                guard let values, values.isSymbolicLink != true,
-                    values.isRegularFile == true,
-                    values.isReadable == true,
-                    values.contentType?.conforms(to: .image) == true
-                else {
-                    return false
-                }
 
-                return true
+                return values.isSymbolicLink != true
+                    && values.isRegularFile == true && values.isReadable == true
+                    && values.contentType?.conforms(to: .image) == true
             }
 
         return result

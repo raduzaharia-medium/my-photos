@@ -1,6 +1,6 @@
 import Foundation
-import SwiftUI
 import SwiftData
+import SwiftUI
 import UniformTypeIdentifiers
 
 typealias NotificationOutput = NotificationCenter.Publisher.Output
@@ -13,7 +13,6 @@ extension View {
         fileImporter: FileImportService,
         modalPresenter: ModalService,
         photoStore: PhotoStore,
-        fileStore: FileStore,
     ) -> some View {
         let pickFolderPresenter = PickFolderPresenter(
             fileImporter: fileImporter,
@@ -21,7 +20,8 @@ extension View {
         )
         let pickTagPresenter = PickTagPresenter(modalPresenter: modalPresenter)
         let importPhotosPresenter = ImportPhotosPresenter(
-            modalPresenter: modalPresenter
+            modalPresenter: modalPresenter,
+            notifier: notifier
         )
 
         #if os(macOS)
@@ -30,13 +30,8 @@ extension View {
                     notifier.show("Could not import folder", .error)
                     return
                 }
-                guard let parsed = try? fileStore.parseImageFiles(in: folder)
-                else {
-                    notifier.show("Could not import folder", .error)
-                    return
-                }
 
-                importPhotosPresenter.show(parsed)
+                importPhotosPresenter.show(folder)
             }
         #endif
 
