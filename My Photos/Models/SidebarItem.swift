@@ -57,7 +57,7 @@ enum SidebarItem: Hashable {
         switch self {
         case .tag: return true
         case .dateDay, .dateMonth, .dateYear: return false
-        case .placeCountry, .placeLocality: return true
+        case .placeCountry, .placeLocality: return false
         case .album, .person, .event: return true
         }
     }

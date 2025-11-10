@@ -24,6 +24,7 @@ struct TagEditorSheet: View {
         self.onCancel = onCancel
 
         _name = State(initialValue: tag?.name ?? "")
+        _parent = State(initialValue: tag?.parent)
     }
 
     var body: some View {

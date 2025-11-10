@@ -7,7 +7,7 @@ final class Tag: Identifiable, Hashable, Equatable {
     @Attribute(.unique) var key: String
     @Attribute(.unique) var name: String
 
-    @Relationship(inverse: \Tag.parent) var children: [Tag] = []
+    @Relationship(deleteRule: .cascade, inverse: \Tag.parent) var children: [Tag] = []
     @Relationship var parent: Tag?
     @Relationship var photos: [Photo] = []
 
