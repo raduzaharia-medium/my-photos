@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 
 extension View {
     func setupAlbumHandlers(
+        presentationState: PresentationState,
         modalPresenter: ModalService,
         notifier: NotificationService,
         confirmer: ConfirmationService,
@@ -40,6 +41,8 @@ extension View {
 
             do {
                 try await albumStore.delete(album.id)
+                presentationState.photoFilter = []
+                
                 notifier.show("Album deleted", .success)
             } catch {
                 notifier.show("Could not delete album", .error)
@@ -51,6 +54,8 @@ extension View {
 
             do {
                 try await albumStore.delete(albums.map(\.id))
+                presentationState.photoFilter = []
+
                 notifier.show("Albums deleted", .success)
             } catch {
                 notifier.show("Could not delete albums", .error)

@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 
 extension View {
     func setupPersonHandlers(
+        presentationState: PresentationState,
         modalPresenter: ModalService,
         notifier: NotificationService,
         confirmer: ConfirmationService,
@@ -43,6 +44,8 @@ extension View {
 
             do {
                 try await personStore.delete(person.id)
+                presentationState.photoFilter = []
+
                 notifier.show("Person deleted", .success)
             } catch {
                 notifier.show("Could not delete person", .error)
@@ -54,6 +57,8 @@ extension View {
 
             do {
                 try await personStore.delete(people.map(\.id))
+                presentationState.photoFilter = []
+
                 notifier.show("People deleted", .success)
             } catch {
                 notifier.show("Could not delete people", .error)

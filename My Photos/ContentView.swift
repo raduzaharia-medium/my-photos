@@ -92,12 +92,14 @@ struct ContentView: View {
                 onCompletion: fileImporter.action
             )
             .setupTagHandlers(
+                presentationState: presentationState,
                 modalPresenter: modalPresenter,
                 notifier: notifier,
                 confirmer: confirmer,
                 tagStore: tagStore
             )
             .setupAlbumHandlers(
+                presentationState: presentationState,
                 modalPresenter: modalPresenter,
                 notifier: notifier,
                 confirmer: confirmer,
@@ -112,18 +114,21 @@ struct ContentView: View {
                 photoStore: photoStore,
             )
             .setupPersonHandlers(
+                presentationState: presentationState,
                 modalPresenter: modalPresenter,
                 notifier: notifier,
                 confirmer: confirmer,
                 personStore: personStore
             )
             .setupEventHandlers(
+                presentationState: presentationState,
                 modalPresenter: modalPresenter,
                 notifier: notifier,
                 confirmer: confirmer,
                 eventStore: eventStore
             )
             .setupFilterHandlers(
+                presentationState: presentationState,
                 notifier: notifier,
                 confirmer: confirmer,
                 albumStore: albumStore,

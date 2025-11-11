@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 
 extension View {
     func setupFilterHandlers(
+        presentationState: PresentationState,
         notifier: NotificationService,
         confirmer: ConfirmationService,
         albumStore: AlbumStore,
@@ -35,6 +36,8 @@ extension View {
                 try await personStore.delete(people.map(\.id))
                 try await eventStore.delete(events.map(\.id))
                 try await tagStore.delete(tags.map(\.id))
+                
+                presentationState.photoFilter = []
                 
                 notifier.show("Filters deleted", .success)
             } catch {

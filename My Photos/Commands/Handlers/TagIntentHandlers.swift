@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 
 extension View {
     func setupTagHandlers(
+        presentationState: PresentationState,
         modalPresenter: ModalService,
         notifier: NotificationService,
         confirmer: ConfirmationService,
@@ -58,6 +59,8 @@ extension View {
 
             do {
                 try await tagStore.delete(tag.id)
+                presentationState.photoFilter = []
+
                 notifier.show("Tag deleted", .success)
             } catch {
                 notifier.show("Could not delete tag", .error)
@@ -69,6 +72,8 @@ extension View {
 
             do {
                 try await tagStore.delete(tags.map(\.id))
+                presentationState.photoFilter = []
+
                 notifier.show("Tags deleted", .success)
             } catch {
                 notifier.show("Could not delete tags", .error)

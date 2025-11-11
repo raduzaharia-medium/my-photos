@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 
 extension View {
     func setupEventHandlers(
+        presentationState: PresentationState,
         modalPresenter: ModalService,
         notifier: NotificationService,
         confirmer: ConfirmationService,
@@ -40,6 +41,8 @@ extension View {
 
             do {
                 try await eventStore.delete(event.id)
+                presentationState.photoFilter = []
+
                 notifier.show("Event deleted", .success)
             } catch {
                 notifier.show("Could not delete event", .error)
@@ -51,6 +54,8 @@ extension View {
 
             do {
                 try await eventStore.delete(events.map(\.id))
+                presentationState.photoFilter = []
+
                 notifier.show("Events deleted", .success)
             } catch {
                 notifier.show("Could not delete events", .error)
