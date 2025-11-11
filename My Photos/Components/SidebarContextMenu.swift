@@ -11,9 +11,16 @@ struct SidebarContextMenu: View {
     private var show: Bool { all.allSatisfy(\.self.editable) }
 
     var body: some View {
+        let isCurrentInSelection = photoFilter.contains(current)
         if !show {
             EmptyView()
-        } else if all.count == 1 {
+        } else if isCurrentInSelection && photoFilter.count > 1 {
+            Button(role: .destructive) {
+                FilterIntents.requestDelete(Array(photoFilter))
+            } label: {
+                Label("Delete All", systemImage: "trash")
+            }
+        } else {
             Button {
                 if case .album(let album) = current {
                     AlbumIntents.requestEdit(album)
@@ -27,7 +34,6 @@ struct SidebarContextMenu: View {
             } label: {
                 Label("Edit", systemImage: "pencil")
             }
-
             Button(role: .destructive) {
                 if case .album(let album) = current {
                     AlbumIntents.requestDelete(album)
@@ -40,12 +46,6 @@ struct SidebarContextMenu: View {
                 }
             } label: {
                 Label("Delete", systemImage: "trash")
-            }
-        } else {
-            Button(role: .destructive) {
-                //            TagIntents.requestDelete(tags)
-            } label: {
-                Label("Delete All", systemImage: "trash")
             }
         }
     }

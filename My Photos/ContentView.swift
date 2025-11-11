@@ -123,6 +123,15 @@ struct ContentView: View {
                 confirmer: confirmer,
                 eventStore: eventStore
             )
+            .setupFilterHandlers(
+                notifier: notifier,
+                confirmer: confirmer,
+                albumStore: albumStore,
+                personStore: personStore,
+                eventStore: eventStore,
+                tagStore: tagStore
+            )
+
     }
 }
 
