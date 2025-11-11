@@ -10,9 +10,17 @@ struct LibraryCommands: Commands {
                 .keyboardShortcut("I", modifiers: [.command, .shift])
 
             Divider()
-
-//            Button("Create Tag…") { TagIntents.requestCreate() }
-//                .keyboardShortcut("T", modifiers: [.command, .shift])
+            
+            Menu("Create") {
+                Button("Album…") { AlbumIntents.requestCreate() }
+                    .keyboardShortcut("A", modifiers: [.command, .shift])
+                Button("Person…") { PersonIntents.requestCreate() }
+                    .keyboardShortcut("P", modifiers: [.command, .shift])
+                Button("Event…") { EventIntents.requestCreate() }
+                    .keyboardShortcut("E", modifiers: [.command, .shift])
+                Button("Tag…") { TagIntents.requestCreate() }
+                    .keyboardShortcut("T", modifiers: [.command, .shift])
+            }
 
 //            Button("Edit Tag…") {
 //                guard presentationState.photoFilter.count == 1,
