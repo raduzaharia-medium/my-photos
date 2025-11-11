@@ -10,7 +10,7 @@ struct LibraryCommands: Commands {
                 .keyboardShortcut("I", modifiers: [.command, .shift])
 
             Divider()
-            
+
             Menu("Create") {
                 Button("Album…") { AlbumIntents.requestCreate() }
                     .keyboardShortcut("A", modifiers: [.command, .shift])
@@ -22,39 +22,50 @@ struct LibraryCommands: Commands {
                     .keyboardShortcut("T", modifiers: [.command, .shift])
             }
 
-//            Button("Edit Tag…") {
-//                guard presentationState.photoFilter.count == 1,
-//                    case .tag(let tag) = presentationState.photoFilter.first
-//                else {
-//                    return
-//                }
-//
-//                TagIntents.requestEdit(tag)
-//            }
-//            .keyboardShortcut("E", modifiers: [.command, .shift])
-//            .disabled(!presentationState.canEditSelection)
-//
-//            if presentationState.canDeleteSelection {
-//                Button("Delete Tag", role: .destructive) {
-//                    TagIntents.requestDelete(presentationState.selectedTags.first!)
-//                }
-//                .keyboardShortcut("D", modifiers: [.command, .shift])
-//            }
-//
-//            if presentationState.canDeleteManySelection {
-//                Button(
-//                    "Delete \(presentationState.selectedTags.count) Tags",
-//                    role: .destructive
-//                ) {
-//                    TagIntents.requestDelete(presentationState.selectedTags)
-//                }
-//                .keyboardShortcut("D", modifiers: [.command, .shift])
-//            }
+            if presentationState.photoFilter.count == 1 {
+                let selection = presentationState.photoFilter.first
 
-            Divider()
-            
-            Button("Switch selection mode") {
-                PhotoIntents.toggleSelectionMode()
+                if case .album(let album) = selection {
+                    Button("Edit Album…") {
+                        AlbumIntents.requestEdit(album)
+                    }
+                    Button("Delete Album…") {
+                        AlbumIntents.requestDelete(album)
+                    }
+                }
+
+                if case .person(let person) = selection {
+                    Button("Edit Person…") {
+                        PersonIntents.requestEdit(person)
+                    }
+                    Button("Delete Person…") {
+                        PersonIntents.requestDelete(person)
+                    }
+                }
+
+                if case .event(let event) = selection {
+                    Button("Edit Event…") {
+                        EventIntents.requestEdit(event)
+                    }
+                    Button("Delete Event…") {
+                        EventIntents.requestDelete(event)
+                    }
+                }
+
+                if case .tag(let tag) = selection {
+                    Button("Edit Tag…") {
+                        TagIntents.requestEdit(tag)
+                    }
+                    Button("Delete Tag…") {
+                        TagIntents.requestDelete(tag)
+                    }
+                }
+            } else if presentationState.photoFilter.count > 1 {
+                Button("Delete Items…") {
+                    FilterIntents.requestDelete(
+                        Array(presentationState.photoFilter)
+                    )
+                }
             }
         }
     }
