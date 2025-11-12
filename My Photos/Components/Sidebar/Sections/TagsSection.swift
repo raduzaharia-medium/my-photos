@@ -53,10 +53,15 @@ private struct TagRow: View {
 
     var body: some View {
         SidebarRow(.tag(tag), isDraggable: true).tag(tag)
-            .dropDestination(for: SidebarDragItem.self) { items, _ in
+            .dropDestination(for: SidebarDropItem.self) { items, _ in
                 var performedAny = false
 
-                for incoming in items {
+                let photoIDs = items.photos.compactMap(\.id)
+                let tags = items.tags
+
+                if !photoIDs.isEmpty { PhotoIntents.tag(photoIDs, [.tag(tag)]) }
+
+                for incoming in tags {
                     var current: Tag? = tag
                     while let node = current {
                         if node.id == incoming.id { return false }
@@ -65,6 +70,7 @@ private struct TagRow: View {
 
                     TagIntents.edit(incoming.id, parent: tag)
                     performedAny = true
+
                 }
 
                 return performedAny
