@@ -23,23 +23,24 @@ struct PhotoNavigator: View {
 }
 
 #if os(macOS)
-private struct Desktop: View {
-    @Binding var index: Int
-    let currentPhoto: Photo
-    let photos: [Photo]
+    private struct Desktop: View {
+        @Binding var index: Int
+        let currentPhoto: Photo
+        let photos: [Photo]
 
-    var body: some View {
-        VStack(spacing: 0) {
-            PhotoCard(currentPhoto, variant: .detail)
-                .padding(16)
-                .animation(.default, value: currentPhoto.id)
+        var body: some View {
+            VStack(spacing: 0) {
+                PhotoCard(currentPhoto, variant: .detail)
+                    .id(currentPhoto.id)
+                    .transition(.opacity)
+                    .padding(16)
+            }
+            .focusable()
+            .toolbar { PhotoNavigatorToolbar(photos, index: $index) }
+            .toolbarBackground(.hidden, for: .automatic)
+            .navigationTitle(Text(currentPhoto.title))
         }
-        .focusable()
-        .toolbar { PhotoNavigatorToolbar(photos, index: $index) }
-        .toolbarBackground(.hidden, for: .automatic)
-        .navigationTitle(Text(currentPhoto.title))
     }
-}
 #endif
 
 #if os(iOS) || os(iPadOS)
@@ -55,6 +56,7 @@ private struct Desktop: View {
                         i,
                         photo in
                         PhotoCard(photo, variant: .detail)
+                            .id(photo.id)
                             .padding(16)
                             .tag(i)
                     }
