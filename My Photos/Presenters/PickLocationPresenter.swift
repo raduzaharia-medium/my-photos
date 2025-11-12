@@ -1,7 +1,7 @@
 import SwiftUI
 
 @MainActor
-final class PickTagPresenter: ObservableObject {
+final class PickLocationPresenter: ObservableObject {
     let modalPresenter: ModalService
     
     init(modalPresenter: ModalService) {
@@ -11,12 +11,12 @@ final class PickTagPresenter: ObservableObject {
     func show(_ photos: [Photo]) {
         withAnimation {
             modalPresenter.show(onDismiss: {}) {
-                TagPickerSheet(
+                LocationPickerSheet(
                     photos: photos,
-                    onSave: { photos, tags in
+                    onSave: { photos, location in
                         let photoIDs = photos.map(\.id)
                         
-                        PhotoIntents.tag(photoIDs, tags)
+                        // TODO: PhotoIntents.setLocation(photoIDs, location)
                         PhotoIntents.toggleSelectionMode()
 
                         self.modalPresenter.dismiss()

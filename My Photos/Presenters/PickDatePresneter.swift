@@ -1,7 +1,7 @@
 import SwiftUI
 
 @MainActor
-final class PickTagPresenter: ObservableObject {
+final class PickDatePresenter: ObservableObject {
     let modalPresenter: ModalService
     
     init(modalPresenter: ModalService) {
@@ -11,12 +11,12 @@ final class PickTagPresenter: ObservableObject {
     func show(_ photos: [Photo]) {
         withAnimation {
             modalPresenter.show(onDismiss: {}) {
-                TagPickerSheet(
+                DatePickerSheet(
                     photos: photos,
-                    onSave: { photos, tags in
+                    onSave: { photos, date in
                         let photoIDs = photos.map(\.id)
                         
-                        PhotoIntents.tag(photoIDs, tags)
+                        // TODO: PhotoIntents.setDateTaken(photoIDs, date)
                         PhotoIntents.toggleSelectionMode()
 
                         self.modalPresenter.dismiss()

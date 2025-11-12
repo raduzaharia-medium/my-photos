@@ -19,6 +19,8 @@ extension View {
             notifier: notifier
         )
         let pickTagPresenter = PickTagPresenter(modalPresenter: modalPresenter)
+        let pickDatePresenter = PickDatePresenter(modalPresenter: modalPresenter)
+        let pickLocationPresenter = PickLocationPresenter(modalPresenter: modalPresenter)
         let importPhotosPresenter = ImportPhotosPresenter(
             modalPresenter: modalPresenter,
             notifier: notifier
@@ -39,8 +41,7 @@ extension View {
             }
         #endif
 
-        let tagPhotos: (NotificationOutput) -> Void = {
-            note in
+        let tagPhotos: (NotificationOutput) -> Void = { note in
             guard let photoIDs = note.object as? [UUID] else { return }
             guard let tags = note.userInfo?["tags"] as? [SidebarItem] else {
                 return
@@ -52,25 +53,31 @@ extension View {
         let showImporter: (NotificationOutput) -> Void = { _ in
             pickFolderPresenter.show()
         }
-        let showTagger: (NotificationOutput) -> Void = {
-            note in
+        let showTagger: (NotificationOutput) -> Void = { note in
             guard let photos = note.object as? [Photo] else { return }
             pickTagPresenter.show(photos)
         }
-        let clearSelection: (NotificationOutput) -> Void = {
-            _ in
-            presentationState.photoSelection.removeAll()
+        let showDateChanger: (NotificationOutput) -> Void = { note in
+            guard let photos = note.object as? [Photo] else { return }
+            pickDatePresenter.show(photos)
         }
-        let select: (NotificationOutput) -> Void = {
-            note in
+        let showLocationChanger: (NotificationOutput) -> Void = { note in
+            guard let photos = note.object as? [Photo] else { return }
+            pickLocationPresenter.show(photos)
+        }
+        let clearSelection: (NotificationOutput) -> Void = { _ in
+            withAnimation {
+                presentationState.photoSelection.removeAll()
+            }
+        }
+        let select: (NotificationOutput) -> Void = { note in
             guard let photo = note.object as? Photo else { return }
 
             withAnimation {
                 presentationState.photoSelection = Set([photo])
             }
         }
-        let selectMany: (NotificationOutput) -> Void = {
-            note in
+        let selectMany: (NotificationOutput) -> Void = { note in
             guard let photos = note.object as? [Photo] else { return }
 
             withAnimation {
@@ -111,6 +118,18 @@ extension View {
             .onReceive(
                 NotificationCenter.default.publisher(for: .requestTagPhotos),
                 perform: showTagger
+            )
+            .onReceive(
+                NotificationCenter.default.publisher(
+                    for: .requestChangeDatePhotos
+                ),
+                perform: showDateChanger
+            )
+            .onReceive(
+                NotificationCenter.default.publisher(
+                    for: .requestChangeLocationPhotos
+                ),
+                perform: showLocationChanger
             )
             #if os(macOS)
                 .onReceive(

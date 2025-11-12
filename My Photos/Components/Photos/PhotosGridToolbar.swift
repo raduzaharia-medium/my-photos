@@ -48,8 +48,19 @@ private struct MainButtons: View {
             PhotoIntents.requestTag(Array(state.photoSelection))
         } label: {
             Image(systemName: "tag")
-        }.controlSize(.regular)
-            .disabled(!allowTagging)
+        }.controlSize(.regular).disabled(!allowTagging)
+
+        Button {
+            PhotoIntents.requestChangeDate(Array(state.photoSelection))
+        } label: {
+            Image(systemName: "calendar")
+        }.controlSize(.regular).disabled(!allowTagging)
+
+        Button {
+            PhotoIntents.requestChangeLocation(Array(state.photoSelection))
+        } label: {
+            Image(systemName: "mappin.and.ellipse")
+        }.controlSize(.regular).disabled(!allowTagging)
 
         Button {
             if allSelected {

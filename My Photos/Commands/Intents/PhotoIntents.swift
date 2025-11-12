@@ -3,6 +3,12 @@ import SwiftUI
 extension Notification.Name {
     static let requestImportPhotos = Notification.Name("requestImportPhotos")
     static let requestTagPhotos = Notification.Name("requestTagPhotos")
+    static let requestChangeDatePhotos = Notification.Name(
+        "requestChangeDatePhotos"
+    )
+    static let requestChangeLocationPhotos = Notification.Name(
+        "requestChangeLocationPhotos"
+    )
 
     static let importPhotos = Notification.Name("importPhotos")
     static let tagPhotos = Notification.Name("tagPhotos")
@@ -30,6 +36,18 @@ enum PhotoIntents {
     }
     static func requestTag(_ photos: [Photo]) {
         NotificationCenter.default.post(name: .requestTagPhotos, object: photos)
+    }
+    static func requestChangeDate(_ photos: [Photo]) {
+        NotificationCenter.default.post(
+            name: .requestChangeDatePhotos,
+            object: photos
+        )
+    }
+    static func requestChangeLocation(_ photos: [Photo]) {
+        NotificationCenter.default.post(
+            name: .requestChangeDatePhotos,
+            object: photos
+        )
     }
 
     static func `import`(_ folder: URL) {
