@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 final class PickFolderPresenter: ObservableObject {
     let fileImporter: FileImportService
     let notifier: NotificationService
@@ -9,7 +10,6 @@ final class PickFolderPresenter: ObservableObject {
         self.notifier = notifier
     }
 
-    @MainActor
     func show() {
         withAnimation {
             fileImporter.pickSingleFolder { result in
@@ -26,7 +26,6 @@ final class PickFolderPresenter: ObservableObject {
         PhotoIntents.import(folder)
     }
 
-    @MainActor
     private func abortImport(error: Error) {
         notifier.show("Failed to import: \(error.localizedDescription)", .error)
     }

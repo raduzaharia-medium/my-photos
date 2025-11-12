@@ -35,10 +35,10 @@ enum PhotoIntents {
     static func `import`(_ folder: URL) {
         NotificationCenter.default.post(name: .importPhotos, object: folder)
     }
-    static func tag(_ photos: [Photo], _ tags: [SidebarItem]) {
+    static func tag(_ photoIDs: [UUID], _ tags: [SidebarItem]) {
         NotificationCenter.default.post(
             name: .tagPhotos,
-            object: photos,
+            object: photoIDs,
             userInfo: ["tags": tags]
         )
     }

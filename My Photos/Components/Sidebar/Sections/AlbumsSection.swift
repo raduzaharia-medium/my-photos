@@ -8,6 +8,12 @@ struct AlbumsSection: View {
         Section("Albums") {
             ForEach(albums) { album in
                 SidebarRow(.album(album)).tag(album)
+                    .dropDestination(for: PhotoDragItem.self) { items, _ in
+                        let photoIDs = items.map(\.id)
+
+                        PhotoIntents.tag(photoIDs, [.album(album)])
+                        return true
+                    }
             }
         }
     }

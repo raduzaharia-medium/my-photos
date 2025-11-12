@@ -23,6 +23,10 @@ extension View {
             modalPresenter: modalPresenter,
             notifier: notifier
         )
+        let tagPhotosPresenter = TagPhotosPresenter(
+            modalPresenter: modalPresenter,
+            notifier: notifier
+        )
 
         #if os(macOS)
             let importPhotos: (NotificationOutput) -> Void = { note in
@@ -37,17 +41,12 @@ extension View {
 
         let tagPhotos: (NotificationOutput) -> Void = {
             note in
-            guard let photos = note.object as? [Photo] else { return }
+            guard let photoIDs = note.object as? [UUID] else { return }
             guard let tags = note.userInfo?["tags"] as? [SidebarItem] else {
                 return
             }
 
-            do {
-                // try photoStore.tagPhotos(photos, tags)
-                notifier.show("Photos tagged", .success)
-            } catch {
-                notifier.show("Failed to tag photos", .error)
-            }
+            tagPhotosPresenter.show(photoIDs, tags: tags)
         }
 
         let showImporter: (NotificationOutput) -> Void = { _ in

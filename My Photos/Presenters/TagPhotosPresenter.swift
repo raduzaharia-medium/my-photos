@@ -1,7 +1,7 @@
 import SwiftUI
 
 @MainActor
-final class ImportPhotosPresenter: ObservableObject {
+final class TagPhotosPresenter: ObservableObject {
     let modalPresenter: ModalService
     let notifier: NotificationService
 
@@ -10,10 +10,10 @@ final class ImportPhotosPresenter: ObservableObject {
         self.notifier = notifier
     }
 
-    func show(_ folder: URL) {
+    func show(_ photoIDs: [UUID], tags: [SidebarItem]) {
         withAnimation {
             modalPresenter.show(onDismiss: {}) {
-                ImportPhotosSheet(folder)
+                TagPhotosSheet(photoIDs: photoIDs, tags: tags)
 //                { result in
 //                    switch result {
 //                    case .success: return

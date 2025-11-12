@@ -8,14 +8,16 @@ final class PickTagPresenter: ObservableObject {
         self.modalPresenter = modalPresenter
     }
 
-    @MainActor
     func show(_ photos: [Photo]) {
         withAnimation {
             modalPresenter.show(onDismiss: {}) {
                 TagPickerSheet(
                     photos: photos,
                     onSave: { photos, tags in
-                        PhotoIntents.tag(photos, tags)
+                        let photoIDs = photos.map(\.id)
+                        
+                        
+                        PhotoIntents.tag(photoIDs, tags)
                         PhotoIntents.toggleSelectionMode()
 
                         self.modalPresenter.dismiss()
