@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct DatePickerSheet: View {
+struct DateSetterSheet: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 

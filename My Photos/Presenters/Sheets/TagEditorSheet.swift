@@ -2,6 +2,8 @@ import SwiftData
 import SwiftUI
 
 struct TagEditorSheet: View {
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
     @State private var name: String
     @State private var parent: Tag?
 
@@ -11,37 +13,27 @@ struct TagEditorSheet: View {
     var trim: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
     var canSave: Bool { !trim.isEmpty }
 
-    var onSave: (Tag?, String, Tag?) -> Void
-    var onCancel: () -> Void
-
-    init(
-        _ tag: Tag? = nil,
-        onSave: @escaping (Tag?, String, Tag?) -> Void,
-        onCancel: @escaping () -> Void
-    ) {
+    init(_ tag: Tag? = nil) {
         self.tag = tag
-        self.onSave = onSave
-        self.onCancel = onCancel
-
-        _name = State(initialValue: tag?.name ?? "")
-        _parent = State(initialValue: tag?.parent)
+        self._name = State(initialValue: tag?.name ?? "")
+        self._parent = State(initialValue: tag?.parent)
     }
 
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                NameInput(name: $name).onSubmit { onSave(tag, trim, parent) }
+                NameInput(name: $name).onSubmit { Task { try? await doWork() } }
                 ParentPicker(parent: $parent, tag: tag)
                 Spacer(minLength: 0)
             }.padding(20)
                 .navigationTitle(title)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel", role: .cancel) { onCancel() }
+                        Button("Cancel", role: .cancel) { dismiss() }
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save", role: .confirm) {
-                            onSave(tag, trim, parent)
+                            Task { try? await doWork() }
                         }.keyboardShortcut(.defaultAction)
                             .disabled(!canSave)
                     }
@@ -50,6 +42,19 @@ struct TagEditorSheet: View {
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
+    }
+    
+    @MainActor
+    private func doWork() async throws {
+        let tagStore = TagStore(modelContainer: context.container)
+
+        if let tag {
+            try await tagStore.update(tag.id, trim, parent?.id)
+        } else {
+            try await tagStore.create(trim, parent?.id)
+        }
+
+        dismiss()
     }
 }
 

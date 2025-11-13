@@ -10,9 +10,6 @@ extension View {
         confirmer: ConfirmationService,
         tagStore: TagStore
     ) -> some View {
-        let editTagPresenter = TagEditorPresenter(
-            modalPresenter: modalPresenter
-        )
         let deleteTagPresenter = DeleteTagPresenter(confirmer: confirmer)
 
         let edit: (NotificationCenter.Publisher.Output) async -> Void = {
@@ -81,12 +78,12 @@ extension View {
         }
         let showTagCreator: (NotificationCenter.Publisher.Output) -> Void = {
             _ in
-            editTagPresenter.show(nil)
+            modalPresenter.show(onDismiss: {}) { TagEditorSheet(nil) }
         }
         let showTagEditor: (NotificationCenter.Publisher.Output) -> Void = {
             note in
             guard let tag = note.object as? Tag else { return }
-            editTagPresenter.show(tag)
+            modalPresenter.show(onDismiss: {}) { TagEditorSheet(tag) }
         }
         let showTagRemover: (NotificationCenter.Publisher.Output) -> Void = {
             note in

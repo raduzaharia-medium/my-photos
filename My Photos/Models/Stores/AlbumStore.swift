@@ -12,7 +12,7 @@ actor AlbumStore {
         return item.id
     }
 
-    func update(_ id: UUID, name: String) throws {
+    func update(_ id: UUID, _ name: String) throws {
         let item = try get(id)
         guard let item else { throw DataStoreError.invalidPredicate }
 

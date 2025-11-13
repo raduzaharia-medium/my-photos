@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct EventEditorSheet: View {
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
     @State private var name: String
 
     let event: Event?
@@ -9,35 +11,25 @@ struct EventEditorSheet: View {
     var trim: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
     var canSave: Bool { !trim.isEmpty }
 
-    var onSave: (Event?, String) -> Void
-    var onCancel: () -> Void
-
-    init(
-        _ event: Event? = nil,
-        onSave: @escaping (Event?, String) -> Void,
-        onCancel: @escaping () -> Void
-    ) {
+    init(_ event: Event? = nil) {
         self.event = event
-        self.onSave = onSave
-        self.onCancel = onCancel
-
-        _name = State(initialValue: event?.name ?? "")
+        self._name = State(initialValue: event?.name ?? "")
     }
 
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                NameInput(name: $name).onSubmit { onSave(event, trim) }
+                NameInput(name: $name).onSubmit { Task { try? await doWork() } }
                 Spacer(minLength: 0)
             }.padding(20)
                 .navigationTitle(title)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel", role: .cancel) { onCancel() }
+                        Button("Cancel", role: .cancel) { dismiss() }
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save", role: .confirm) {
-                            onSave(event, trim)
+                            Task { try? await doWork() }
                         }.keyboardShortcut(.defaultAction)
                             .disabled(!canSave)
                     }
@@ -46,6 +38,19 @@ struct EventEditorSheet: View {
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
+    }
+    
+    @MainActor
+    private func doWork() async throws {
+        let eventStore = EventStore(modelContainer: context.container)
+
+        if let event {
+            try await eventStore.update(event.id, trim)
+        } else {
+            try await eventStore.create(trim)
+        }
+
+        dismiss()
     }
 }
 

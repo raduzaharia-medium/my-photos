@@ -10,12 +10,10 @@ extension View {
         confirmer: ConfirmationService,
         eventStore: EventStore
     ) -> some View {
-        let eventEditorPresenter = EventEditorPresenter(
-            modalPresenter: modalPresenter
-        )
         let deleteEventPresenter = DeleteEventPresenter(confirmer: confirmer)
 
-        let edit: (NotificationCenter.Publisher.Output) async -> Void = { note in
+        let edit: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
             guard let event = note.object as? Event else { return }
             guard let name = note.userInfo?["name"] as? String else { return }
 
@@ -26,7 +24,8 @@ extension View {
                 notifier.show("Could not update event", .error)
             }
         }
-        let create: (NotificationCenter.Publisher.Output) async -> Void = { note in
+        let create: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
             guard let name = note.object as? String else { return }
 
             do {
@@ -36,7 +35,8 @@ extension View {
                 notifier.show("Could not create event", .error)
             }
         }
-        let delete: (NotificationCenter.Publisher.Output) async -> Void = { note in
+        let delete: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
             guard let event = note.object as? Event else { return }
 
             do {
@@ -61,14 +61,15 @@ extension View {
                 notifier.show("Could not delete events", .error)
             }
         }
-        let showCreator: (NotificationCenter.Publisher.Output) -> Void = {
-            _ in
-            eventEditorPresenter.show(nil)
+        let showCreator: (NotificationCenter.Publisher.Output) -> Void = { _ in
+            modalPresenter.show(onDismiss: {}) { EventEditorSheet(nil) }
         }
         let showEditor: (NotificationCenter.Publisher.Output) -> Void = {
             note in
             guard let event = note.object as? Event else { return }
-            eventEditorPresenter.show(event)
+            modalPresenter.show(onDismiss: {}) {
+                EventEditorSheet(event)
+            }
         }
         let showRemover: (NotificationCenter.Publisher.Output) -> Void = {
             note in

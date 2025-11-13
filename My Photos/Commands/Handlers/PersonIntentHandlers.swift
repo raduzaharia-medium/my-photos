@@ -10,9 +10,6 @@ extension View {
         confirmer: ConfirmationService,
         personStore: PersonStore
     ) -> some View {
-        let personEditorPresenter = PersonEditorPresenter(
-            modalPresenter: modalPresenter
-        )
         let deletePersonPresenter = DeletePersonPresenter(confirmer: confirmer)
 
         let edit: (NotificationCenter.Publisher.Output) async -> Void = {
@@ -64,14 +61,13 @@ extension View {
                 notifier.show("Could not delete people", .error)
             }
         }
-        let showCreator: (NotificationCenter.Publisher.Output) -> Void = {
-            _ in
-            personEditorPresenter.show(nil)
+        let showCreator: (NotificationCenter.Publisher.Output) -> Void = { _ in
+            modalPresenter.show(onDismiss: {}) { PersonEditorSheet(nil) }
         }
         let showEditor: (NotificationCenter.Publisher.Output) -> Void = {
             note in
             guard let person = note.object as? Person else { return }
-            personEditorPresenter.show(person)
+            modalPresenter.show(onDismiss: {}) { PersonEditorSheet(person) }
         }
         let showRemover: (NotificationCenter.Publisher.Output) -> Void = {
             note in

@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct AlbumEditorSheet: View {
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
     @State private var name: String
 
     let album: Album?
@@ -9,35 +11,25 @@ struct AlbumEditorSheet: View {
     var trim: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
     var canSave: Bool { !trim.isEmpty }
 
-    var onSave: (Album?, String) -> Void
-    var onCancel: () -> Void
-
-    init(
-        _ album: Album? = nil,
-        onSave: @escaping (Album?, String) -> Void,
-        onCancel: @escaping () -> Void
-    ) {
+    init(_ album: Album? = nil) {
         self.album = album
-        self.onSave = onSave
-        self.onCancel = onCancel
-
-        _name = State(initialValue: album?.name ?? "")
+        self._name = State(initialValue: album?.name ?? "")
     }
 
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                NameInput(name: $name).onSubmit { onSave(album, trim) }
+                NameInput(name: $name).onSubmit { Task { try? await doWork() } }
                 Spacer(minLength: 0)
             }.padding(20)
                 .navigationTitle(title)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel", role: .cancel) { onCancel() }
+                        Button("Cancel", role: .cancel) { dismiss() }
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save", role: .confirm) {
-                            onSave(album, trim)
+                            Task { try? await doWork() }
                         }.keyboardShortcut(.defaultAction)
                             .disabled(!canSave)
                     }
@@ -46,6 +38,19 @@ struct AlbumEditorSheet: View {
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
+    }
+
+    @MainActor
+    private func doWork() async throws {
+        let albumStore = AlbumStore(modelContainer: context.container)
+
+        if let album {
+            try await albumStore.update(album.id, trim)
+        } else {
+            try await albumStore.create(trim)
+        }
+
+        dismiss()
     }
 }
 

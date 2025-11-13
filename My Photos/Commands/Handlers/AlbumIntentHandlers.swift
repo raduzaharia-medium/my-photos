@@ -10,23 +10,22 @@ extension View {
         confirmer: ConfirmationService,
         albumStore: AlbumStore
     ) -> some View {
-        let albumEditorPresenter = AlbumEditorPresenter(
-            modalPresenter: modalPresenter
-        )
         let deleteAlbumPresenter = DeleteAlbumPresenter(confirmer: confirmer)
 
-        let edit: (NotificationCenter.Publisher.Output) async -> Void = { note in
+        let edit: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
             guard let album = note.object as? Album else { return }
             guard let name = note.userInfo?["name"] as? String else { return }
 
             do {
-                try await albumStore.update(album.id, name: name)
+                try await albumStore.update(album.id, name)
                 notifier.show("Album updated", .success)
             } catch {
                 notifier.show("Could not update album", .error)
             }
         }
-        let create: (NotificationCenter.Publisher.Output) async -> Void = { note in
+        let create: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
             guard let name = note.object as? String else { return }
 
             do {
@@ -36,13 +35,14 @@ extension View {
                 notifier.show("Could not create album", .error)
             }
         }
-        let delete: (NotificationCenter.Publisher.Output) async -> Void = { note in
+        let delete: (NotificationCenter.Publisher.Output) async -> Void = {
+            note in
             guard let album = note.object as? Album else { return }
 
             do {
                 try await albumStore.delete(album.id)
                 presentationState.photoFilter = []
-                
+
                 notifier.show("Album deleted", .success)
             } catch {
                 notifier.show("Could not delete album", .error)
@@ -61,14 +61,13 @@ extension View {
                 notifier.show("Could not delete albums", .error)
             }
         }
-        let showCreator: (NotificationCenter.Publisher.Output) -> Void = {
-            _ in
-            albumEditorPresenter.show(nil)
+        let showCreator: (NotificationCenter.Publisher.Output) -> Void = { _ in
+            modalPresenter.show(onDismiss: {}) { AlbumEditorSheet(nil) }
         }
         let showEditor: (NotificationCenter.Publisher.Output) -> Void = {
             note in
             guard let album = note.object as? Album else { return }
-            albumEditorPresenter.show(album)
+            modalPresenter.show(onDismiss: {}) { AlbumEditorSheet(album) }
         }
         let showRemover: (NotificationCenter.Publisher.Output) -> Void = {
             note in

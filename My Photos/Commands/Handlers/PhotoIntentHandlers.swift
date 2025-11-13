@@ -66,7 +66,7 @@ extension View {
 
             withAnimation {
                 modalPresenter.show(onDismiss: {}) {
-                    DatePickerSheet(
+                    DateSetterSheet(
                         photoIDs: photoIDs,
                         year: year,
                         month: month,
