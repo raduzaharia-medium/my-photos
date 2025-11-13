@@ -19,8 +19,9 @@ extension View {
             notifier: notifier
         )
         let pickTagPresenter = PickTagPresenter(modalPresenter: modalPresenter)
-        let pickDatePresenter = PickDatePresenter(modalPresenter: modalPresenter)
-        let pickLocationPresenter = PickLocationPresenter(modalPresenter: modalPresenter)
+        let pickLocationPresenter = PickLocationPresenter(
+            modalPresenter: modalPresenter
+        )
         let importPhotosPresenter = ImportPhotosPresenter(
             modalPresenter: modalPresenter,
             notifier: notifier
@@ -59,7 +60,12 @@ extension View {
         }
         let showDateChanger: (NotificationOutput) -> Void = { note in
             guard let photos = note.object as? [Photo] else { return }
-            pickDatePresenter.show(photos)
+            
+            withAnimation {
+                modalPresenter.show(onDismiss: {}) {
+                    DatePickerSheet(photos: photos)
+                }
+            }
         }
         let showLocationChanger: (NotificationOutput) -> Void = { note in
             guard let photos = note.object as? [Photo] else { return }

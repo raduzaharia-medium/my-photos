@@ -61,6 +61,12 @@ private struct MainButtons: View {
         } label: {
             Image(systemName: "mappin.and.ellipse")
         }.controlSize(.regular).disabled(!allowTagging)
+        
+        Button {
+            // TODO: PhotoIntents.requestDetectFaces(Array(state.photoSelection))
+        } label: {
+            Image(systemName: "viewfinder")
+        }.controlSize(.regular).disabled(!allowTagging)
 
         Button {
             if allSelected {

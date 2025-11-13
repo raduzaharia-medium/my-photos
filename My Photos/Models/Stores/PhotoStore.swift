@@ -23,9 +23,7 @@ actor PhotoStore {
 
     func tagPhotos(_ ids: [UUID], _ tags: [SidebarItem]) throws {
         for id in ids {
-            guard let photo = try get(id) else {
-                throw DataStoreError.invalidPredicate
-            }
+            let photo = try get(id)
 
             for tag in tags {
                 if !photo.tags.contains(where: { $0.id == tag.id }) {
@@ -41,10 +39,19 @@ actor PhotoStore {
 
         try modelContext.save()
     }
+
+    func setDateTaken(_ id: UUID, _ date: Date) throws {
+        let photo = try get(id)
+
+        photo.dateTaken = date
+    }
+
+    func save() throws {
+        try modelContext.save()
+    }
+
     func addAlbums(_ id: UUID, _ albumIDs: [UUID]) throws {
-        guard let photo = try get(id) else {
-            throw DataStoreError.invalidPredicate
-        }
+        let photo = try get(id)
 
         for albumId in albumIDs {
             guard let album = try getAlbum(albumId) else {
@@ -57,9 +64,7 @@ actor PhotoStore {
         try modelContext.save()
     }
     func addPeople(_ id: UUID, _ personIDs: [UUID]) throws {
-        guard let photo = try get(id) else {
-            throw DataStoreError.invalidPredicate
-        }
+        let photo = try get(id)
 
         for personId in personIDs {
             guard let person = try getPerson(personId) else {
@@ -72,9 +77,7 @@ actor PhotoStore {
         try modelContext.save()
     }
     func addEvents(_ id: UUID, _ eventIDs: [UUID]) throws {
-        guard let photo = try get(id) else {
-            throw DataStoreError.invalidPredicate
-        }
+        let photo = try get(id)
 
         for eventId in eventIDs {
             guard let event = try getEvent(eventId) else {
@@ -87,9 +90,7 @@ actor PhotoStore {
         try modelContext.save()
     }
     func addTags(_ id: UUID, _ tagIDs: [UUID]) throws {
-        guard let photo = try get(id) else {
-            throw DataStoreError.invalidPredicate
-        }
+        let photo = try get(id)
 
         for tagId in tagIDs {
             guard let tag = try getTag(tagId) else {
@@ -108,11 +109,13 @@ actor PhotoStore {
 
         return (try modelContext.fetch(descriptor)).first
     }
-    private func get(_ id: UUID) throws -> Photo? {
+    private func get(_ id: UUID) throws -> Photo {
         let predicate = #Predicate<Photo> { $0.id == id }
         let descriptor = FetchDescriptor<Photo>(predicate: predicate)
+        let result = (try modelContext.fetch(descriptor)).first
 
-        return (try modelContext.fetch(descriptor)).first
+        guard let result else { throw URLError(.fileDoesNotExist) }
+        return result
     }
 
     private func getAlbum(_ id: UUID?) throws -> Album? {
