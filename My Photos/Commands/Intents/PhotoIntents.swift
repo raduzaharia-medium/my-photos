@@ -37,10 +37,22 @@ enum PhotoIntents {
     static func requestTag(_ photos: [Photo]) {
         NotificationCenter.default.post(name: .requestTagPhotos, object: photos)
     }
-    static func requestChangeDate(_ photos: [Photo]) {
+    static func requestChangeDate(
+        _ photoIDs: [UUID],
+        year: Int? = nil,
+        month: Int? = nil,
+        day: Int? = nil
+    ) {
+        var userInfo: [String: Int] = [:]
+        
+        if let year = year { userInfo["year"] = year }
+        if let month = month { userInfo["month"] = month }
+        if let day = day { userInfo["day"] = day }
+        
         NotificationCenter.default.post(
             name: .requestChangeDatePhotos,
-            object: photos
+            object: photoIDs,
+            userInfo: userInfo
         )
     }
     static func requestChangeLocation(_ photos: [Photo]) {

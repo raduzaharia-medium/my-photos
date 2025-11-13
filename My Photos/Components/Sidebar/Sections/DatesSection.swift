@@ -11,6 +11,15 @@ struct DatesSection: View {
                     DateSectionMonths(year: year)
                 } label: {
                     SidebarRow(.dateYear(year)).tag(year)
+                        .dropDestination(for: PhotoDragItem.self) { items, _ in
+                            let photoIDs = items.map(\.id)
+
+                            PhotoIntents.requestChangeDate(
+                                photoIDs,
+                                year: year.year
+                            )
+                            return true
+                        }
                 }.listRowSeparator(.hidden)
 
             }
@@ -33,6 +42,16 @@ private struct DateSectionMonths: View {
                 DateSectionDays(month: month)
             } label: {
                 SidebarRow(.dateMonth(month)).tag(month)
+                    .dropDestination(for: PhotoDragItem.self) { items, _ in
+                        let photoIDs = items.map(\.id)
+
+                        PhotoIntents.requestChangeDate(
+                            photoIDs,
+                            year: year.year,
+                            month: month.month
+                        )
+                        return true
+                    }
             }.listRowSeparator(.hidden)
 
         }
@@ -51,6 +70,17 @@ private struct DateSectionDays: View {
     var body: some View {
         ForEach(days) { day in
             SidebarRow(.dateDay(day)).tag(day)
+                .dropDestination(for: PhotoDragItem.self) { items, _ in
+                    let photoIDs = items.map(\.id)
+
+                    PhotoIntents.requestChangeDate(
+                        photoIDs,
+                        year: month.year.year,
+                        month: month.month,
+                        day: day.day
+                    )
+                    return true
+                }
         }
     }
 }

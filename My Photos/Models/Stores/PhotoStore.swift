@@ -50,6 +50,17 @@ actor PhotoStore {
         try modelContext.save()
     }
 
+    func getDateTaken(_ id: UUID) throws -> Date? {
+        let photo = try get(id)
+        return photo.dateTaken
+    }
+    func getDateTaken(_ ids: [UUID]) throws -> [UUID: Date?] {
+        let photos = try ids.compactMap { try get($0) }
+        let result = photos.reduce(into: [UUID: Date?]()) { $0[$1.id] = $1.dateTaken }
+        
+        return result
+    }
+
     func addAlbums(_ id: UUID, _ albumIDs: [UUID]) throws {
         let photo = try get(id)
 

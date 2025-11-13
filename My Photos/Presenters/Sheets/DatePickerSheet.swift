@@ -4,26 +4,27 @@ struct DatePickerSheet: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
-    @State private var selectedDate: Date = Date()
+    @State private var selectedDate: Date
     @State private var task: Task<Void, Never>? = nil
     @State private var total: Int = 0
     @State private var completed: Int = 0
     @State private var isSaving = false
+    @State private var formattedPhotoDates: String = ""
 
-    private var formattedPhotoDates: String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
+    let photoIDs: [UUID]
 
-        let dates = Set(photos.compactMap((\.dateTaken))).sorted().map {
-            formatter.string(from: $0)
-        }
-        return dates.joined(separator: " • ")
+    init(photoIDs: [UUID], year: Int? = nil, month: Int? = nil, day: Int? = nil)
+    {
+        let calendar = Calendar.current
+        let year = year ?? calendar.component(.year, from: .now)
+        let month = month ?? calendar.component(.month, from: .now)
+        let day = day ?? calendar.component(.day, from: .now)
+        let components = DateComponents(year: year, month: month, day: day)
+        let date = calendar.date(from: components)
+
+        self.photoIDs = photoIDs
+        self.selectedDate = calendar.startOfDay(for: date ?? .now)
     }
-
-    let photos: [Photo]
-
-    var photoIDs: [UUID] { photos.compactMap(\.id) }
 
     var body: some View {
         NavigationStack {
@@ -39,6 +40,9 @@ struct DatePickerSheet: View {
             .padding(20)
             .frame(minWidth: 400, minHeight: 200)
             .navigationTitle("Change Date Taken")
+            .task {
+                try? await loadFormattedPhotoDates()
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .cancel) {
@@ -90,6 +94,21 @@ struct DatePickerSheet: View {
         PhotoIntents.toggleSelectionMode()
         isSaving = false
         dismiss()
+    }
+
+    @MainActor
+    private func loadFormattedPhotoDates() async throws {
+        let photoStore = PhotoStore(modelContainer: context.container)
+        let formatter = DateFormatter()
+
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+
+        let dateTakens = await (try photoStore.getDateTaken(photoIDs))
+        let onlyDates = dateTakens.values.compactMap { $0 }
+        let dates = Set(onlyDates).sorted().map { formatter.string(from: $0) }
+
+        self.formattedPhotoDates = dates.joined(separator: " • ")
     }
 }
 

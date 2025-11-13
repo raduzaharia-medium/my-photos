@@ -51,7 +51,8 @@ private struct MainButtons: View {
         }.controlSize(.regular).disabled(!allowTagging)
 
         Button {
-            PhotoIntents.requestChangeDate(Array(state.photoSelection))
+            let photoIDs = state.photoSelection.map(\.id)
+            PhotoIntents.requestChangeDate(photoIDs)
         } label: {
             Image(systemName: "calendar")
         }.controlSize(.regular).disabled(!allowTagging)

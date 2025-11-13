@@ -59,11 +59,19 @@ extension View {
             pickTagPresenter.show(photos)
         }
         let showDateChanger: (NotificationOutput) -> Void = { note in
-            guard let photos = note.object as? [Photo] else { return }
-            
+            guard let photoIDs = note.object as? [UUID] else { return }
+            let year = note.userInfo?["year"] as? Int
+            let month = note.userInfo?["month"] as? Int
+            let day = note.userInfo?["day"] as? Int
+
             withAnimation {
                 modalPresenter.show(onDismiss: {}) {
-                    DatePickerSheet(photos: photos)
+                    DatePickerSheet(
+                        photoIDs: photoIDs,
+                        year: year,
+                        month: month,
+                        day: day
+                    )
                 }
             }
         }
