@@ -12,29 +12,6 @@ extension View {
     ) -> some View {
         let deletePersonPresenter = DeletePersonPresenter(confirmer: confirmer)
 
-        let edit: (NotificationCenter.Publisher.Output) async -> Void = {
-            note in
-            guard let person = note.object as? Person else { return }
-            guard let name = note.userInfo?["name"] as? String else { return }
-
-            do {
-                try await personStore.update(person.id, name: name)
-                notifier.show("Person updated", .success)
-            } catch {
-                notifier.show("Could not update person", .error)
-            }
-        }
-        let create: (NotificationCenter.Publisher.Output) async -> Void = {
-            note in
-            guard let name = note.object as? String else { return }
-
-            do {
-                try await personStore.create(name)
-                notifier.show("Person created", .success)
-            } catch {
-                notifier.show("Could not create person", .error)
-            }
-        }
         let delete: (NotificationCenter.Publisher.Output) async -> Void = {
             note in
             guard let person = note.object as? Person else { return }
@@ -82,11 +59,6 @@ extension View {
 
         return
             self
-            .onReceive(NotificationCenter.default.publisher(for: .editPerson)) {
-                note in Task { await edit(note) }
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .createPerson))
-        { note in Task { await create(note) } }
             .onReceive(NotificationCenter.default.publisher(for: .deletePerson))
         { note in Task { await delete(note) } }
             .onReceive(NotificationCenter.default.publisher(for: .deletePeople))

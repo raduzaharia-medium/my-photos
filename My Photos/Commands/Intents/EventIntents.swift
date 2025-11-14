@@ -6,8 +6,6 @@ extension Notification.Name {
     static let requestDeleteEvent = Notification.Name("requestDeleteEvent")
     static let requestDeleteEvents = Notification.Name("requestDeleteEvents")
 
-    static let createEvent = Notification.Name("createEvent")
-    static let editEvent = Notification.Name("editEvent")
     static let deleteEvent = Notification.Name("deleteEvent")
     static let deleteEvents = Notification.Name("deleteEvents")
 }
@@ -29,16 +27,6 @@ enum EventIntents {
         )
     }
 
-    static func create(name: String) {
-        NotificationCenter.default.post(name: .createEvent, object: name)
-    }
-    static func edit(_ event: Event, name: String) {
-        NotificationCenter.default.post(
-            name: .editEvent,
-            object: event,
-            userInfo: ["name": name]
-        )
-    }
     static func delete(_ event: Event) {
         NotificationCenter.default.post(name: .deleteEvent, object: event)
     }

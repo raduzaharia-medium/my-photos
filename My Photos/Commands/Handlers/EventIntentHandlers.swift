@@ -12,29 +12,6 @@ extension View {
     ) -> some View {
         let deleteEventPresenter = DeleteEventPresenter(confirmer: confirmer)
 
-        let edit: (NotificationCenter.Publisher.Output) async -> Void = {
-            note in
-            guard let event = note.object as? Event else { return }
-            guard let name = note.userInfo?["name"] as? String else { return }
-
-            do {
-                try await eventStore.update(event.id, name)
-                notifier.show("Event updated", .success)
-            } catch {
-                notifier.show("Could not update event", .error)
-            }
-        }
-        let create: (NotificationCenter.Publisher.Output) async -> Void = {
-            note in
-            guard let name = note.object as? String else { return }
-
-            do {
-                try await eventStore.create(name)
-                notifier.show("Event created", .success)
-            } catch {
-                notifier.show("Could not create event", .error)
-            }
-        }
         let delete: (NotificationCenter.Publisher.Output) async -> Void = {
             note in
             guard let event = note.object as? Event else { return }
@@ -84,16 +61,6 @@ extension View {
 
         return
             self
-            .onReceive(
-                NotificationCenter.default.publisher(for: .editEvent)
-            ) { note in
-                Task { await edit(note) }
-            }
-            .onReceive(
-                NotificationCenter.default.publisher(for: .createEvent)
-            ) { note in
-                Task { await create(note) }
-            }
             .onReceive(
                 NotificationCenter.default.publisher(for: .deleteEvent)
             ) { note in

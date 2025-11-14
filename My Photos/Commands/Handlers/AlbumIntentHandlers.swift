@@ -12,29 +12,6 @@ extension View {
     ) -> some View {
         let deleteAlbumPresenter = DeleteAlbumPresenter(confirmer: confirmer)
 
-        let edit: (NotificationCenter.Publisher.Output) async -> Void = {
-            note in
-            guard let album = note.object as? Album else { return }
-            guard let name = note.userInfo?["name"] as? String else { return }
-
-            do {
-                try await albumStore.update(album.id, name)
-                notifier.show("Album updated", .success)
-            } catch {
-                notifier.show("Could not update album", .error)
-            }
-        }
-        let create: (NotificationCenter.Publisher.Output) async -> Void = {
-            note in
-            guard let name = note.object as? String else { return }
-
-            do {
-                try await albumStore.create(name)
-                notifier.show("Album created", .success)
-            } catch {
-                notifier.show("Could not create album", .error)
-            }
-        }
         let delete: (NotificationCenter.Publisher.Output) async -> Void = {
             note in
             guard let album = note.object as? Album else { return }
@@ -82,16 +59,6 @@ extension View {
 
         return
             self
-            .onReceive(
-                NotificationCenter.default.publisher(for: .editAlbum)
-            ) { note in
-                Task { await edit(note) }
-            }
-            .onReceive(
-                NotificationCenter.default.publisher(for: .createAlbum)
-            ) { note in
-                Task { await create(note) }
-            }
             .onReceive(
                 NotificationCenter.default.publisher(for: .deleteAlbum)
             ) { note in

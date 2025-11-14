@@ -6,8 +6,6 @@ extension Notification.Name {
     static let requestDeleteAlbum = Notification.Name("requestDeleteAlbum")
     static let requestDeleteAlbums = Notification.Name("requestDeleteAlbums")
 
-    static let createAlbum = Notification.Name("createAlbum")
-    static let editAlbum = Notification.Name("editAlbum")
     static let deleteAlbum = Notification.Name("deleteAlbum")
     static let deleteAlbums = Notification.Name("deleteAlbums")
 }
@@ -29,16 +27,6 @@ enum AlbumIntents {
         )
     }
 
-    static func create(name: String) {
-        NotificationCenter.default.post(name: .createAlbum, object: name)
-    }
-    static func edit(_ album: Album, name: String) {
-        NotificationCenter.default.post(
-            name: .editAlbum,
-            object: album,
-            userInfo: ["name": name]
-        )
-    }
     static func delete(_ album: Album) {
         NotificationCenter.default.post(name: .deleteAlbum, object: album)
     }
