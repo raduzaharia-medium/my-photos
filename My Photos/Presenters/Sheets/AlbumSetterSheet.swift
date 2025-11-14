@@ -65,7 +65,7 @@ struct AlbumSetterSheet: View {
                 }
 
                 ToolbarItem(placement: .automatic) {
-                    ProgressIndication(
+                    ProgressIndicator(
                         isSaving: $isSaving,
                         completed: $completed,
                         total: $total
@@ -108,48 +108,5 @@ struct AlbumSetterSheet: View {
         let names = allAlbums.map(\.name)
 
         self.formattedExistingAlbums = names.joined(separator: " • ")
-    }
-}
-
-private struct DateInput: View {
-    @FocusState private var focused: Bool
-    @Binding var date: Date
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Date Taken").font(.caption).foregroundStyle(.secondary)
-            DatePicker(
-                "",
-                selection: $date,
-                displayedComponents: .date
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .labelsHidden()
-            .textFieldStyle(.roundedBorder)
-            .focused($focused)
-            .task { focused = true }
-            .submitLabel(.done)
-        }
-    }
-}
-
-private struct ProgressIndication: View {
-    @Binding var isSaving: Bool
-    @Binding var completed: Int
-    @Binding var total: Int
-
-    var body: some View {
-        if isSaving && completed < total {
-            ProgressView(
-                value: Double(completed),
-                total: Double(max(total, 1))
-            )
-            .progressViewStyle(.circular)
-            .controlSize(.small)
-        } else if isSaving && completed == total {
-            ProgressView()
-                .progressViewStyle(.circular)
-                .controlSize(.small)
-        }
     }
 }

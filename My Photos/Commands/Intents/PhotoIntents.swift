@@ -41,7 +41,6 @@ enum PhotoIntents {
         NotificationCenter.default.post(name: .requestTagPhotos, object: photos)
     }
     static func requestChangeDate(
-        _ photoIDs: [UUID],
         year: Int? = nil,
         month: Int? = nil,
         day: Int? = nil
@@ -54,7 +53,7 @@ enum PhotoIntents {
 
         NotificationCenter.default.post(
             name: .requestChangeDatePhotos,
-            object: photoIDs,
+            object: nil,
             userInfo: userInfo
         )
     }

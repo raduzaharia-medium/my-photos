@@ -8,9 +8,7 @@ struct AlbumsSection: View {
         Section("Albums") {
             ForEach(albums) { album in
                 SidebarRow(.album(album)).tag(album)
-                    .dropDestination(for: PhotoDragItem.self) { items, _ in
-                        // TODO: do I need the dragged items if they are already in presentation state?
-                        
+                    .dropDestination(for: PhotoDragItem.self) { items, _ in                       
                         PhotoIntents.requestChangeAlbum(album: album)
                         return true
                     }

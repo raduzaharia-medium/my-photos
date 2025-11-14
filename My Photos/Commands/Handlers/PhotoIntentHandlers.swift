@@ -58,18 +58,12 @@ extension View {
             modalPresenter.show(onDismiss: {}) { TagSetterSheet() }
         }
         let showDateChanger: (NotificationOutput) -> Void = { note in
-            guard let photoIDs = note.object as? [UUID] else { return }
             let year = note.userInfo?["year"] as? Int
             let month = note.userInfo?["month"] as? Int
             let day = note.userInfo?["day"] as? Int
 
             modalPresenter.show(onDismiss: {}) {
-                DateSetterSheet(
-                    photoIDs: photoIDs,
-                    year: year,
-                    month: month,
-                    day: day
-                )
+                DateSetterSheet(year: year, month: month, day: day)
             }
         }
         let showLocationChanger: (NotificationOutput) -> Void = { note in

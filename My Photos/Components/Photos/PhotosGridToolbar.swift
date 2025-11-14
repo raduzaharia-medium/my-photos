@@ -45,8 +45,7 @@ private struct MainButtons: View {
 
     var body: some View {
         Button {
-            let photoIDs = state.photoSelection.map(\.id)
-            PhotoIntents.requestChangeDate(photoIDs)
+            PhotoIntents.requestChangeDate()
         } label: {
             Image(systemName: DateTaken.icon)
         }.controlSize(.regular).disabled(!allowTagging)

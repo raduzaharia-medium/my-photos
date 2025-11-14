@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct DateSetterSheet: View {
+    @Environment(PresentationState.self) private var state
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
@@ -12,9 +13,7 @@ struct DateSetterSheet: View {
     @State private var isSaving = false
     @State private var formattedPhotoDates: String = ""
 
-    let photoIDs: [UUID]
-
-    init(photoIDs: [UUID], year: Int? = nil, month: Int? = nil, day: Int? = nil)
+    init(year: Int? = nil, month: Int? = nil, day: Int? = nil)
     {
         let calendar = Calendar.current
         let year = year ?? calendar.component(.year, from: .now)
@@ -23,7 +22,6 @@ struct DateSetterSheet: View {
         let components = DateComponents(year: year, month: month, day: day)
         let date = calendar.date(from: components)
 
-        self.photoIDs = photoIDs
         self.selectedDate = calendar.startOfDay(for: date ?? .now)
     }
 
@@ -62,7 +60,7 @@ struct DateSetterSheet: View {
                 }
 
                 ToolbarItem(placement: .automatic) {
-                    ProgressIndication(
+                    ProgressIndicator(
                         isSaving: $isSaving,
                         completed: $completed,
                         total: $total
@@ -75,6 +73,7 @@ struct DateSetterSheet: View {
     @MainActor
     private func doWork() async throws {
         let photoStore = PhotoStore(modelContainer: context.container)
+        let photoIDs = state.photoSelection.map(\.id)
 
         isSaving = true
         total = photoIDs.count
@@ -99,59 +98,14 @@ struct DateSetterSheet: View {
 
     @MainActor
     private func loadFormattedPhotoDates() async throws {
-        let photoStore = PhotoStore(modelContainer: context.container)
         let formatter = DateFormatter()
 
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
 
-        let dateTakens = await (try photoStore.getDateTaken(photoIDs))
-        let onlyDates = dateTakens.values.compactMap { $0 }
-        let dates = Set(onlyDates).sorted().map { formatter.string(from: $0) }
+        let dates = state.photoSelection.compactMap(\.dateTaken)
+        let formatted = Set(dates).sorted().map { formatter.string(from: $0) }
 
-        self.formattedPhotoDates = dates.joined(separator: " • ")
-    }
-}
-
-private struct DateInput: View {
-    @FocusState private var focused: Bool
-    @Binding var date: Date
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Date Taken").font(.caption).foregroundStyle(.secondary)
-            DatePicker(
-                "",
-                selection: $date,
-                displayedComponents: .date
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .labelsHidden()
-            .textFieldStyle(.roundedBorder)
-            .focused($focused)
-            .task { focused = true }
-            .submitLabel(.done)
-        }
-    }
-}
-
-private struct ProgressIndication: View {
-    @Binding var isSaving: Bool
-    @Binding var completed: Int
-    @Binding var total: Int
-
-    var body: some View {
-        if isSaving && completed < total {
-            ProgressView(
-                value: Double(completed),
-                total: Double(max(total, 1))
-            )
-            .progressViewStyle(.circular)
-            .controlSize(.small)
-        } else if isSaving && completed == total {
-            ProgressView()
-                .progressViewStyle(.circular)
-                .controlSize(.small)
-        }
+        self.formattedPhotoDates = formatted.joined(separator: " • ")
     }
 }
