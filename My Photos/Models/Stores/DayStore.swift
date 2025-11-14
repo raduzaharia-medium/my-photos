@@ -16,7 +16,7 @@ actor DayStore {
         let item = try get(id)
         guard let item else { throw DataStoreError.invalidPredicate }
 
-        item.day = day
+        item.value = day
         try modelContext.save()
     }
 

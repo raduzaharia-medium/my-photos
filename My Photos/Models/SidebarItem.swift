@@ -14,9 +14,9 @@ enum SidebarItem: Hashable {
     var name: String {
         switch self {
         case .tag(let tag): return tag.name
-        case .dateYear(let date): return "\(date.year)"
-        case .dateMonth(let date): return monthName(date.month)
-        case .dateDay(let date): return "\(date.day)"
+        case .dateYear(let year): return "\(year.value)"
+        case .dateMonth(let month): return monthName(month.value)
+        case .dateDay(let day): return "\(day.value)"
         case .placeCountry(let country): return country.name
         case .placeLocality(let locality): return locality.name
         case .album(let album): return album.name

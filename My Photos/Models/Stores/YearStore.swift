@@ -15,7 +15,7 @@ actor YearStore {
         let item = try get(id)
         guard let item else { throw DataStoreError.invalidPredicate }
 
-        item.year = year
+        item.value = year
         try modelContext.save()
     }
 

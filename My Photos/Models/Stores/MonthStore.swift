@@ -16,7 +16,7 @@ actor MonthStore {
         let item = try get(id)
         guard let item else { throw DataStoreError.invalidPredicate }
 
-        item.month = month
+        item.value = month
         try modelContext.save()
     }
 

@@ -5,14 +5,14 @@ import SwiftData
 final class DateTakenYear: Identifiable, Hashable, Equatable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
-    @Attribute(.unique) var year: Int
+    @Attribute(.unique) var value: Int
 
     @Relationship(deleteRule: .cascade, inverse: \DateTakenMonth.year)
     var months: [DateTakenMonth] = []
     @Relationship(inverse: \Photo.dateTakenYear) var photos: [Photo] = []
 
     init(_ year: Int) {
-        self.year = year
+        self.value = year
         self.key = DateTakenYear.key(year)
     }
 
@@ -28,7 +28,7 @@ final class DateTakenMonth: Identifiable, Hashable, Equatable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
 
-    var month: Int
+    var value: Int
 
     @Relationship var year: DateTakenYear
     @Relationship(deleteRule: .cascade, inverse: \DateTakenDay.month) var days:
@@ -38,7 +38,7 @@ final class DateTakenMonth: Identifiable, Hashable, Equatable {
     init(_ year: DateTakenYear, _ month: Int) {
         precondition((1...12).contains(month), "Month must be 1...12")
 
-        self.month = month
+        self.value = month
         self.year = year
         self.key = DateTakenMonth.key(year, month)
     }
@@ -60,13 +60,13 @@ final class DateTakenDay: Identifiable, Hashable, Equatable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
 
-    var day: Int
+    var value: Int
 
     @Relationship var month: DateTakenMonth
     @Relationship(inverse: \Photo.dateTakenDay) var photos: [Photo] = []
 
     init(_ month: DateTakenMonth, _ day: Int) {
-        self.day = day
+        self.value = day
         self.month = month
         self.key = DateTakenDay.key(month, day)
     }

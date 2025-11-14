@@ -12,7 +12,7 @@ struct DatesSection: View {
                 } label: {
                     SidebarRow(.dateYear(year)).tag(year)
                         .dropDestination(for: PhotoDragItem.self) { items, _ in
-                            PhotoIntents.requestChangeDate(year: year.year)
+                            PhotoIntents.requestChangeDate(year: year.value)
                             return true
                         }
                 }.listRowSeparator(.hidden)
@@ -39,8 +39,8 @@ private struct DateSectionMonths: View {
                 SidebarRow(.dateMonth(month)).tag(month)
                     .dropDestination(for: PhotoDragItem.self) { items, _ in
                         PhotoIntents.requestChangeDate(
-                            year: year.year,
-                            month: month.month
+                            year: year.value,
+                            month: month.value
                         )
                         return true
                     }
@@ -64,9 +64,9 @@ private struct DateSectionDays: View {
             SidebarRow(.dateDay(day)).tag(day)
                 .dropDestination(for: PhotoDragItem.self) { items, _ in
                     PhotoIntents.requestChangeDate(
-                        year: month.year.year,
-                        month: month.month,
-                        day: day.day
+                        year: month.year.value,
+                        month: month.value,
+                        day: day.value
                     )
                     return true
                 }
