@@ -45,30 +45,36 @@ private struct MainButtons: View {
 
     var body: some View {
         Button {
-            PhotoIntents.requestTag(Array(state.photoSelection))
-        } label: {
-            Image(systemName: "tag")
-        }.controlSize(.regular).disabled(!allowTagging)
-
-        Button {
             let photoIDs = state.photoSelection.map(\.id)
             PhotoIntents.requestChangeDate(photoIDs)
         } label: {
-            Image(systemName: "calendar")
+            Image(systemName: DateTaken.icon)
         }.controlSize(.regular).disabled(!allowTagging)
 
         Button {
             PhotoIntents.requestChangeLocation(Array(state.photoSelection))
         } label: {
-            Image(systemName: "mappin.and.ellipse")
+            Image(systemName: Place.icon)
+        }.controlSize(.regular).disabled(!allowTagging)
+        
+        Button {
+            PhotoIntents.requestChangeAlbum()
+        } label: {
+            Image(systemName: Album.icon)
         }.controlSize(.regular).disabled(!allowTagging)
         
         Button {
             // TODO: PhotoIntents.requestDetectFaces(Array(state.photoSelection))
         } label: {
-            Image(systemName: "viewfinder")
+            Image(systemName: Person.icon)
         }.controlSize(.regular).disabled(!allowTagging)
 
+        Button {
+            PhotoIntents.requestTag(Array(state.photoSelection))
+        } label: {
+            Image(systemName: Tag.icon)
+        }.controlSize(.regular).disabled(!allowTagging)
+        
         Button {
             if allSelected {
                 PhotoIntents.clearSelection()
@@ -78,6 +84,5 @@ private struct MainButtons: View {
         } label: {
             Image(systemName: selectionIcon)
         }.controlSize(.regular)
-
     }
 }

@@ -87,6 +87,8 @@ enum DateTaken: Hashable {
     case year(DateTakenYear)
     case month(DateTakenMonth)
     case day(DateTakenDay)
+        
+    static let icon: String = "calendar"
 }
 
 extension DateTakenYear {

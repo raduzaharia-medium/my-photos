@@ -9,6 +9,9 @@ extension Notification.Name {
     static let requestChangeLocationPhotos = Notification.Name(
         "requestChangeLocationPhotos"
     )
+    static let requestChangeAlbumPhotos = Notification.Name(
+        "requestChangeAlbumPhotos"
+    )
 
     static let importPhotos = Notification.Name("importPhotos")
     static let tagPhotos = Notification.Name("tagPhotos")
@@ -44,11 +47,11 @@ enum PhotoIntents {
         day: Int? = nil
     ) {
         var userInfo: [String: Int] = [:]
-        
-        if let year = year { userInfo["year"] = year }
-        if let month = month { userInfo["month"] = month }
-        if let day = day { userInfo["day"] = day }
-        
+
+        if let year { userInfo["year"] = year }
+        if let month { userInfo["month"] = month }
+        if let day { userInfo["day"] = day }
+
         NotificationCenter.default.post(
             name: .requestChangeDatePhotos,
             object: photoIDs,
@@ -59,6 +62,12 @@ enum PhotoIntents {
         NotificationCenter.default.post(
             name: .requestChangeDatePhotos,
             object: photos
+        )
+    }
+    static func requestChangeAlbum(album: Album? = nil) {
+        NotificationCenter.default.post(
+            name: .requestChangeAlbumPhotos,
+            object: album,
         )
     }
 

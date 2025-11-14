@@ -18,7 +18,6 @@ extension View {
             fileImporter: fileImporter,
             notifier: notifier
         )
-        let pickTagPresenter = PickTagPresenter(modalPresenter: modalPresenter)
         let pickLocationPresenter = PickLocationPresenter(
             modalPresenter: modalPresenter
         )
@@ -56,7 +55,7 @@ extension View {
         }
         let showTagger: (NotificationOutput) -> Void = { note in
             guard let photos = note.object as? [Photo] else { return }
-            pickTagPresenter.show(photos)
+            modalPresenter.show(onDismiss: {}) { TagSetterSheet() }
         }
         let showDateChanger: (NotificationOutput) -> Void = { note in
             guard let photoIDs = note.object as? [UUID] else { return }
@@ -64,20 +63,26 @@ extension View {
             let month = note.userInfo?["month"] as? Int
             let day = note.userInfo?["day"] as? Int
 
-            withAnimation {
-                modalPresenter.show(onDismiss: {}) {
-                    DateSetterSheet(
-                        photoIDs: photoIDs,
-                        year: year,
-                        month: month,
-                        day: day
-                    )
-                }
+            modalPresenter.show(onDismiss: {}) {
+                DateSetterSheet(
+                    photoIDs: photoIDs,
+                    year: year,
+                    month: month,
+                    day: day
+                )
             }
         }
         let showLocationChanger: (NotificationOutput) -> Void = { note in
             guard let photos = note.object as? [Photo] else { return }
             pickLocationPresenter.show(photos)
+        }
+        let showAlbumChanger: (NotificationOutput) -> Void = { note in
+            let album = note.object as? Album
+
+            modalPresenter.show(onDismiss: {}) {
+                AlbumSetterSheet(album: album)
+            }
+
         }
         let clearSelection: (NotificationOutput) -> Void = { _ in
             withAnimation {
@@ -138,6 +143,12 @@ extension View {
                     for: .requestChangeDatePhotos
                 ),
                 perform: showDateChanger
+            )
+            .onReceive(
+                NotificationCenter.default.publisher(
+                    for: .requestChangeAlbumPhotos
+                ),
+                perform: showAlbumChanger
             )
             .onReceive(
                 NotificationCenter.default.publisher(

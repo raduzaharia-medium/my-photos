@@ -39,6 +39,20 @@ actor PhotoStore {
 
         try modelContext.save()
     }
+    func tagPhoto(_ id: UUID, _ tags: [SidebarItem]) throws {
+        let photo = try get(id)
+
+        for tag in tags {
+            if !photo.tags.contains(where: { $0.id == tag.id }) {
+                if case .album(let album) = tag { photo.addAlbum(album) }
+                if case .person(let person) = tag {
+                    photo.addPerson(person)
+                }
+                if case .event(let event) = tag { photo.addEvent(event) }
+                if case .tag(let tag) = tag { photo.addTag(tag) }
+            }
+        }
+    }
 
     func setDateTaken(_ id: UUID, _ date: Date) throws {
         let photo = try get(id)
@@ -56,8 +70,10 @@ actor PhotoStore {
     }
     func getDateTaken(_ ids: [UUID]) throws -> [UUID: Date?] {
         let photos = try ids.compactMap { try get($0) }
-        let result = photos.reduce(into: [UUID: Date?]()) { $0[$1.id] = $1.dateTaken }
-        
+        let result = photos.reduce(into: [UUID: Date?]()) {
+            $0[$1.id] = $1.dateTaken
+        }
+
         return result
     }
 
@@ -71,8 +87,6 @@ actor PhotoStore {
 
             photo.addAlbum(album)
         }
-
-        try modelContext.save()
     }
     func addPeople(_ id: UUID, _ personIDs: [UUID]) throws {
         let photo = try get(id)
@@ -84,8 +98,6 @@ actor PhotoStore {
 
             photo.addPerson(person)
         }
-
-        try modelContext.save()
     }
     func addEvents(_ id: UUID, _ eventIDs: [UUID]) throws {
         let photo = try get(id)
@@ -97,8 +109,6 @@ actor PhotoStore {
 
             photo.addEvent(event)
         }
-
-        try modelContext.save()
     }
     func addTags(_ id: UUID, _ tagIDs: [UUID]) throws {
         let photo = try get(id)
@@ -110,8 +120,6 @@ actor PhotoStore {
 
             photo.addTag(tag)
         }
-
-        try modelContext.save()
     }
 
     private func get(by fullPath: String) throws -> Photo? {

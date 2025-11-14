@@ -1,48 +1,51 @@
 import SwiftUI
 
-struct DateSetterSheet: View {
+struct AlbumSetterSheet: View {
+    @Environment(PresentationState.self) private var state
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
-    @State private var selectedDate: Date
-    
+    @State private var selectedAlbums: Set<Album>
+
     @State private var task: Task<Void, Never>? = nil
     @State private var total: Int = 0
     @State private var completed: Int = 0
     @State private var isSaving = false
-    @State private var formattedPhotoDates: String = ""
+    @State private var formattedExistingAlbums: String = ""
 
-    let photoIDs: [UUID]
-
-    init(photoIDs: [UUID], year: Int? = nil, month: Int? = nil, day: Int? = nil)
-    {
-        let calendar = Calendar.current
-        let year = year ?? calendar.component(.year, from: .now)
-        let month = month ?? calendar.component(.month, from: .now)
-        let day = day ?? calendar.component(.day, from: .now)
-        let components = DateComponents(year: year, month: month, day: day)
-        let date = calendar.date(from: components)
-
-        self.photoIDs = photoIDs
-        self.selectedDate = calendar.startOfDay(for: date ?? .now)
+    init(album: Album? = nil) {
+        if let album {
+            _selectedAlbums = State(initialValue: [album])
+        } else {
+            _selectedAlbums = State(initialValue: [])
+        }
     }
 
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                DateInput(date: $selectedDate)
-                Text("Existing dates in selection: \(formattedPhotoDates)")
+                AlbumInput(selection: $selectedAlbums)
+
+                if formattedExistingAlbums.isEmpty {
+                    Text("The selected photos will be added to these albums.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(
+                        "The selected photos will be added to these albums. Some selected photos are also part of other albums: \(formattedExistingAlbums)"
+                    )
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+                }
 
                 Spacer(minLength: 0)
             }
             .allowsHitTesting(!isSaving)
             .padding(20)
             .frame(minWidth: 400, minHeight: 200)
-            .navigationTitle("Change Date Taken")
+            .navigationTitle("Add Photos to Albums")
             .task {
-                try? await loadFormattedPhotoDates()
+                try? await loadExistingAlbums()
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -75,9 +78,11 @@ struct DateSetterSheet: View {
     @MainActor
     private func doWork() async throws {
         let photoStore = PhotoStore(modelContainer: context.container)
+        let photoIDs = state.photoSelection.map(\.id)
+        let albumIDs = selectedAlbums.map(\.id)
 
         isSaving = true
-        total = photoIDs.count
+        total = state.photoSelection.count
         completed = 0
 
         for id in photoIDs {
@@ -86,7 +91,7 @@ struct DateSetterSheet: View {
                 dismiss()
             }
 
-            try await photoStore.setDateTaken(id, selectedDate)
+            try await photoStore.addAlbums(id, albumIDs)
             completed += 1
         }
 
@@ -98,18 +103,11 @@ struct DateSetterSheet: View {
     }
 
     @MainActor
-    private func loadFormattedPhotoDates() async throws {
-        let photoStore = PhotoStore(modelContainer: context.container)
-        let formatter = DateFormatter()
+    private func loadExistingAlbums() async throws {
+        let allAlbums = Set(state.photoSelection.flatMap(\.albums).sorted())
+        let names = allAlbums.map(\.name)
 
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-
-        let dateTakens = await (try photoStore.getDateTaken(photoIDs))
-        let onlyDates = dateTakens.values.compactMap { $0 }
-        let dates = Set(onlyDates).sorted().map { formatter.string(from: $0) }
-
-        self.formattedPhotoDates = dates.joined(separator: " • ")
+        self.formattedExistingAlbums = names.joined(separator: " • ")
     }
 }
 
