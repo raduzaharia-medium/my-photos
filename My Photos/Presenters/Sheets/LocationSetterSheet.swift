@@ -15,13 +15,13 @@ struct LocationSetterSheet: View {
 
     private var formattedPhotoCountries: String {
         let countries = state.photoSelection.compactMap(\.country)
-        let formatted = Set(countries).sorted().map(\.country)
+        let formatted = Set(countries).sorted().map(\.name)
         
         return formatted.joined(separator: " • ")
     }
     private var formattedPhotoLocalities: String {
         let localities = state.photoSelection.compactMap(\.locality)
-        let formatted = Set(localities).sorted().map(\.locality)
+        let formatted = Set(localities).sorted().map(\.name)
         
         return formatted.joined(separator: " • ")
     }

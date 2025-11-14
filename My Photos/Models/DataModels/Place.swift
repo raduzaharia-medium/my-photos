@@ -5,15 +5,15 @@ import SwiftData
 final class PlaceCountry: Identifiable, Hashable, Equatable, Comparable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
-    @Attribute(.unique) var country: String
+    @Attribute(.unique) var name: String
 
     @Relationship(deleteRule: .cascade, inverse: \PlaceLocality.country)
     var localities: [PlaceLocality] = []
     @Relationship(inverse: \Photo.country) var photos: [Photo] = []
 
-    init(_ country: String) {
-        self.country = country
-        self.key = PlaceCountry.key(country)
+    init(_ name: String) {
+        self.name = name
+        self.key = PlaceCountry.key(name)
     }
 
     static func == (left: PlaceCountry, right: PlaceCountry) -> Bool {
@@ -31,15 +31,15 @@ final class PlaceLocality: Identifiable, Hashable, Equatable, Comparable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
 
-    var locality: String
+    var name: String
 
     @Relationship var country: PlaceCountry
     @Relationship(inverse: \Photo.locality) var photos: [Photo] = []
 
-    init(_ country: PlaceCountry, _ locality: String) {
-        self.locality = locality
+    init(_ country: PlaceCountry, _ name: String) {
+        self.name = name
         self.country = country
-        self.key = PlaceLocality.key(country, locality)
+        self.key = PlaceLocality.key(country, name)
     }
 
     static func == (left: PlaceLocality, right: PlaceLocality) -> Bool {

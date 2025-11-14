@@ -16,7 +16,7 @@ actor LocalityStore {
         let item = try get(id)
         guard let item else { throw DataStoreError.invalidPredicate }
 
-        item.locality = name
+        item.name = name
         try modelContext.save()
     }
 

@@ -21,7 +21,7 @@ struct LocalityInput: View {
 
                 ForEach(localities) { locality in
                     Label {
-                        Text(locality.locality)
+                        Text(locality.name)
                     } icon: {
                         Image(systemName: PlaceCountry.icon)
                     }

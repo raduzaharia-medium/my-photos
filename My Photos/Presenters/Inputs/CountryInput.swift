@@ -21,7 +21,7 @@ struct CountryInput: View {
 
                 ForEach(countries) { country in
                     Label {
-                        Text(country.country)
+                        Text(country.name)
                     } icon: {
                         Image(systemName: PlaceCountry.icon)
                     }

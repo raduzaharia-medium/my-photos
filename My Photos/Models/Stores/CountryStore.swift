@@ -16,7 +16,7 @@ actor CountryStore {
         let item = try get(id)
         guard let item else { throw DataStoreError.invalidPredicate }
 
-        item.country = name
+        item.name = name
         try modelContext.save()
     }
 
