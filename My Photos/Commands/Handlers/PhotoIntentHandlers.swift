@@ -76,7 +76,13 @@ extension View {
             modalPresenter.show(onDismiss: {}) {
                 AlbumSetterSheet(album: album)
             }
+        }
+        let showEventChanger: (NotificationOutput) -> Void = { note in
+            let event = note.object as? Event
 
+            modalPresenter.show(onDismiss: {}) {
+                EventSetterSheet(event: event)
+            }
         }
         let clearSelection: (NotificationOutput) -> Void = { _ in
             withAnimation {
@@ -143,6 +149,12 @@ extension View {
                     for: .requestChangeAlbumPhotos
                 ),
                 perform: showAlbumChanger
+            )
+            .onReceive(
+                NotificationCenter.default.publisher(
+                    for: .requestChangeEventPhotos
+                ),
+                perform: showEventChanger
             )
             .onReceive(
                 NotificationCenter.default.publisher(

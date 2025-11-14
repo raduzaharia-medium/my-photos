@@ -15,7 +15,7 @@ final class Album: Identifiable, Hashable, Equatable, Comparable {
     }
 
     static func == (left: Album, right: Album) -> Bool { left.key == right.key }
-    static func < (lhs: Album, rhs: Album) -> Bool { lhs.name < rhs.name }
+    static func < (lhs: Album, rhs: Album) -> Bool { lhs.key < rhs.key }
 
     static func key(_ name: String) -> String { name }
 }

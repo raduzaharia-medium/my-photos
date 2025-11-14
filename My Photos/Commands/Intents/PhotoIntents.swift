@@ -12,6 +12,9 @@ extension Notification.Name {
     static let requestChangeAlbumPhotos = Notification.Name(
         "requestChangeAlbumPhotos"
     )
+    static let requestChangeEventPhotos = Notification.Name(
+        "requestChangeEventPhotos"
+    )
 
     static let importPhotos = Notification.Name("importPhotos")
     static let tagPhotos = Notification.Name("tagPhotos")
@@ -67,6 +70,12 @@ enum PhotoIntents {
         NotificationCenter.default.post(
             name: .requestChangeAlbumPhotos,
             object: album,
+        )
+    }
+    static func requestChangeEvent(event: Event? = nil) {
+        NotificationCenter.default.post(
+            name: .requestChangeEventPhotos,
+            object: event,
         )
     }
 

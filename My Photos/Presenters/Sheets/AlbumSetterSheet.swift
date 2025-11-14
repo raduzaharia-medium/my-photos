@@ -11,7 +11,13 @@ struct AlbumSetterSheet: View {
     @State private var total: Int = 0
     @State private var completed: Int = 0
     @State private var isSaving = false
-    @State private var formattedExistingAlbums: String = ""
+    
+    private var formattedExistingAlbums: String {
+        let allAlbums = Set(state.photoSelection.flatMap(\.albums).sorted())
+        let names = allAlbums.map(\.name)
+
+        return names.joined(separator: " • ")
+    }
 
     init(album: Album? = nil) {
         if let album {
@@ -44,9 +50,6 @@ struct AlbumSetterSheet: View {
             .padding(20)
             .frame(minWidth: 400, minHeight: 200)
             .navigationTitle("Add Photos to Albums")
-            .task {
-                try? await loadExistingAlbums()
-            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .cancel) {
@@ -100,13 +103,5 @@ struct AlbumSetterSheet: View {
         PhotoIntents.toggleSelectionMode()
         isSaving = false
         dismiss()
-    }
-
-    @MainActor
-    private func loadExistingAlbums() async throws {
-        let allAlbums = Set(state.photoSelection.flatMap(\.albums).sorted())
-        let names = allAlbums.map(\.name)
-
-        self.formattedExistingAlbums = names.joined(separator: " • ")
     }
 }

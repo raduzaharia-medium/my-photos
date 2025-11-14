@@ -69,6 +69,12 @@ private struct MainButtons: View {
         }.controlSize(.regular).disabled(!allowTagging)
 
         Button {
+            PhotoIntents.requestChangeEvent()
+        } label: {
+            Image(systemName: Event.icon)
+        }.controlSize(.regular).disabled(!allowTagging)
+        
+        Button {
             PhotoIntents.requestTag(Array(state.photoSelection))
         } label: {
             Image(systemName: Tag.icon)

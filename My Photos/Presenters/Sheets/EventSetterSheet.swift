@@ -1,54 +1,55 @@
 import SwiftUI
 
-struct DateSetterSheet: View {
+struct EventSetterSheet: View {
     @Environment(PresentationState.self) private var state
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
-    @State private var selectedDate: Date
+    @State private var selectedEvents: Set<Event>
 
     @State private var task: Task<Void, Never>? = nil
     @State private var total: Int = 0
     @State private var completed: Int = 0
     @State private var isSaving = false
+    
+    private var formattedExistingEvents: String {
+        let allEvents = Set(state.photoSelection.flatMap(\.events).sorted())
+        let names = allEvents.map(\.name)
 
-    private var formattedPhotoDates: String {
-        let formatter = DateFormatter()
-
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-
-        let dates = state.photoSelection.compactMap(\.dateTaken)
-        let formatted = Set(dates).sorted().map { formatter.string(from: $0) }
-
-        return formatted.joined(separator: " • ")
+        return names.joined(separator: " • ")
     }
 
-    init(year: Int? = nil, month: Int? = nil, day: Int? = nil) {
-        let calendar = Calendar.current
-        let year = year ?? calendar.component(.year, from: .now)
-        let month = month ?? calendar.component(.month, from: .now)
-        let day = day ?? calendar.component(.day, from: .now)
-        let components = DateComponents(year: year, month: month, day: day)
-        let date = calendar.date(from: components)
-
-        self.selectedDate = calendar.startOfDay(for: date ?? .now)
+    init(event: Event? = nil) {
+        if let event {
+            _selectedEvents = State(initialValue: [event])
+        } else {
+            _selectedEvents = State(initialValue: [])
+        }
     }
 
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                DateInput(date: $selectedDate)
-                Text("Existing dates in selection: \(formattedPhotoDates)")
+                EventInput(selection: $selectedEvents)
+
+                if formattedExistingEvents.isEmpty {
+                    Text("The selected photos will be added to these events.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(
+                        "The selected photos will be added to these events. Some selected photos are also part of other events: \(formattedExistingEvents)"
+                    )
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+                }
 
                 Spacer(minLength: 0)
             }
             .allowsHitTesting(!isSaving)
             .padding(20)
             .frame(minWidth: 400, minHeight: 200)
-            .navigationTitle("Change Date Taken")
+            .navigationTitle("Add Photos to Events")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .cancel) {
@@ -81,9 +82,10 @@ struct DateSetterSheet: View {
     private func doWork() async throws {
         let photoStore = PhotoStore(modelContainer: context.container)
         let photoIDs = state.photoSelection.map(\.id)
+        let eventIDs = selectedEvents.map(\.id)
 
         isSaving = true
-        total = photoIDs.count
+        total = state.photoSelection.count
         completed = 0
 
         for id in photoIDs {
@@ -92,7 +94,7 @@ struct DateSetterSheet: View {
                 dismiss()
             }
 
-            try await photoStore.setDateTaken(id, selectedDate)
+            try await photoStore.addEvents(id, eventIDs)
             completed += 1
         }
 

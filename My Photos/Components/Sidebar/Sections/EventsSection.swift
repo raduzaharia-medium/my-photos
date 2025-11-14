@@ -9,9 +9,7 @@ struct EventsSection: View {
             ForEach(events) { event in
                 SidebarRow(.event(event)).tag(event)
                     .dropDestination(for: PhotoDragItem.self) { items, _ in
-                        let photoIDs = items.map(\.id)
-
-                        PhotoIntents.tag(photoIDs, [.event(event)])
+                        PhotoIntents.requestChangeEvent(event: event)
                         return true
                     }
             }

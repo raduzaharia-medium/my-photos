@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Event: Identifiable, Hashable, Equatable {
+final class Event: Identifiable, Hashable, Equatable, Comparable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
     @Attribute(.unique) var name: String
@@ -16,6 +16,9 @@ final class Event: Identifiable, Hashable, Equatable {
 
     static func == (left: Event, right: Event) -> Bool {
         left.key == right.key
+    }
+    static func < (lhs: Event, rhs: Event) -> Bool {
+        lhs.key < rhs.key
     }
     
     static func key(_ name: String) -> String { name }
