@@ -11,6 +11,10 @@ struct PlacesSection: View {
                     DateSectionLocalities(country: country)
                 } label: {
                     SidebarRow(.placeCountry(country)).tag(country)
+                        .dropDestination(for: PhotoDragItem.self) { items, _ in                           
+                            PhotoIntents.requestChangeLocation(country: country)
+                            return true
+                        }
                 }.listRowSeparator(.hidden)
 
             }
@@ -30,6 +34,10 @@ private struct DateSectionLocalities: View {
     var body: some View {
         ForEach(localities) { locality in
             SidebarRow(.placeLocality(locality)).tag(locality)
+                .dropDestination(for: PhotoDragItem.self) { items, _ in
+                    PhotoIntents.requestChangeLocation(locality: locality)
+                    return true
+                }
         }
     }
 }

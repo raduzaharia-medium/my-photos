@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class PlaceCountry: Identifiable, Hashable, Equatable {
+final class PlaceCountry: Identifiable, Hashable, Equatable, Comparable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
     @Attribute(.unique) var country: String
@@ -19,12 +19,15 @@ final class PlaceCountry: Identifiable, Hashable, Equatable {
     static func == (left: PlaceCountry, right: PlaceCountry) -> Bool {
         left.key == right.key
     }
+    static func < (lhs: PlaceCountry, rhs: PlaceCountry) -> Bool {
+        lhs.key < rhs.key
+    }
 
     static func key(_ country: String) -> String { country }
 }
 
 @Model
-final class PlaceLocality: Identifiable, Hashable, Equatable {
+final class PlaceLocality: Identifiable, Hashable, Equatable, Comparable {
     @Attribute(.unique) var id = UUID()
     @Attribute(.unique) var key: String
 
@@ -41,6 +44,9 @@ final class PlaceLocality: Identifiable, Hashable, Equatable {
 
     static func == (left: PlaceLocality, right: PlaceLocality) -> Bool {
         left.key == right.key
+    }
+    static func < (lhs: PlaceLocality, rhs: PlaceLocality) -> Bool {
+        lhs.key < rhs.key
     }
 
     static func key(_ country: PlaceCountry, _ locality: String) -> String {

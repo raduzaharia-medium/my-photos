@@ -59,6 +59,18 @@ actor PhotoStore {
 
         photo.dateTaken = date
     }
+    func setCountry(_ id: UUID, _ countryId: UUID) throws {
+        let photo = try get(id)
+        let country = try getCountry(countryId)
+        
+        photo.country = country
+    }
+    func setLocality(_ id: UUID, _ localityId: UUID) throws {
+        let photo = try get(id)
+        let locality = try getLocality(localityId)
+        
+        photo.locality = locality
+    }
 
     func save() throws {
         try modelContext.save()
@@ -166,6 +178,22 @@ actor PhotoStore {
 
         let predicate = #Predicate<Tag> { $0.id == id }
         let descriptor = FetchDescriptor<Tag>(predicate: predicate)
+
+        return (try modelContext.fetch(descriptor)).first
+    }
+    private func getCountry(_ id: UUID?) throws -> PlaceCountry? {
+        guard let id else { return nil }
+
+        let predicate = #Predicate<PlaceCountry> { $0.id == id }
+        let descriptor = FetchDescriptor<PlaceCountry>(predicate: predicate)
+
+        return (try modelContext.fetch(descriptor)).first
+    }
+    private func getLocality(_ id: UUID?) throws -> PlaceLocality? {
+        guard let id else { return nil }
+
+        let predicate = #Predicate<PlaceLocality> { $0.id == id }
+        let descriptor = FetchDescriptor<PlaceLocality>(predicate: predicate)
 
         return (try modelContext.fetch(descriptor)).first
     }

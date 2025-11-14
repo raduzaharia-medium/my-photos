@@ -60,10 +60,19 @@ enum PhotoIntents {
             userInfo: userInfo
         )
     }
-    static func requestChangeLocation(_ photos: [Photo]) {
+    static func requestChangeLocation(
+        country: PlaceCountry? = nil,
+        locality: PlaceLocality? = nil
+    ) {
+        var userInfo: [String: Any] = [:]
+        
+        if let country { userInfo["country"] = country }
+        if let locality { userInfo["locality"] = locality }
+               
         NotificationCenter.default.post(
-            name: .requestChangeDatePhotos,
-            object: photos
+            name: .requestChangeLocationPhotos,
+            object: nil,
+            userInfo: userInfo
         )
     }
     static func requestChangeAlbum(album: Album? = nil) {

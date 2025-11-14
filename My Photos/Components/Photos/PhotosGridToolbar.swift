@@ -51,7 +51,7 @@ private struct MainButtons: View {
         }.controlSize(.regular).disabled(!allowTagging)
 
         Button {
-            PhotoIntents.requestChangeLocation(Array(state.photoSelection))
+            PhotoIntents.requestChangeLocation()
         } label: {
             Image(systemName: Place.icon)
         }.controlSize(.regular).disabled(!allowTagging)

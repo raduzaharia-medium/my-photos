@@ -18,9 +18,6 @@ extension View {
             fileImporter: fileImporter,
             notifier: notifier
         )
-        let pickLocationPresenter = PickLocationPresenter(
-            modalPresenter: modalPresenter
-        )
         let importPhotosPresenter = ImportPhotosPresenter(
             modalPresenter: modalPresenter,
             notifier: notifier
@@ -67,8 +64,12 @@ extension View {
             }
         }
         let showLocationChanger: (NotificationOutput) -> Void = { note in
-            guard let photos = note.object as? [Photo] else { return }
-            pickLocationPresenter.show(photos)
+            let country = note.userInfo?["country"] as? PlaceCountry
+            let locality = note.userInfo?["locality"] as? PlaceLocality
+            
+            modalPresenter.show(onDismiss: {}) {
+                LocationSetterSheet(country: country, locality: locality)
+            }
         }
         let showAlbumChanger: (NotificationOutput) -> Void = { note in
             let album = note.object as? Album
