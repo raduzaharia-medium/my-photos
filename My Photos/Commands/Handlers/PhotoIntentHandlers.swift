@@ -50,10 +50,6 @@ extension View {
         let showImporter: (NotificationOutput) -> Void = { _ in
             pickFolderPresenter.show()
         }
-        let showTagger: (NotificationOutput) -> Void = { note in
-            guard let photos = note.object as? [Photo] else { return }
-            modalPresenter.show(onDismiss: {}) { TagSetterSheet() }
-        }
         let showDateChanger: (NotificationOutput) -> Void = { note in
             let year = note.userInfo?["year"] as? Int
             let month = note.userInfo?["month"] as? Int
@@ -66,7 +62,7 @@ extension View {
         let showLocationChanger: (NotificationOutput) -> Void = { note in
             let country = note.userInfo?["country"] as? PlaceCountry
             let locality = note.userInfo?["locality"] as? PlaceLocality
-            
+
             modalPresenter.show(onDismiss: {}) {
                 LocationSetterSheet(country: country, locality: locality)
             }
@@ -78,12 +74,24 @@ extension View {
                 AlbumSetterSheet(album: album)
             }
         }
+        let showPersonChanger: (NotificationOutput) -> Void = { note in
+            let person = note.object as? Person
+
+            modalPresenter.show(onDismiss: {}) {
+                PersonSetterSheet(person: person)
+            }
+        }
         let showEventChanger: (NotificationOutput) -> Void = { note in
             let event = note.object as? Event
 
             modalPresenter.show(onDismiss: {}) {
                 EventSetterSheet(event: event)
             }
+        }
+        let showTagChanger: (NotificationOutput) -> Void = { note in
+            let tag = note.object as? Tag
+
+            modalPresenter.show(onDismiss: {}) { TagSetterSheet(tag: tag) }
         }
         let clearSelection: (NotificationOutput) -> Void = { _ in
             withAnimation {
@@ -136,10 +144,6 @@ extension View {
                 perform: showImporter
             )
             .onReceive(
-                NotificationCenter.default.publisher(for: .requestTagPhotos),
-                perform: showTagger
-            )
-            .onReceive(
                 NotificationCenter.default.publisher(
                     for: .requestChangeDatePhotos
                 ),
@@ -153,6 +157,12 @@ extension View {
             )
             .onReceive(
                 NotificationCenter.default.publisher(
+                    for: .requestChangePersonPhotos
+                ),
+                perform: showPersonChanger
+            )
+            .onReceive(
+                NotificationCenter.default.publisher(
                     for: .requestChangeEventPhotos
                 ),
                 perform: showEventChanger
@@ -163,16 +173,16 @@ extension View {
                 ),
                 perform: showLocationChanger
             )
+            .onReceive(
+                NotificationCenter.default.publisher(for: .requestChangeTagPhotos),
+                perform: showTagChanger
+            )
             #if os(macOS)
                 .onReceive(
                     NotificationCenter.default.publisher(for: .importPhotos),
                     perform: importPhotos
                 )
             #endif
-            .onReceive(
-                NotificationCenter.default.publisher(for: .tagPhotos),
-                perform: tagPhotos
-            )
             .onReceive(
                 NotificationCenter.default.publisher(for: .clearPhotoSelection),
                 perform: clearSelection

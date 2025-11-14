@@ -63,7 +63,7 @@ private struct MainButtons: View {
         }.controlSize(.regular).disabled(!allowTagging)
         
         Button {
-            // TODO: PhotoIntents.requestDetectFaces(Array(state.photoSelection))
+            PhotoIntents.requestChangePerson()
         } label: {
             Image(systemName: Person.icon)
         }.controlSize(.regular).disabled(!allowTagging)
@@ -75,7 +75,7 @@ private struct MainButtons: View {
         }.controlSize(.regular).disabled(!allowTagging)
         
         Button {
-            PhotoIntents.requestTag(Array(state.photoSelection))
+            PhotoIntents.requestChangeTag()
         } label: {
             Image(systemName: Tag.icon)
         }.controlSize(.regular).disabled(!allowTagging)

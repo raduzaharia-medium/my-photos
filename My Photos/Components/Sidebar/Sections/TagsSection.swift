@@ -58,8 +58,8 @@ private struct TagRow: View {
 
                 let photoIDs = items.photos.compactMap(\.id)
                 let tags = items.tags
-
-                if !photoIDs.isEmpty { PhotoIntents.tag(photoIDs, [.tag(tag)]) }
+               
+                if !photoIDs.isEmpty { PhotoIntents.requestChangeTag(tag: tag) }
 
                 for incoming in tags {
                     var current: Tag? = tag

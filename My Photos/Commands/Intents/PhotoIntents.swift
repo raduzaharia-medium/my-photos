@@ -2,7 +2,6 @@ import SwiftUI
 
 extension Notification.Name {
     static let requestImportPhotos = Notification.Name("requestImportPhotos")
-    static let requestTagPhotos = Notification.Name("requestTagPhotos")
     static let requestChangeDatePhotos = Notification.Name(
         "requestChangeDatePhotos"
     )
@@ -12,12 +11,17 @@ extension Notification.Name {
     static let requestChangeAlbumPhotos = Notification.Name(
         "requestChangeAlbumPhotos"
     )
+    static let requestChangePersonPhotos = Notification.Name(
+        "requestChangePersonPhotos"
+    )
     static let requestChangeEventPhotos = Notification.Name(
         "requestChangeEventPhotos"
     )
+    static let requestChangeTagPhotos = Notification.Name(
+        "requestChangeTagPhotos"
+    )
 
     static let importPhotos = Notification.Name("importPhotos")
-    static let tagPhotos = Notification.Name("tagPhotos")
     static let photoImported = Notification.Name("photoImported")
 
     static let togglePhotoSelectionMode = Notification.Name(
@@ -39,9 +43,6 @@ extension Notification.Name {
 enum PhotoIntents {
     static func requestImport() {
         NotificationCenter.default.post(name: .requestImportPhotos, object: nil)
-    }
-    static func requestTag(_ photos: [Photo]) {
-        NotificationCenter.default.post(name: .requestTagPhotos, object: photos)
     }
     static func requestChangeDate(
         year: Int? = nil,
@@ -65,10 +66,10 @@ enum PhotoIntents {
         locality: PlaceLocality? = nil
     ) {
         var userInfo: [String: Any] = [:]
-        
+
         if let country { userInfo["country"] = country }
         if let locality { userInfo["locality"] = locality }
-               
+
         NotificationCenter.default.post(
             name: .requestChangeLocationPhotos,
             object: nil,
@@ -81,22 +82,27 @@ enum PhotoIntents {
             object: album,
         )
     }
+    static func requestChangePerson(person: Person? = nil) {
+        NotificationCenter.default.post(
+            name: .requestChangePersonPhotos,
+            object: person,
+        )
+    }
     static func requestChangeEvent(event: Event? = nil) {
         NotificationCenter.default.post(
             name: .requestChangeEventPhotos,
             object: event,
         )
     }
+    static func requestChangeTag(tag: Tag? = nil) {       
+        NotificationCenter.default.post(
+            name: .requestChangeTagPhotos,
+            object: tag
+        )
+    }
 
     static func `import`(_ folder: URL) {
         NotificationCenter.default.post(name: .importPhotos, object: folder)
-    }
-    static func tag(_ photoIDs: [UUID], _ tags: [SidebarItem]) {
-        NotificationCenter.default.post(
-            name: .tagPhotos,
-            object: photoIDs,
-            userInfo: ["tags": tags]
-        )
     }
     static func photoImported() {
         NotificationCenter.default.post(name: .photoImported, object: nil)

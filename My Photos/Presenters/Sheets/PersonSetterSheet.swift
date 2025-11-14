@@ -1,44 +1,44 @@
 import SwiftUI
 
-struct TagSetterSheet: View {
+struct PersonSetterSheet: View {
     @Environment(PresentationState.self) private var state
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
-    @State private var selectedTags: Set<Tag>
+    @State private var selectedPeople: Set<Person>
 
     @State private var task: Task<Void, Never>? = nil
     @State private var total: Int = 0
     @State private var completed: Int = 0
     @State private var isSaving = false
-    
-    private var formattedExistingTags: String {
-        let allTags = Set(state.photoSelection.flatMap(\.tags).sorted())
-        let names = allTags.map(\.name)
+
+    private var formattedExistingPeople: String {
+        let allPeople = Set(state.photoSelection.flatMap(\.people).sorted())
+        let names = allPeople.map(\.name)
 
         return names.joined(separator: " • ")
     }
 
-    init(tag: Tag? = nil) {       
-        if let tag {
-            _selectedTags = State(initialValue: [tag])
+    init(person: Person? = nil) {
+        if let person {
+            _selectedPeople = State(initialValue: [person])
         } else {
-            _selectedTags = State(initialValue: [])
+            _selectedPeople = State(initialValue: [])
         }
     }
 
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
-                TagInput(selection: $selectedTags)
+                PersonInput(selection: $selectedPeople)
 
-                if formattedExistingTags.isEmpty {
-                    Text("The selected photos will be added to these tags.")
+                if formattedExistingPeople.isEmpty {
+                    Text("The selected photos will mark these people.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 } else {
                     Text(
-                        "The selected photos will be added to these tags. Some selected photos are also part of other tags: \(formattedExistingTags)"
+                        "The selected photos will mark these people. Some selected photos also have other people: \(formattedExistingPeople)"
                     )
                     .font(.footnote)
                     .foregroundStyle(.secondary)
@@ -49,7 +49,7 @@ struct TagSetterSheet: View {
             .allowsHitTesting(!isSaving)
             .padding(20)
             .frame(minWidth: 400, minHeight: 200)
-            .navigationTitle("Add Photos to Tags")
+            .navigationTitle("Add People to Photos")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .cancel) {
@@ -82,7 +82,7 @@ struct TagSetterSheet: View {
     private func doWork() async throws {
         let photoStore = PhotoStore(modelContainer: context.container)
         let photoIDs = state.photoSelection.map(\.id)
-        let tagIDs = selectedTags.map(\.id)
+        let peopleIDs = selectedPeople.map(\.id)
 
         isSaving = true
         total = state.photoSelection.count
@@ -94,7 +94,7 @@ struct TagSetterSheet: View {
                 dismiss()
             }
 
-            try await photoStore.addTags(id, tagIDs)
+            try await photoStore.addPeople(id, peopleIDs)
             completed += 1
         }
 
